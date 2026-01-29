@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microrock Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #111;
+            --accent-primary: #7aa2f7; 
+            --accent-glow: #00e8ff; 
+            --youtube-red: #ff0000;
+            --discord-blurple: #5865F2;
+            --roblox-green: #00b06f;
+            --success: #00ff9d;
+            --error: #ff4444;
+            --glass: rgba(15, 15, 20, 0.9);
+            --border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* THEME CLASSES */
+        .theme-red { --accent-primary: #ff4444; --accent-glow: #ff8888; }
+        .theme-green { --accent-primary: #00cc66; --accent-glow: #55ff99; }
+        .theme-purple { --accent-primary: #be2edd; --accent-glow: #e056fd; }
+
+        * { box-sizing: border-box; transition: all 0.3s ease; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- MINECRAFT/ROBLOX BACKGROUND ANIMATION --- */
+        .world-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            overflow: hidden;
+            perspective: 1000px;
+            background: #050505;
+        }
+
+        .terrain-grid {
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(#333 2px, transparent 2px),
+                linear-gradient(90deg, #333 2px, transparent 2px);
+            background-size: 100px 100px;
+            transform: rotateX(60deg);
+            animation: moveTerrain 5s linear infinite;
+            opacity: 0.3;
+        }
+        
+        .terrain-grid::after {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background-image: radial-gradient(rgba(0, 255, 157, 0.1) 15%, transparent 16%);
+            background-size: 100px 100px;
+        }
+
+        @keyframes moveTerrain {
+            0% { transform: rotateX(60deg) translateY(0); }
+            100% { transform: rotateX(60deg) translateY(100px); }
+        }
+
+        .cube {
+            position: absolute;
+            width: 40px; height: 40px;
+            background: rgba(122, 162, 247, 0.2);
+            border: 2px solid var(--accent-glow);
+            box-shadow: 0 0 15px var(--accent-glow);
+            animation: floatUp 10s linear infinite;
+            bottom: -100px;
+        }
+        .cube:nth-child(1) { left: 10%; width: 30px; height: 30px; animation-duration: 8s; animation-delay: 0s; }
+        .cube:nth-child(2) { left: 30%; width: 50px; height: 50px; animation-duration: 12s; animation-delay: 2s; border-color: #ff4444; box-shadow: 0 0 15px #ff4444; }
+        .cube:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-duration: 6s; animation-delay: 4s; border-color: #00ff9d; box-shadow: 0 0 15px #00ff9d;}
+        .cube:nth-child(4) { left: 90%; width: 60px; height: 60px; animation-duration: 15s; animation-delay: 1s; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+
+        body.static-mode .terrain-grid, body.static-mode .cube { animation: none; display: none; }
+
+        /* --- AUTH SCREEN --- */
+        .auth-container {
+            height: 100vh; display: flex; align-items: center; justify-content: center; width: 100%;
+            position: absolute; top: 0; left: 0; z-index: 100;
+            background: #050505;
+        }
+        
+        .auth-box {
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 20px;
+            width: 350px;
+            text-align: center;
+            border: var(--border);
+            box-shadow: 0 0 50px rgba(0, 232, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { font-size: 2rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 5px; }
+        .logo span { color: var(--accent-glow); }
+
+        .input-field {
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff;
+            border-radius: 8px; outline: none;
+        }
+        .input-field:focus { border-color: var(--accent-glow); box-shadow: 0 0 10px rgba(0, 232, 255, 0.2); }
+
+        .btn-main {
+            width: 100%; padding: 12px; margin-top: 15px;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-glow));
+            border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-main:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--accent-glow); }
+
+        .error-msg { color: var(--error); font-size: 0.8rem; margin-top: 10px; min-height: 20px; display: none; }
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        /* --- DASHBOARD --- */
+        .dashboard {
+            width: 90%; max-width: 1000px; margin-top: 40px; display: none; opacity: 0;
+            animation: fadeIn 1s forwards; padding-bottom: 80px;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .nav-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass); padding: 20px; border-radius: 15px; border: var(--border);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; background: var(--accent-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; }
+        
+        .btn-logout { background: #333; border: 1px solid #555; color: #fff; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+        .btn-logout:hover { background: var(--error); border-color: var(--error); }
+
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn {
+            background: rgba(255,255,255,0.05); border: none; padding: 12px 20px; color: #aaa;
+            border-radius: 8px; cursor: pointer; flex: 1; font-weight: bold; min-width: 100px;
+        }
+        .tab-btn.active { background: var(--accent-primary); color: #000; box-shadow: 0 0 15px var(--accent-primary); }
+        .tab-btn.youtube-tab.active { background: var(--youtube-red); color: #fff; box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
+
+        .content-box { display: none; background: var(--glass); padding: 25px; border-radius: 15px; border: var(--border); }
+        .content-box.active { display: block; animation: slideUp 0.5s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* SERVER STATUS CARD */
+        .status-indicator {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 5px 15px; border-radius: 20px; border: 1px solid #555;
+            background: rgba(255,255,255,0.05); color: #aaa;
+            font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .dot { height: 10px; width: 10px; border-radius: 50%; background: #777; box-shadow: 0 0 5px #777; }
+        
+        .status-online { border-color: var(--success); color: var(--success); background: rgba(0, 255, 157, 0.1); }
+        .status-online .dot { background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
+        
+        .status-offline { border-color: var(--error); color: var(--error); background: rgba(255, 68, 68, 0.1); }
+        .status-offline .dot { background: var(--error); box-shadow: 0 0 10px var(--error); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .ip-container {
+            background: linear-gradient(90deg, #111, #1a1a1a); padding: 20px; border-radius: 10px;
+            text-align: center; border: 1px dashed var(--accent-glow); cursor: pointer; margin: 20px 0;
+            position: relative; overflow: hidden;
+        }
+        .ip-text { font-size: 2rem; font-family: monospace; color: var(--accent-glow); text-shadow: 0 0 10px var(--accent-glow); }
+        .server-version { position: absolute; top: 5px; right: 10px; font-size: 0.7rem; color: #555; }
+
+        /* YOUTUBE SECTION */
+        .yt-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .yt-logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--youtube-red); }
+        .sub-btn { background: var(--youtube-red); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .sub-btn:hover { background: #cc0000; }
+
+        /* SETTINGS SECTION */
+        .settings-grid { display: grid; gap: 20px; }
+        .setting-item { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .color-options { display: flex; gap: 10px; }
+        .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
+        .color-btn.c-blue { background: #7aa2f7; }
+        .color-btn.c-red { background: #ff4444; }
+        .color-btn.c-green { background: #00cc66; }
+        .color-btn.c-purple { background: #be2edd; }
+        .color-btn:hover { transform: scale(1.1); }
+        
+        /* NEWS TICKER */
+        .news-ticker {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--accent-primary); color: #000;
+            padding: 8px 0; overflow: hidden; white-space: nowrap;
+            z-index: 50; font-weight: bold; border-top: 2px solid var(--accent-glow);
+        }
+        .news-content { display: inline-block; padding-left: 100%; animation: scrollText 15s linear infinite; }
+        @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        /* ACTION GRID */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .discord-btn { background: var(--discord-blurple); color: #fff; }
+        .discord-btn:hover { background: #4752c4; }
+        
+        /* ROBLOX BUTTON */
+        .roblox-btn { background: linear-gradient(45deg, #00b06f, #00d68f); color: #000; grid-column: 1 / -1; }
+        .roblox-btn:hover { box-shadow: 0 0 20px #00d68f; }
+
+    </style>
+</head>
+<body id="main-body">
+
+    <div class="world-container">
+        <div class="terrain-grid"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+    </div>
+
+    <div id="auth-screen" class="auth-container">
+        <div id="login-form" class="auth-box">
+            <h1 class="logo">MICRO<span>ROCK</span></h1>
+            <p style="color:#aaa; font-size: 0.9rem;">SECURE ACCESS PANEL</p>
+            
+            <input type="text" id="login-user" class="input-field" placeholder="Username">
+            <input type="password" id="login-pass" class="input-field" placeholder="Password">
+            
+            <p id="login-error" class="error-msg">⚠ Incorrect Username or Password</p>
+
+            <button onclick="attemptLogin()" class="btn-main">Login</button>
+            
+            <p style="margin-top:15px; font-size:0.8rem; color:#777;">
+                Don't have an account? <span style="color:var(--accent-primary); cursor:pointer;" onclick="switchAuth('signup')">Create One</span>
+            </p>
+            <p style="font-size:0.7rem; color:#555; margin-top:10px;">
+                *Accounts are saved on this device only.
+            </p>
+        </div>
+
+        <div id="signup-form" class="auth-box" style="display:none;">
+            <h1 class="logo">NEW <span>USER</span></h1>
+            <p style="color:#aaa; font-size: 0.9rem;">REGISTER LOCAL ACCOUNT</p>
+            <input type="text" id="reg-user" class="input-field" placeholder="Create Username">
+            <input type="password" id="reg-pass" class="input-field" placeholder="Create Password">
+            <p id="reg-error" class="error-msg">⚠ Please fill all fields</p>
+            <button onclick="attemptRegister()" class="btn-main">Sign Up</button>
+            <p style="margin-top:15px; font-size:0.8rem; color:#777;">
+                Already registered? <span style="color:var(--accent-primary); cursor:pointer;" onclick="switchAuth('login')">Login Here</span>
+            </p>
+        </div>
+    </div>
+
+    <div id="dashboard" class="dashboard">
+        
+        <div class="nav-header">
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">U</div>
+                <div>
+                    <div style="font-weight:bold; font-size:1.1rem;" id="display-username">User</div>
+                    <div style="font-size:0.8rem; color:var(--success);">● Active</div>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('home', this)">🏠 Server</button>
+            <button class="tab-btn youtube-tab" onclick="openTab('youtube', this)">
+                <i class="fab fa-youtube"></i> YouTube
+            </button>
+            <button class="tab-btn" onclick="openTab('settings', this)">⚙️ Settings</button>
+        </div>
+
+        <div id="home" class="content-box active">
+            <h2><i class="fas fa-server"></i> LIVE SERVER MONITOR</h2>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                <div id="status-badge" class="status-indicator">
+                    <span class="dot"></span> <span id="status-text">Connecting...</span>
+                </div>
+                <button onclick="checkServerStatus()" style="background:transparent; border:none; color:#777; cursor:pointer;">
+                    <i class="fas fa-sync-alt"></i> Force Refresh
+                </button>
+            </div>
+
+            <div class="ip-container" onclick="copyIP()">
+                <div class="server-version" id="server-ver">Bedrock</div>
+                <div style="color:#888; margin-bottom:5px;">TAP TO COPY IP</div>
+                <div class="ip-text">191.96.231.11</div>
+                <div style="color:#aaa; font-size:0.9rem;">Port: <span style="color:#fff">30885</span></div>
+            </div>
+
+            <div style="margin-bottom:20px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px;">
+                <div style="display:flex; justify-content:space-between; font-size:1.1rem; margin-bottom:10px;">
+                    <span><i class="fas fa-users"></i> Real-Time Players</span>
+                    <span id="player-count" style="font-weight:bold; color:var(--accent-glow);">-- / --</span>
+                </div>
+                <div style="width:100%; height:12px; background:#111; border-radius:10px; overflow:hidden; border: 1px solid #333;">
+                    <div id="player-bar" style="width:0%; height:100%; background:var(--accent-primary); box-shadow: 0 0 10px var(--accent-glow); transition: width 1s;"></div>
+                </div>
+                <p style="font-size:0.8rem; color:#666; margin-top:5px; text-align:right;">Data pulled live from Bedrock Protocol</p>
+            </div>
+
+            <div class="action-grid">
+                <button onclick="launchGame()" class="btn-main" style="background:#00ff9d; margin-top:0;">
+                    <i class="fas fa-play"></i> Open Minecraft
+                </button>
+                <button onclick="window.open('https://discord.gg/your-invite-code', '_blank')" class="btn-main discord-btn" style="margin-top:0;">
+                    <i class="fab fa-discord"></i> Join Discord
+                </button>
+                <button onclick="window.open('https://plsdonate.me/robloxbotlooser', '_blank')" class="btn-main roblox-btn">
+                    <i class="fas fa-gamepad"></i> Donate on Roblox (Pls Donate)
+                </button>
+            </div>
+            
+            <button onclick="shareIP()" class="btn-main" style="background:#333; color:#fff; border:1px solid #555; margin-top: 15px;">
+                <i class="fas fa-share-alt"></i> Share Server
+            </button>
+        </div>
+
+        <div id="youtube" class="content-box">
+            <div class="yt-header">
+                <img src="https://ui-avatars.com/api/?name=M&background=ff0000&color=fff&size=128" class="yt-logo" alt="Logo">
+                <div style="flex:1;">
+                    <h2 style="margin:0;">Microrock Tamil Gaming</h2>
+                    <p style="margin:5px 0; color:#aaa;">Official Channel</p>
+                </div>
+                <a href="https://www.youtube.com/@MicrorockTamilGaming" target="_blank" class="sub-btn">
+                    SUBSCRIBE
+                </a>
+            </div>
+            <div style="text-align:center; padding:20px;">
+                <i class="fab fa-youtube" style="font-size:4rem; color:#333;"></i>
+                <p>Check out our latest videos for tutorials and updates!</p>
+                <a href="https://www.youtube.com/@MicrorockTamilGaming/videos" target="_blank" style="color:var(--accent-primary);">View All Videos &rarr;</a>
+            </div>
+        </div>
+
+        <div id="settings" class="content-box">
+            <h3><i class="fas fa-cog"></i> Panel Settings</h3>
+            
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <span>Theme Color</span>
+                    <div class="color-options">
+                        <div class="color-btn c-blue" onclick="setTheme('blue')"></div>
+                        <div class="color-btn c-red" onclick="setTheme('red')"></div>
+                        <div class="color-btn c-green" onclick="setTheme('green')"></div>
+                        <div class="color-btn c-purple" onclick="setTheme('purple')"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <span style="display:block;">Performance Mode</span>
+                        <small style="color:#777;">Disable 3D background</small>
+                    </div>
+                    <input type="checkbox" id="perf-toggle" onchange="togglePerformance(this)">
+                </div>
+
+                <div class="setting-item">
+                    <div>
+                        <span style="display:block;">Auto-Refresh Rate</span>
+                        <small style="color:#777;">Current: <span id="refresh-rate-display">30s</span></small>
+                    </div>
+                    <select onchange="setRefreshRate(this.value)" style="background:#222; color:#fff; border:1px solid #444; padding:5px;">
+                        <option value="10000">10s (Fast)</option>
+                        <option value="30000" selected>30s (Normal)</option>
+                        <option value="60000">60s (Slow)</option>
+                    </select>
+                </div>
+
+                <div class="setting-item" style="border-color: var(--error); background: rgba(255,0,0,0.1);">
+                    <div>
+                        <span style="display:block; color:var(--error); font-weight:bold;">Danger Zone</span>
+                        <small style="color:#777;">Delete account & reset data</small>
+                    </div>
+                    <button onclick="deleteAccount()" style="background:var(--error); border:none; color:#fff; padding:8px 15px; border-radius:5px; cursor:pointer;">
+                        DELETE
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="news-ticker">
+        <div class="news-content">
+            📢 WELCOME TO MICROROCK TAMIL GAMING! • SERVER IP: 191.96.231.11 PORT: 30885 • JOIN OUR DISCORD FOR SUPPORT • NEW SURVIVAL SEASON STARTING SOON! • SUBSCRIBE ON YOUTUBE!
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL VARIABLES ---
+        let refreshIntervalId;
+        const SERVER_IP = "191.96.231.11";
+        const SERVER_PORT = "30885";
+
+        // --- AUTHENTICATION LOGIC ---
+        window.onload = function() {
+            const savedUser = localStorage.getItem('microrock_user');
+            loadSettings();
+            if(savedUser) {
+                showDashboard(savedUser);
+            }
+        }
+
+        function switchAuth(type) {
+            document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
+            document.getElementById('signup-form').style.display = type === 'signup' ? 'block' : 'none';
+            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+        }
+
+        function attemptRegister() {
+            const user = document.getElementById('reg-user').value;
+            const pass = document.getElementById('reg-pass').value;
+            const errorMsg = document.getElementById('reg-error');
+
+            if(user.length < 3 || pass.length < 3) {
+                errorMsg.innerText = "⚠ Username/Password too short";
+                showError(errorMsg, document.getElementById('signup-form'));
+                return;
+            }
+            // Local Storage (Device specific)
+            localStorage.setItem('db_user', user);
+            localStorage.setItem('db_pass', pass);
+            alert("✅ Local Account Created!");
+            switchAuth('login');
+        }
+
+        function attemptLogin() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            const errorMsg = document.getElementById('login-error');
+            
+            // Get Local Details
+            const storedUser = localStorage.getItem('db_user');
+            const storedPass = localStorage.getItem('db_pass');
+
+            // 1. CHECK LOCAL STORAGE
+            if(user === storedUser && pass === storedPass) {
+                localStorage.setItem('microrock_user', user); 
+                showDashboard(user);
+            } else {
+                errorMsg.style.display = 'block';
+                showError(errorMsg, document.getElementById('login-form'));
+            }
+        }
+
+        function showError(msgElement, boxElement) {
+            msgElement.style.display = 'block';
+            boxElement.classList.add('shake');
+            setTimeout(() => boxElement.classList.remove('shake'), 400);
+        }
+
+        function logout() {
+            localStorage.removeItem('microrock_user');
+            location.reload(); 
+        }
+
+        function showDashboard(username) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('display-username').innerText = username;
+            document.getElementById('user-avatar').innerText = username.charAt(0).toUpperCase();
+            
+            checkServerStatus(); 
+            setRefreshRate(30000);
+        }
+
+        // --- SETTINGS LOGIC ---
+        function setTheme(color) {
+            const body = document.getElementById('main-body');
+            body.classList.remove('theme-red', 'theme-green', 'theme-purple');
+            if(color !== 'blue') body.classList.add('theme-' + color);
+            localStorage.setItem('microrock_theme', color);
+        }
+
+        function togglePerformance(checkbox) {
+            if(checkbox.checked) {
+                document.body.classList.add('static-mode');
+                localStorage.setItem('microrock_perf', 'static');
+            } else {
+                document.body.classList.remove('static-mode');
+                localStorage.setItem('microrock_perf', 'anim');
+            }
+        }
+
+        function setRefreshRate(ms) {
+            ms = parseInt(ms);
+            clearInterval(refreshIntervalId);
+            refreshIntervalId = setInterval(checkServerStatus, ms);
+            document.getElementById('refresh-rate-display').innerText = (ms/1000) + 's';
+        }
+
+        function deleteAccount() {
+            if(confirm("Are you sure? This will delete your login and reset settings.")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function loadSettings() {
+            const theme = localStorage.getItem('microrock_theme');
+            if(theme) setTheme(theme);
+            const perf = localStorage.getItem('microrock_perf');
+            if(perf === 'static') {
+                document.getElementById('perf-toggle').checked = true;
+                document.body.classList.add('static-mode');
+            }
+        }
+
+        // --- DASHBOARD FUNCTIONS ---
+        function openTab(tabId, btn) {
+            document.querySelectorAll('.content-box').forEach(box => box.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        async function checkServerStatus() {
+            const badge = document.getElementById('status-badge');
+            const statusText = document.getElementById('status-text');
+            const playerCount = document.getElementById('player-count');
+            const playerBar = document.getElementById('player-bar');
+            const verText = document.getElementById('server-ver');
+
+            statusText.innerText = "Pinging...";
+            badge.className = "status-indicator"; 
+
+            try {
+                const response = await fetch(`https://api.mcsrvstat.us/bedrock/2/${SERVER_IP}:${SERVER_PORT}`);
+                const data = await response.json();
+
+                if (data.online) {
+                    badge.classList.add('status-online');
+                    statusText.innerText = "ONLINE";
+                    playerCount.innerText = `${data.players.online} / ${data.players.max}`;
+                    const percentage = (data.players.online / data.players.max) * 100;
+                    playerBar.style.width = percentage + "%";
+                    if(data.version) verText.innerText = "v" + data.version;
+                } else {
+                    throw new Error("Server is offline");
+                }
+            } catch (error) {
+                badge.classList.add('status-offline');
+                statusText.innerText = "OFFLINE";
+                playerCount.innerText = "0 / 0";
+                playerBar.style.width = "0%";
+                verText.innerText = "Unreachable";
+            }
+        }
+
+        function copyIP() {
+            navigator.clipboard.writeText(SERVER_IP + ":" + SERVER_PORT);
+            alert("IP Copied!");
+        }
+
+        function launchGame() {
+            window.location.href = `minecraft://?addExternalServer=Microrock|${SERVER_IP}:${SERVER_PORT}`;
+        }
+        
+        function shareIP() {
+            const text = `Join MicrorockTamilGaming! IP: ${SERVER_IP} Port: ${SERVER_PORT}`;
+            if (navigator.share) {
+                navigator.share({ title: 'Join Server', text: text });
+            } else {
+                navigator.clipboard.writeText(text);
+                alert("Share info copied!");
+            }
+        }
+    </script>
+</body>
+</html>
+
