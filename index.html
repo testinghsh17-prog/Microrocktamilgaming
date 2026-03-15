@@ -2,607 +2,527 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microrock Admin Panel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>School Hub - 7-Martham</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <style>
-        :root {
-            --bg-dark: #111;
-            --accent-primary: #7aa2f7; 
-            --accent-glow: #00e8ff; 
-            --youtube-red: #ff0000;
-            --discord-blurple: #5865F2;
-            --roblox-green: #00b06f;
-            --success: #00ff9d;
-            --error: #ff4444;
-            --glass: rgba(15, 15, 20, 0.9);
-            --border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        /* THEME CLASSES */
-        .theme-red { --accent-primary: #ff4444; --accent-glow: #ff8888; }
-        .theme-green { --accent-primary: #00cc66; --accent-glow: #55ff99; }
-        .theme-purple { --accent-primary: #be2edd; --accent-glow: #e056fd; }
-
-        * { box-sizing: border-box; transition: all 0.3s ease; font-family: 'Segoe UI', sans-serif; }
-
-        body {
-            margin: 0;
-            background-color: var(--bg-dark);
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-        }
-
-        /* --- MINECRAFT/ROBLOX BACKGROUND ANIMATION --- */
-        .world-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            overflow: hidden;
-            perspective: 1000px;
-            background: #050505;
-        }
-
-        .terrain-grid {
-            position: absolute;
-            bottom: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background-image: 
-                linear-gradient(#333 2px, transparent 2px),
-                linear-gradient(90deg, #333 2px, transparent 2px);
-            background-size: 100px 100px;
-            transform: rotateX(60deg);
-            animation: moveTerrain 5s linear infinite;
-            opacity: 0.3;
-        }
+        /* CORE SETUP & MOBILE FIX */
+        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #e5e5e5; position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
+        * { box-sizing: border-box; }
         
-        .terrain-grid::after {
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background-image: radial-gradient(rgba(0, 255, 157, 0.1) 15%, transparent 16%);
-            background-size: 100px 100px;
-        }
+        /* MODALS */
+        .modal-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #2c3e50, #3498db); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+        .modal-box { background: white; padding: 35px; border-radius: 16px; width: 340px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .modal-box h2 { margin-top: 0; color: #2c3e50; text-align: center; margin-bottom: 25px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: #7f8c8d; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dcdde1; font-size: 15px; outline: none; background: #f8f9fa; transition: 0.2s; }
+        .modal-box button.primary { background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 8px; font-size: 16px; margin-top: 10px; transition: 0.2s; }
+        .modal-box button.secondary { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; font-weight: bold; cursor: pointer; padding: 10px; border-radius: 8px; margin-top: 10px; }
+        .credits { text-align: center; font-size: 12px; color: #95a5a6; margin-top: 20px; font-weight: 500; }
 
-        @keyframes moveTerrain {
-            0% { transform: rotateX(60deg) translateY(0); }
-            100% { transform: rotateX(60deg) translateY(100px); }
-        }
+        /* MAIN APP LAYOUT */
+        #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
 
-        .cube {
-            position: absolute;
-            width: 40px; height: 40px;
-            background: rgba(122, 162, 247, 0.2);
-            border: 2px solid var(--accent-glow);
-            box-shadow: 0 0 15px var(--accent-glow);
-            animation: floatUp 10s linear infinite;
-            bottom: -100px;
-        }
-        .cube:nth-child(1) { left: 10%; width: 30px; height: 30px; animation-duration: 8s; animation-delay: 0s; }
-        .cube:nth-child(2) { left: 30%; width: 50px; height: 50px; animation-duration: 12s; animation-delay: 2s; border-color: #ff4444; box-shadow: 0 0 15px #ff4444; }
-        .cube:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-duration: 6s; animation-delay: 4s; border-color: #00ff9d; box-shadow: 0 0 15px #00ff9d;}
-        .cube:nth-child(4) { left: 90%; width: 60px; height: 60px; animation-duration: 15s; animation-delay: 1s; }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            20% { opacity: 0.8; }
-            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
-        }
-
-        body.static-mode .terrain-grid, body.static-mode .cube { animation: none; display: none; }
-
-        /* --- AUTH SCREEN --- */
-        .auth-container {
-            height: 100vh; display: flex; align-items: center; justify-content: center; width: 100%;
-            position: absolute; top: 0; left: 0; z-index: 100;
-            background: #050505;
-        }
+        /* LEFT SIDEBAR */
+        .sidebar { width: 320px; background: white; display: flex; flex-direction: column; border-right: 1px solid #dcdde1; z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #dcdde1; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-title { font-weight: bold; color: #2c3e50; font-size: 18px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .edit-btn { background: #ecf0f1; color: #2c3e50; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .close-sidebar-btn { display: none; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; }
         
-        .auth-box {
-            background: var(--glass);
-            padding: 40px;
-            border-radius: 20px;
-            width: 350px;
-            text-align: center;
-            border: var(--border);
-            box-shadow: 0 0 50px rgba(0, 232, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
+        .user-list { flex: 1; overflow-y: auto; padding: 10px; background: white; }
+        .user-item { display: flex; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 5px; background: #f8f9fa; border-left: 4px solid transparent; }
+        .user-item.online-border { border-left-color: #2ecc71; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin-right: 15px; text-transform: uppercase; }
+        .user-details { flex: 1; min-width: 0; }
+        .name-text { font-weight: 600; color: #2f3640; font-size: 15px; }
+        .status-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; margin-top: 4px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot.online { background: #2ecc71; box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
+        .dot.offline { background: #e74c3c; }
+        .credits-sidebar { padding: 15px; background: #f8f9fa; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #dcdde1; font-weight: 500;}
 
-        .logo { font-size: 2rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 5px; }
-        .logo span { color: var(--accent-glow); }
-
-        .input-field {
-            width: 100%; padding: 12px; margin: 10px 0;
-            background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff;
-            border-radius: 8px; outline: none;
-        }
-        .input-field:focus { border-color: var(--accent-glow); box-shadow: 0 0 10px rgba(0, 232, 255, 0.2); }
-
-        .btn-main {
-            width: 100%; padding: 12px; margin-top: 15px;
-            background: linear-gradient(45deg, var(--accent-primary), var(--accent-glow));
-            border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-main:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--accent-glow); }
-
-        .error-msg { color: var(--error); font-size: 0.8rem; margin-top: 10px; min-height: 20px; display: none; }
-        .shake { animation: shake 0.4s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-
-        /* --- DASHBOARD --- */
-        .dashboard {
-            width: 90%; max-width: 1000px; margin-top: 40px; display: none; opacity: 0;
-            animation: fadeIn 1s forwards; padding-bottom: 80px;
-        }
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        .nav-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--glass); padding: 20px; border-radius: 15px; border: var(--border);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .user-profile { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; background: var(--accent-glow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; }
+        /* RIGHT SECTION */
+        .chat-section { flex: 1; display: flex; flex-direction: column; background: #e5e5e5; position: relative; width: 100%; background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); }
+        .chat-header { padding: 12px 20px; background: white; border-bottom: 1px solid #dcdde1; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;}
+        .menu-btn { display: none; font-size: 24px; cursor: pointer; color: #2f3640; }
+        .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-weight: bold; color: #2f3640; font-size: 16px; }
+        .header-subtitle { font-size: 12px; color: #3498db; font-weight: 600; margin-top: 2px; }
         
-        .btn-logout { background: #333; border: 1px solid #555; color: #fff; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
-        .btn-logout:hover { background: var(--error); border-color: var(--error); }
+        #conn-status { font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; background: #f39c12; color: white; }
 
-        /* TABS */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn {
-            background: rgba(255,255,255,0.05); border: none; padding: 12px 20px; color: #aaa;
-            border-radius: 8px; cursor: pointer; flex: 1; font-weight: bold; min-width: 100px;
-        }
-        .tab-btn.active { background: var(--accent-primary); color: #000; box-shadow: 0 0 15px var(--accent-primary); }
-        .tab-btn.youtube-tab.active { background: var(--youtube-red); color: #fff; box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        #typing-indicator { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 0 20px; height: 20px; display: flex; align-items: center; }
+        .sys-msg { align-self: center; background: rgba(0,0,0,0.1); color: #555; padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center;}
 
-        .content-box { display: none; background: var(--glass); padding: 25px; border-radius: 15px; border: var(--border); }
-        .content-box.active { display: block; animation: slideUp 0.5s; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* SERVER STATUS CARD */
-        .status-indicator {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 5px 15px; border-radius: 20px; border: 1px solid #555;
-            background: rgba(255,255,255,0.05); color: #aaa;
-            font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .dot { height: 10px; width: 10px; border-radius: 50%; background: #777; box-shadow: 0 0 5px #777; }
+        /* Chat Bubbles */
+        .msg-bubble { background: white; padding: 10px 14px; border-radius: 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; border-top-left-radius: 2px; }
+        .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
+        .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; }
+        .msg-bubble.me .msg-sender { color: #27ae60; }
+        .msg-text { font-size: 15px; color: #2f3640; line-height: 1.4; word-wrap: break-word; }
+        .msg-time { font-size: 10px; color: rgba(0,0,0,0.45); text-align: right; margin-top: 4px; }
         
-        .status-online { border-color: var(--success); color: var(--success); background: rgba(0, 255, 157, 0.1); }
-        .status-online .dot { background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
+        /* DELETED MESSAGE STYLING */
+        .deleted-text { font-style: italic; color: #7f8c8d; font-size: 14px; display: flex; align-items: center; gap: 5px;}
         
-        .status-offline { border-color: var(--error); color: var(--error); background: rgba(255, 68, 68, 0.1); }
-        .status-offline .dot { background: var(--error); box-shadow: 0 0 10px var(--error); }
+        .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(231, 76, 60, 0.1); border: none; color: #e74c3c; font-size: 14px; cursor: pointer; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .delete-btn:hover { background: #e74c3c; color: white; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .msg-image { margin-top: 5px; cursor: pointer; }
+        .msg-image img { max-width: 200px; max-height: 250px; border-radius: 8px; display: block; object-fit: cover; }
+        .msg-text a { color: #3498db; }
+        audio { height: 40px; max-width: 200px; margin-top: 5px; outline: none; }
 
-        .ip-container {
-            background: linear-gradient(90deg, #111, #1a1a1a); padding: 20px; border-radius: 10px;
-            text-align: center; border: 1px dashed var(--accent-glow); cursor: pointer; margin: 20px 0;
-            position: relative; overflow: hidden;
+        /* Input Area */
+        .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+        .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
+        .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
+        .send-btn.recording { background: #e74c3c; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; top: 0; left: 0; height: 100dvh; transform: translateX(-100%); width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 2000; }
+            .sidebar.open { transform: translateX(0); }
+            .menu-btn { display: block; }
+            .close-sidebar-btn { display: flex; }
         }
-        .ip-text { font-size: 1.2rem; font-family: monospace; color: var(--accent-glow); text-shadow: 0 0 10px var(--accent-glow); word-break: break-all; margin-bottom: 5px; }
-        .server-version { position: absolute; top: 5px; right: 10px; font-size: 0.7rem; color: #555; }
-        .java-ip-text { font-size: 0.85rem; color: #777; margin-top: 8px; border-top: 1px solid #333; padding-top: 8px; }
 
-        /* YOUTUBE SECTION */
-        .yt-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
-        .yt-logo { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--youtube-red); }
-        .sub-btn { background: var(--youtube-red); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
-        .sub-btn:hover { background: #cc0000; }
-
-        /* SETTINGS SECTION */
-        .settings-grid { display: grid; gap: 20px; }
-        .setting-item { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .color-options { display: flex; gap: 10px; }
-        .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #555; }
-        .color-btn.c-blue { background: #7aa2f7; }
-        .color-btn.c-red { background: #ff4444; }
-        .color-btn.c-green { background: #00cc66; }
-        .color-btn.c-purple { background: #be2edd; }
-        .color-btn:hover { transform: scale(1.1); }
-        
-        /* NEWS TICKER */
-        .news-ticker {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--accent-primary); color: #000;
-            padding: 8px 0; overflow: hidden; white-space: nowrap;
-            z-index: 50; font-weight: bold; border-top: 2px solid var(--accent-glow);
-        }
-        .news-content { display: inline-block; padding-left: 100%; animation: scrollText 15s linear infinite; }
-        @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
-        /* ACTION GRID */
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .discord-btn { background: var(--discord-blurple); color: #fff; }
-        .discord-btn:hover { background: #4752c4; }
-        
-        /* ROBLOX BUTTON */
-        .roblox-btn { background: linear-gradient(45deg, #00b06f, #00d68f); color: #000; grid-column: 1 / -1; }
-        .roblox-btn:hover { box-shadow: 0 0 20px #00d68f; }
-
+        /* Lightbox */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
+        #lightbox.active { display: flex; }
+        #lightbox img { max-width: 90%; max-height: 75%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .lb-actions { display: flex; gap: 15px; margin-top: 20px; }
+        .lb-btn { padding: 10px 25px; color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; }
     </style>
 </head>
-<body id="main-body">
+<body>
 
-    <div class="world-container">
-        <div class="terrain-grid"></div>
-        <div class="cube"></div>
-        <div class="cube"></div>
-        <div class="cube"></div>
-        <div class="cube"></div>
-    </div>
-
-    <div id="auth-screen" class="auth-container">
-        <div id="login-form" class="auth-box">
-            <h1 class="logo">MICRO<span>ROCK</span></h1>
-            <p style="color:#aaa; font-size: 0.9rem;">SECURE ACCESS PANEL</p>
-            
-            <input type="text" id="login-user" class="input-field" placeholder="Username">
-            <input type="password" id="login-pass" class="input-field" placeholder="Password">
-            
-            <p id="login-error" class="error-msg">⚠ Incorrect Username or Password</p>
-
-            <button onclick="attemptLogin()" class="btn-main">Login</button>
-            
-            <p style="margin-top:15px; font-size:0.8rem; color:#777;">
-                Don't have an account? <span style="color:var(--accent-primary); cursor:pointer;" onclick="switchAuth('signup')">Create One</span>
-            </p>
-            <p style="font-size:0.7rem; color:#555; margin-top:10px;">
-                *Accounts are saved on this device only.
-            </p>
-        </div>
-
-        <div id="signup-form" class="auth-box" style="display:none;">
-            <h1 class="logo">NEW <span>USER</span></h1>
-            <p style="color:#aaa; font-size: 0.9rem;">REGISTER LOCAL ACCOUNT</p>
-            <input type="text" id="reg-user" class="input-field" placeholder="Create Username">
-            <input type="password" id="reg-pass" class="input-field" placeholder="Create Password">
-            <p id="reg-error" class="error-msg">⚠ Please fill all fields</p>
-            <button onclick="attemptRegister()" class="btn-main">Sign Up</button>
-            <p style="margin-top:15px; font-size:0.8rem; color:#777;">
-                Already registered? <span style="color:var(--accent-primary); cursor:pointer;" onclick="switchAuth('login')">Login Here</span>
-            </p>
+    <div id="lightbox">
+        <img id="lightbox-img" src="">
+        <div class="lb-actions">
+            <a id="lb-download" href="" download="" class="lb-btn" style="background: #2ecc71;">⬇ Download</a>
+            <button onclick="document.getElementById('lightbox').classList.remove('active')" class="lb-btn" style="background: #e74c3c;">✕ Close</button>
         </div>
     </div>
 
-    <div id="dashboard" class="dashboard">
-        
-        <div class="nav-header">
-            <div class="user-profile">
-                <div class="avatar" id="user-avatar">U</div>
-                <div>
-                    <div style="font-weight:bold; font-size:1.1rem;" id="display-username">User</div>
-                    <div style="font-size:0.8rem; color:var(--success);">● Active</div>
-                </div>
-            </div>
-            <button class="btn-logout" onclick="logout()">Logout <i class="fas fa-sign-out-alt"></i></button>
+    <input type="file" id="image-picker" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+
+    <div id="login-screen" class="modal-screen">
+        <div class="modal-box">
+            <h2>7-Martham Hub</h2>
+            <div class="input-group"><label>Student Name</label><input type="text" id="nameInput" placeholder="Enter full name"></div>
+            <div class="input-group"><label>Gender</label><select id="genderInput"><option>Male</option><option>Female</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="dobInput" placeholder="e.g. 15/08/2005"></div>
+            <button class="primary" onclick="login()">Enter Group Chat</button>
+            <div class="credits">Made by Vishnuram and Prasanth</div>
         </div>
-
-        <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('home', this)">🏠 Server</button>
-            <button class="tab-btn youtube-tab" onclick="openTab('youtube', this)">
-                <i class="fab fa-youtube"></i> YouTube
-            </button>
-            <button class="tab-btn" onclick="openTab('settings', this)">⚙️ Settings</button>
-        </div>
-
-        <div id="home" class="content-box active">
-            <h2><i class="fas fa-server"></i> LIVE SERVER MONITOR</h2>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                <div id="status-badge" class="status-indicator">
-                    <span class="dot"></span> <span id="status-text">Connecting...</span>
-                </div>
-                <button onclick="checkServerStatus()" style="background:transparent; border:none; color:#777; cursor:pointer;">
-                    <i class="fas fa-sync-alt"></i> Force Refresh
-                </button>
-            </div>
-
-            <div class="ip-container" onclick="copyIP()">
-                <div class="server-version" id="server-ver">Bedrock</div>
-                <div style="color:#888; margin-bottom:5px;">TAP TO COPY IP</div>
-                <div class="ip-text">microrockgaming.bedrock.minekeep.gg</div>
-                <div style="color:#aaa; font-size:0.9rem;">Port: <span style="color:#fff">19132</span></div>
-                
-                <div class="java-ip-text">
-                    <i class="fab fa-java"></i> Java IP: microrockgaming.minekeep.gg
-                </div>
-            </div>
-
-            <div style="margin-bottom:20px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 10px;">
-                <div style="display:flex; justify-content:space-between; font-size:1.1rem; margin-bottom:10px;">
-                    <span><i class="fas fa-users"></i> Real-Time Players</span>
-                    <span id="player-count" style="font-weight:bold; color:var(--accent-glow);">-- / --</span>
-                </div>
-                <div style="width:100%; height:12px; background:#111; border-radius:10px; overflow:hidden; border: 1px solid #333;">
-                    <div id="player-bar" style="width:0%; height:100%; background:var(--accent-primary); box-shadow: 0 0 10px var(--accent-glow); transition: width 1s;"></div>
-                </div>
-                <p style="font-size:0.8rem; color:#666; margin-top:5px; text-align:right;">Data pulled live from Bedrock Protocol</p>
-            </div>
-
-            <div class="action-grid">
-                <button onclick="launchGame()" class="btn-main" style="background:#00ff9d; margin-top:0;">
-                    <i class="fas fa-play"></i> Open Minecraft
-                </button>
-                <button onclick="window.open('https://discord.gg/fH43QdGBB', '_blank')" class="btn-main discord-btn" style="margin-top:0;">
-                    <i class="fab fa-discord"></i> Join Discord
-                </button>
-                <button onclick="window.open('https://plsdonate.me/microrockgamingtamil', '_blank')" class="btn-main roblox-btn">
-                    <i class="fas fa-gamepad"></i> Donate on Roblox (Pls Donate)
-                </button>
-            </div>
-            
-            <button onclick="shareIP()" class="btn-main" style="background:#333; color:#fff; border:1px solid #555; margin-top: 15px;">
-                <i class="fas fa-share-alt"></i> Share Server
-            </button>
-        </div>
-
-        <div id="youtube" class="content-box">
-            <div class="yt-header">
-                <img src="https://ui-avatars.com/api/?name=M&background=ff0000&color=fff&size=128" class="yt-logo" alt="Logo">
-                <div style="flex:1;">
-                    <h2 style="margin:0;">Microrock Tamil Gaming</h2>
-                    <p style="margin:5px 0; color:#aaa;">Official Channel</p>
-                </div>
-                <a href="https://www.youtube.com/@MicrorockTamilGaming" target="_blank" class="sub-btn">
-                    SUBSCRIBE
-                </a>
-            </div>
-            <div style="text-align:center; padding:20px;">
-                <i class="fab fa-youtube" style="font-size:4rem; color:#333;"></i>
-                <p>Check out our latest videos for tutorials and updates!</p>
-                <a href="https://www.youtube.com/@MicrorockTamilGaming/videos" target="_blank" style="color:var(--accent-primary);">View All Videos &rarr;</a>
-            </div>
-        </div>
-
-        <div id="settings" class="content-box">
-            <h3><i class="fas fa-cog"></i> Panel Settings</h3>
-            
-            <div class="settings-grid">
-                <div class="setting-item">
-                    <span>Theme Color</span>
-                    <div class="color-options">
-                        <div class="color-btn c-blue" onclick="setTheme('blue')"></div>
-                        <div class="color-btn c-red" onclick="setTheme('red')"></div>
-                        <div class="color-btn c-green" onclick="setTheme('green')"></div>
-                        <div class="color-btn c-purple" onclick="setTheme('purple')"></div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div>
-                        <span style="display:block;">Performance Mode</span>
-                        <small style="color:#777;">Disable 3D background</small>
-                    </div>
-                    <input type="checkbox" id="perf-toggle" onchange="togglePerformance(this)">
-                </div>
-
-                <div class="setting-item">
-                    <div>
-                        <span style="display:block;">Auto-Refresh Rate</span>
-                        <small style="color:#777;">Current: <span id="refresh-rate-display">30s</span></small>
-                    </div>
-                    <select onchange="setRefreshRate(this.value)" style="background:#222; color:#fff; border:1px solid #444; padding:5px;">
-                        <option value="10000">10s (Fast)</option>
-                        <option value="30000" selected>30s (Normal)</option>
-                        <option value="60000">60s (Slow)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item" style="border-color: var(--error); background: rgba(255,0,0,0.1);">
-                    <div>
-                        <span style="display:block; color:var(--error); font-weight:bold;">Danger Zone</span>
-                        <small style="color:#777;">Delete account & reset data</small>
-                    </div>
-                    <button onclick="deleteAccount()" style="background:var(--error); border:none; color:#fff; padding:8px 15px; border-radius:5px; cursor:pointer;">
-                        DELETE
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
     </div>
 
-    <div class="news-ticker">
-        <div class="news-content">
-            📢 WELCOME TO MICROROCK TAMIL GAMING! • BEDROCK IP: microrockgaming.bedrock.minekeep.gg PORT: 19132 • JAVA IP: microrockgaming.minekeep.gg • NEW SURVIVAL SEASON STARTING SOON! • SUBSCRIBE ON YOUTUBE!
+    <div id="edit-screen" class="modal-screen" style="display: none;">
+        <div class="modal-box">
+            <h2>Edit Profile</h2>
+            <div class="input-group"><label>Name</label><input type="text" id="editName"></div>
+            <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
+            <button class="primary" onclick="saveProfile()">Save Changes</button>
+            <button class="secondary" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
+            <div class="credits">Made by Vishnuram and Prasanth</div>
+        </div>
+    </div>
+
+    <div id="app-screen">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Students</div>
+                <div class="header-actions">
+                    <button class="edit-btn" onclick="openEditProfile()">Edit</button>
+                    <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+                </div>
+            </div>
+            <div class="user-list" id="users-container"></div>
+            <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+                <div class="header-info">
+                    <div>
+                        <div class="header-title">7-Martham Group Chat</div>
+                        <div class="header-subtitle">Made by Vishnuram and Prasanth</div>
+                    </div>
+                    <div id="conn-status">🟠 Connecting...</div>
+                </div>
+            </div>
+            
+            <div class="messages-container" id="messages">
+                <div class="sys-msg">🔒 This group is exclusively for 7-Martham.</div>
+            </div>
+            
+            <div id="typing-indicator"></div>
+
+            <div class="input-bar">
+                <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
+                <input type="text" id="chatInput" placeholder="Type a message..." oninput="handleTypingInput()">
+                <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- GLOBAL VARIABLES ---
-        let refreshIntervalId;
-        const SERVER_IP = "microrockgaming.bedrock.minekeep.gg";
-        const SERVER_PORT = "19132";
-        const JAVA_IP = "microrockgaming.minekeep.gg";
-
-        // --- AUTHENTICATION LOGIC ---
-        window.onload = function() {
-            const savedUser = localStorage.getItem('microrock_user');
-            loadSettings();
-            if(savedUser) {
-                showDashboard(savedUser);
-            }
-        }
-
-        function switchAuth(type) {
-            document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
-            document.getElementById('signup-form').style.display = type === 'signup' ? 'block' : 'none';
-            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
-        }
-
-        function attemptRegister() {
-            const user = document.getElementById('reg-user').value;
-            const pass = document.getElementById('reg-pass').value;
-            const errorMsg = document.getElementById('reg-error');
-
-            if(user.length < 3 || pass.length < 3) {
-                errorMsg.innerText = "⚠ Username/Password too short";
-                showError(errorMsg, document.getElementById('signup-form'));
-                return;
-            }
-            // Local Storage (Device specific)
-            localStorage.setItem('db_user', user);
-            localStorage.setItem('db_pass', pass);
-            alert("✅ Local Account Created!");
-            switchAuth('login');
-        }
-
-        function attemptLogin() {
-            const user = document.getElementById('login-user').value;
-            const pass = document.getElementById('login-pass').value;
-            const errorMsg = document.getElementById('login-error');
-            
-            // Get Local Details
-            const storedUser = localStorage.getItem('db_user');
-            const storedPass = localStorage.getItem('db_pass');
-
-            // 1. CHECK LOCAL STORAGE
-            if(user === storedUser && pass === storedPass) {
-                localStorage.setItem('microrock_user', user); 
-                showDashboard(user);
-            } else {
-                errorMsg.style.display = 'block';
-                showError(errorMsg, document.getElementById('login-form'));
-            }
-        }
-
-        function showError(msgElement, boxElement) {
-            msgElement.style.display = 'block';
-            boxElement.classList.add('shake');
-            setTimeout(() => boxElement.classList.remove('shake'), 400);
-        }
-
-        function logout() {
-            localStorage.removeItem('microrock_user');
-            location.reload(); 
-        }
-
-        function showDashboard(username) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('display-username').innerText = username;
-            document.getElementById('user-avatar').innerText = username.charAt(0).toUpperCase();
-            
-            checkServerStatus(); 
-            setRefreshRate(30000);
-        }
-
-        // --- SETTINGS LOGIC ---
-        function setTheme(color) {
-            const body = document.getElementById('main-body');
-            body.classList.remove('theme-red', 'theme-green', 'theme-purple');
-            if(color !== 'blue') body.classList.add('theme-' + color);
-            localStorage.setItem('microrock_theme', color);
-        }
-
-        function togglePerformance(checkbox) {
-            if(checkbox.checked) {
-                document.body.classList.add('static-mode');
-                localStorage.setItem('microrock_perf', 'static');
-            } else {
-                document.body.classList.remove('static-mode');
-                localStorage.setItem('microrock_perf', 'anim');
-            }
-        }
-
-        function setRefreshRate(ms) {
-            ms = parseInt(ms);
-            clearInterval(refreshIntervalId);
-            refreshIntervalId = setInterval(checkServerStatus, ms);
-            document.getElementById('refresh-rate-display').innerText = (ms/1000) + 's';
-        }
-
-        function deleteAccount() {
-            if(confirm("Are you sure? This will delete your login and reset settings.")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        function loadSettings() {
-            const theme = localStorage.getItem('microrock_theme');
-            if(theme) setTheme(theme);
-            const perf = localStorage.getItem('microrock_perf');
-            if(perf === 'static') {
-                document.getElementById('perf-toggle').checked = true;
-                document.body.classList.add('static-mode');
-            }
-        }
-
-        // --- DASHBOARD FUNCTIONS ---
-        function openTab(tabId, btn) {
-            document.querySelectorAll('.content-box').forEach(box => box.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        async function checkServerStatus() {
-            const badge = document.getElementById('status-badge');
-            const statusText = document.getElementById('status-text');
-            const playerCount = document.getElementById('player-count');
-            const playerBar = document.getElementById('player-bar');
-            const verText = document.getElementById('server-ver');
-
-            statusText.innerText = "Pinging...";
-            badge.className = "status-indicator"; 
-
-            try {
-                // Using the Bedrock IP for the status check
-                const response = await fetch(`https://api.mcsrvstat.us/bedrock/2/${SERVER_IP}:${SERVER_PORT}`);
-                const data = await response.json();
-
-                if (data.online) {
-                    badge.classList.add('status-online');
-                    statusText.innerText = "ONLINE";
-                    playerCount.innerText = `${data.players.online} / ${data.players.max}`;
-                    const percentage = (data.players.online / data.players.max) * 100;
-                    playerBar.style.width = percentage + "%";
-                    if(data.version) verText.innerText = "v" + data.version;
-                } else {
-                    throw new Error("Server is offline");
-                }
-            } catch (error) {
-                badge.classList.add('status-offline');
-                statusText.innerText = "OFFLINE";
-                playerCount.innerText = "0 / 0";
-                playerBar.style.width = "0%";
-                verText.innerText = "Unreachable";
-            }
-        }
-
-        function copyIP() {
-            // Copies the Bedrock IP and Port
-            navigator.clipboard.writeText(SERVER_IP + ":" + SERVER_PORT);
-            alert("Bedrock IP Copied! (" + SERVER_IP + ":" + SERVER_PORT + ")");
-        }
-
-        function launchGame() {
-            // Minecraft URI scheme uses the Bedrock address
-            window.location.href = `minecraft://?addExternalServer=Microrock|${SERVER_IP}:${SERVER_PORT}`;
-        }
+        const BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+        // Unique version to avoid conflicts with old deleted messages
+        const ROOM_TOPIC = 'school_hub_7_martham_exclusive_v19_final'; 
         
-        function shareIP() {
-            const text = `Join MicrorockTamilGaming! \nBedrock: ${SERVER_IP} Port: ${SERVER_PORT}\nJava: ${JAVA_IP}`;
-            if (navigator.share) {
-                navigator.share({ title: 'Join Server', text: text });
-            } else {
-                navigator.clipboard.writeText(text);
-                alert("Share info copied!");
+        let client;
+        let myProfile = null;
+        let typingTimeout = null;
+
+        // SAFE MEMORY LOADING
+        let savedChatHistory = [];
+        let classmates = {};
+        try {
+            savedChatHistory = JSON.parse(localStorage.getItem('7martham_chat_history_v4')) || [];
+            classmates = JSON.parse(localStorage.getItem('7martham_classmates_v4')) || {};
+        } catch(e) {
+            localStorage.removeItem('7martham_chat_history_v4');
+            localStorage.removeItem('7martham_classmates_v4');
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('school_user');
+            if (saved) { myProfile = JSON.parse(saved); startApp(); }
+        };
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        function login() {
+            try {
+                const name = document.getElementById('nameInput').value.trim();
+                const gender = document.getElementById('genderInput').value;
+                const dob = document.getElementById('dobInput').value.trim();
+                if (!name || !dob) return alert("Please fill all fields.");
+
+                myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob };
+                localStorage.setItem('school_user', JSON.stringify(myProfile));
+                startApp();
+            } catch (error) { alert("Login Error: " + error.message); }
+        }
+
+        function openEditProfile() {
+            document.getElementById('editName').value = myProfile.name;
+            document.getElementById('editGender').value = myProfile.gender;
+            document.getElementById('editDob').value = myProfile.dob;
+            document.getElementById('edit-screen').style.display = 'flex';
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('editName').value.trim();
+            if (!name) return alert("Name cannot be empty");
+            myProfile.name = name; myProfile.gender = document.getElementById('editGender').value; myProfile.dob = document.getElementById('editDob').value.trim();
+            localStorage.setItem('school_user', JSON.stringify(myProfile));
+            broadcast('presence', { status: 'online' }); 
+            document.getElementById('edit-screen').style.display = 'none';
+            renderUserList();
+        }
+
+        function startApp() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'flex';
+            
+            renderFullHistory();
+            classmates[myProfile.id] = { ...myProfile, online: true, lastSeen: Date.now() };
+            renderUserList();
+
+            client = mqtt.connect(BROKER, { keepalive: 30 });
+            
+            client.on('connect', () => {
+                document.getElementById('conn-status').innerText = '🟢 Connected';
+                document.getElementById('conn-status').style.background = '#2ecc71';
+                client.subscribe(ROOM_TOPIC);
+                broadcast('system', { text: `${myProfile.name} joined 7-Martham` });
+                broadcast('presence', { status: 'online' });
+                
+                // Offline catch-up request
+                const lastTime = savedChatHistory.length > 0 ? savedChatHistory[savedChatHistory.length-1].payload.timestamp : 0;
+                broadcast('sync_req', { lastTime: lastTime }); 
+                broadcast('rollcall', {}); 
+                
+                setInterval(() => broadcast('presence', { status: 'ping' }), 10000);
+            });
+
+            client.on('offline', () => {
+                document.getElementById('conn-status').innerText = '🔴 Reconnecting...';
+                document.getElementById('conn-status').style.background = '#e74c3c';
+            });
+
+            client.on('message', (topic, message) => {
+                try {
+                    const packet = JSON.parse(message.toString());
+                    handleIncoming(packet);
+                } catch(e){}
+            });
+
+            setInterval(checkOffline, 15000);
+        }
+
+        function broadcast(type, payload) {
+            if (client && client.connected) {
+                client.publish(ROOM_TOPIC, JSON.stringify({ type, sender: myProfile, payload }));
             }
+        }
+
+        function handleIncoming(packet) {
+            const { type, sender, payload } = packet;
+            
+            if(sender && type !== 'typing') {
+                classmates[sender.id] = { ...sender, online: true, lastSeen: Date.now() };
+                saveClassmates(); renderUserList();
+            }
+
+            // SENDER DELETES MESSAGE (APPLIES TO EVERYONE)
+            if (type === 'delete_event') {
+                applyDeleteLocally(payload.msgId);
+            }
+            // CHUNKING SYNC FIX (Prevents crashes)
+            else if (type === 'sync_req' && sender.id !== myProfile.id) {
+                const missingMessages = savedChatHistory.filter(m => m.payload.timestamp > payload.lastTime).slice(-20);
+                if(missingMessages.length > 0) {
+                    // Send in safe chunks of 5 messages
+                    for(let i=0; i<missingMessages.length; i+=5) {
+                        let chunk = missingMessages.slice(i, i+5);
+                        setTimeout(() => {
+                            broadcast('sync_batch', { targetId: sender.id, messages: chunk });
+                        }, i * 150);
+                    }
+                }
+            } 
+            else if (type === 'sync_batch' && payload.targetId === myProfile.id) {
+                let addedNew = false;
+                payload.messages.forEach(incomingMsg => {
+                    if (!savedChatHistory.find(m => m.payload.msgId === incomingMsg.payload.msgId)) {
+                        savedChatHistory.push(incomingMsg);
+                        addedNew = true;
+                    }
+                });
+                if(addedNew) {
+                    savedChatHistory.sort((a, b) => a.payload.timestamp - b.payload.timestamp);
+                    saveHistory();
+                    renderFullHistory(); // Refresh to show new messages
+                }
+            }
+            else if (type === 'rollcall' && sender.id !== myProfile.id) {
+                broadcast('presence', { status: 'online' });
+            }
+            else if (type === 'chat') {
+                renderMessage(sender, payload, false); 
+                if(sender.id !== myProfile.id) document.getElementById('typing-indicator').innerText = ''; 
+            } 
+            else if (type === 'system') {
+                const box = document.getElementById('messages');
+                box.innerHTML += `<div class="sys-msg">${payload.text}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }
+            else if (type === 'typing' && sender.id !== myProfile.id) {
+                const ind = document.getElementById('typing-indicator');
+                ind.innerText = `${sender.name} is typing...`;
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => ind.innerText = '', 2000);
+            }
+        }
+
+        function checkOffline() {
+            const now = Date.now(); let changed = false;
+            for (let id in classmates) {
+                if (id !== myProfile.id && classmates[id].online && (now - classmates[id].lastSeen > 20000)) {
+                    classmates[id].online = false; changed = true;
+                }
+            }
+            if(changed) { saveClassmates(); renderUserList(); }
+        }
+
+        function saveHistory() { localStorage.setItem('7martham_chat_history_v4', JSON.stringify(savedChatHistory)); }
+        function saveClassmates() { localStorage.setItem('7martham_classmates_v4', JSON.stringify(classmates)); }
+
+        function renderUserList() {
+            const container = document.getElementById('users-container'); container.innerHTML = '';
+            const sortedIds = Object.keys(classmates).sort((a, b) => {
+                if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
+                if(classmates[a].online && !classmates[b].online) return -1;
+                if(!classmates[a].online && classmates[b].online) return 1;
+                return classmates[b].lastSeen - classmates[a].lastSeen;
+            });
+
+            sortedIds.forEach(id => {
+                const u = classmates[id]; const isMe = id === myProfile.id;
+                const displayName = isMe ? `${u.name} (You)` : u.name;
+                const initial = u.name.charAt(0).toUpperCase();
+                const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
+                const timeString = isMe ? "Now" : new Date(u.lastSeen).toLocaleTimeString('en-IN', {hour:'numeric', minute:'numeric', hour12:true, timeZone:'Asia/Kolkata'});
+
+                container.innerHTML += `
+                    <div class="user-item ${u.online ? 'online-border' : ''}">
+                        <div class="avatar">${initial}</div>
+                        <div class="user-details">
+                            <div class="user-name-row"><span class="name-text">${displayName}</span></div>
+                            <div class="status-indicator">${statusDot} • ${u.gender}</div>
+                            ${!u.online ? `<div class="last-seen">Last seen ${timeString}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function getIST() { return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' }); }
+
+        function handleTypingInput() {
+            const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
+            if (text) {
+                btn.innerText = '➤'; btn.style.background = '#3498db';
+                if(!btn.dataset.typing || Date.now() - btn.dataset.typing > 2000) { broadcast('typing', {}); btn.dataset.typing = Date.now(); }
+            } else { btn.innerText = '🎤'; btn.style.background = '#075e54'; }
+        }
+
+        function handleActionClick() {
+            const text = document.getElementById('chatInput').value.trim();
+            if (text) {
+                const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                broadcast('chat', { msgId, text, type: 'text', time: getIST(), timestamp: Date.now() });
+                document.getElementById('chatInput').value = ''; handleTypingInput(); 
+            } else { toggleVoiceRecord(); }
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
+
+        // --- NEW DELETION SYSTEM ---
+        function deleteMyMessage(msgId) {
+            if(confirm("Delete this message? It will show as deleted for everyone in 7-Martham.")) {
+                broadcast('delete_event', { msgId });
+                applyDeleteLocally(msgId);
+            }
+        }
+
+        function applyDeleteLocally(msgId) {
+            // 1. Update Memory
+            let msg = savedChatHistory.find(m => m.payload.msgId === msgId);
+            if(msg) {
+                msg.payload.type = 'deleted';
+                msg.payload.text = '🚫 This message was deleted';
+                msg.payload.data = null; // Wipe the image/voice to save space
+                saveHistory();
+            }
+            
+            // 2. Update the Screen instantly
+            let msgEl = document.getElementById('msg_' + msgId);
+            if(msgEl) {
+                let textEl = msgEl.querySelector('.msg-text');
+                if(textEl) textEl.innerHTML = '<span class="deleted-text">🚫 This message was deleted</span>';
+                
+                // Hide the delete trash can if it exists
+                let delBtn = msgEl.querySelector('.delete-btn');
+                if(delBtn) delBtn.style.display = 'none';
+            }
+        }
+
+        function renderFullHistory() {
+            const container = document.getElementById('messages');
+            container.innerHTML = '<div class="sys-msg">🔒 This group is exclusively for 7-Martham.</div>';
+            savedChatHistory.forEach(msg => renderMessage(msg.sender, msg.payload, true));
+        }
+
+        function renderMessage(sender, payload, isHistoryLoad) {
+            const container = document.getElementById('messages');
+            const isMe = sender.id === myProfile.id;
+            
+            let bodyHtml = '';
+            if(payload.type === 'deleted') {
+                bodyHtml = '<span class="deleted-text">🚫 This message was deleted</span>';
+            }
+            else if(payload.type === 'text') {
+                bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
+            } else if (payload.type === 'image') {
+                bodyHtml = `<div class="msg-image" onclick="openLightbox('${payload.data}')"><img src="${payload.data}"></div>`;
+            } else if (payload.type === 'voice') {
+                bodyHtml = `<audio controls src="${payload.data}"></audio>`;
+            }
+
+            if (!document.getElementById('msg_' + payload.msgId)) {
+                // DELETE TRASH CAN ONLY APPEARS ON "MY" MESSAGES, AND ONLY IF NOT ALREADY DELETED
+                const deleteBtnHtml = (isMe && payload.type !== 'deleted') ? `<button class="delete-btn" onclick="deleteMyMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
+
+                container.innerHTML += `
+                    <div class="msg-bubble ${isMe ? 'me' : ''}" id="msg_${payload.msgId}">
+                        ${deleteBtnHtml}
+                        ${isMe ? '' : `<div class="msg-sender">${sender.name}</div>`}
+                        <div class="msg-text">${bodyHtml}</div>
+                        <div class="msg-time">${payload.time}</div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+            }
+
+            if (!isHistoryLoad) {
+                if(!payload.msgId) payload.msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                if (!savedChatHistory.find(m => m.payload.msgId === payload.msgId)) {
+                    savedChatHistory.push({ sender: sender, payload: payload });
+                    if (savedChatHistory.length > 80) savedChatHistory.shift();
+                    saveHistory();
+                }
+            }
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    let w = img.width, h = img.height; const max = 600; // Optimized for stability
+                    if(w > max || h > max) { if(w > h) { h = (max/w)*h; w = max; } else { w = (max/h)*w; h = max; } }
+                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h);
+                    const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    broadcast('chat', { msgId, type: 'image', data: canvas.toDataURL('image/jpeg', 0.6), time: getIST(), timestamp: Date.now() });
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        let mediaRecorder; let audioChunks = []; let isRecording = false;
+        function toggleVoiceRecord() {
+            const btn = document.getElementById('action-btn');
+            if(!isRecording) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true; 
+                    btn.classList.add('recording'); btn.innerText = '⏹'; audioChunks = [];
+                    mediaRecorder.addEventListener("dataavailable", e => audioChunks.push(e.data));
+                    mediaRecorder.addEventListener("stop", () => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                            broadcast('chat', { msgId, type: 'voice', data: e.target.result, time: getIST(), timestamp: Date.now() });
+                        };
+                        reader.readAsDataURL(new Blob(audioChunks, { type: "audio/ogg" }));
+                        stream.getTracks().forEach(t => t.stop());
+                    });
+                }).catch(e => alert("Recording error: " + e.message));
+            } else {
+                mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording'); btn.innerText = '🎤';
+            }
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lb-download').href = src;
+            document.getElementById('lb-download').download = "7martham_photo_" + Date.now() + ".jpg";
+            document.getElementById('lightbox').classList.add('active');
         }
     </script>
 </body>
 </html>
-
