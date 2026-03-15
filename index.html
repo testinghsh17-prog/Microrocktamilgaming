@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>School Hub - 7-Martham</title>
+    <title>School Hub - 7-Marutham</title>
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <style>
         /* CORE SETUP & MOBILE FIX */
@@ -114,7 +114,7 @@
 
     <div id="login-screen" class="modal-screen">
         <div class="modal-box">
-            <h2>7-Martham Hub</h2>
+            <h2>7-Marutham Hub</h2>
             <div class="input-group"><label>Student Name</label><input type="text" id="nameInput" placeholder="Enter full name"></div>
             <div class="input-group"><label>Gender</label><select id="genderInput"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="dobInput" placeholder="e.g. 15/08/2005"></div>
@@ -153,7 +153,7 @@
                 <span class="menu-btn" onclick="toggleSidebar()">☰</span>
                 <div class="header-info">
                     <div>
-                        <div class="header-title">7-Martham Group Chat</div>
+                        <div class="header-title">7-Marutham Group Chat</div>
                         <div class="header-subtitle">Made by Vishnuram and Prasanth</div>
                     </div>
                     <div id="conn-status">🟠 Connecting...</div>
@@ -161,7 +161,7 @@
             </div>
             
             <div class="messages-container" id="messages">
-                <div class="sys-msg">🔒 This group is exclusively for 7-Martham.</div>
+                <div class="sys-msg">🔒 This group is exclusively for 7-Marutham.</div>
             </div>
             
             <div id="typing-indicator"></div>
@@ -176,22 +176,22 @@
 
     <script>
         const BROKER = 'wss://broker.hivemq.com:8884/mqtt';
-        // Unique version to avoid conflicts with old deleted messages
-        const ROOM_TOPIC = 'school_hub_7_martham_exclusive_v19_final'; 
+        // Updated topic to guarantee a fresh room
+        const ROOM_TOPIC = 'school_hub_7_marutham_exclusive_v20'; 
         
         let client;
         let myProfile = null;
         let typingTimeout = null;
 
-        // SAFE MEMORY LOADING
+        // SAFE MEMORY LOADING (Updated keys for 7-Marutham)
         let savedChatHistory = [];
         let classmates = {};
         try {
-            savedChatHistory = JSON.parse(localStorage.getItem('7martham_chat_history_v4')) || [];
-            classmates = JSON.parse(localStorage.getItem('7martham_classmates_v4')) || {};
+            savedChatHistory = JSON.parse(localStorage.getItem('7marutham_chat_history_v5')) || [];
+            classmates = JSON.parse(localStorage.getItem('7marutham_classmates_v5')) || {};
         } catch(e) {
-            localStorage.removeItem('7martham_chat_history_v4');
-            localStorage.removeItem('7martham_classmates_v4');
+            localStorage.removeItem('7marutham_chat_history_v5');
+            localStorage.removeItem('7marutham_classmates_v5');
         }
 
         window.onload = () => {
@@ -245,10 +245,9 @@
                 document.getElementById('conn-status').innerText = '🟢 Connected';
                 document.getElementById('conn-status').style.background = '#2ecc71';
                 client.subscribe(ROOM_TOPIC);
-                broadcast('system', { text: `${myProfile.name} joined 7-Martham` });
+                broadcast('system', { text: `${myProfile.name} joined 7-Marutham` });
                 broadcast('presence', { status: 'online' });
                 
-                // Offline catch-up request
                 const lastTime = savedChatHistory.length > 0 ? savedChatHistory[savedChatHistory.length-1].payload.timestamp : 0;
                 broadcast('sync_req', { lastTime: lastTime }); 
                 broadcast('rollcall', {}); 
@@ -285,15 +284,12 @@
                 saveClassmates(); renderUserList();
             }
 
-            // SENDER DELETES MESSAGE (APPLIES TO EVERYONE)
             if (type === 'delete_event') {
                 applyDeleteLocally(payload.msgId);
             }
-            // CHUNKING SYNC FIX (Prevents crashes)
             else if (type === 'sync_req' && sender.id !== myProfile.id) {
                 const missingMessages = savedChatHistory.filter(m => m.payload.timestamp > payload.lastTime).slice(-20);
                 if(missingMessages.length > 0) {
-                    // Send in safe chunks of 5 messages
                     for(let i=0; i<missingMessages.length; i+=5) {
                         let chunk = missingMessages.slice(i, i+5);
                         setTimeout(() => {
@@ -313,7 +309,7 @@
                 if(addedNew) {
                     savedChatHistory.sort((a, b) => a.payload.timestamp - b.payload.timestamp);
                     saveHistory();
-                    renderFullHistory(); // Refresh to show new messages
+                    renderFullHistory(); 
                 }
             }
             else if (type === 'rollcall' && sender.id !== myProfile.id) {
@@ -346,8 +342,8 @@
             if(changed) { saveClassmates(); renderUserList(); }
         }
 
-        function saveHistory() { localStorage.setItem('7martham_chat_history_v4', JSON.stringify(savedChatHistory)); }
-        function saveClassmates() { localStorage.setItem('7martham_classmates_v4', JSON.stringify(classmates)); }
+        function saveHistory() { localStorage.setItem('7marutham_chat_history_v5', JSON.stringify(savedChatHistory)); }
+        function saveClassmates() { localStorage.setItem('7marutham_classmates_v5', JSON.stringify(classmates)); }
 
         function renderUserList() {
             const container = document.getElementById('users-container'); container.innerHTML = '';
@@ -399,31 +395,27 @@
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
 
-        // --- NEW DELETION SYSTEM ---
         function deleteMyMessage(msgId) {
-            if(confirm("Delete this message? It will show as deleted for everyone in 7-Martham.")) {
+            if(confirm("Delete this message? It will show as deleted for everyone in 7-Marutham.")) {
                 broadcast('delete_event', { msgId });
                 applyDeleteLocally(msgId);
             }
         }
 
         function applyDeleteLocally(msgId) {
-            // 1. Update Memory
             let msg = savedChatHistory.find(m => m.payload.msgId === msgId);
             if(msg) {
                 msg.payload.type = 'deleted';
                 msg.payload.text = '🚫 This message was deleted';
-                msg.payload.data = null; // Wipe the image/voice to save space
+                msg.payload.data = null; 
                 saveHistory();
             }
             
-            // 2. Update the Screen instantly
             let msgEl = document.getElementById('msg_' + msgId);
             if(msgEl) {
                 let textEl = msgEl.querySelector('.msg-text');
                 if(textEl) textEl.innerHTML = '<span class="deleted-text">🚫 This message was deleted</span>';
                 
-                // Hide the delete trash can if it exists
                 let delBtn = msgEl.querySelector('.delete-btn');
                 if(delBtn) delBtn.style.display = 'none';
             }
@@ -431,7 +423,7 @@
 
         function renderFullHistory() {
             const container = document.getElementById('messages');
-            container.innerHTML = '<div class="sys-msg">🔒 This group is exclusively for 7-Martham.</div>';
+            container.innerHTML = '<div class="sys-msg">🔒 This group is exclusively for 7-Marutham.</div>';
             savedChatHistory.forEach(msg => renderMessage(msg.sender, msg.payload, true));
         }
 
@@ -452,7 +444,6 @@
             }
 
             if (!document.getElementById('msg_' + payload.msgId)) {
-                // DELETE TRASH CAN ONLY APPEARS ON "MY" MESSAGES, AND ONLY IF NOT ALREADY DELETED
                 const deleteBtnHtml = (isMe && payload.type !== 'deleted') ? `<button class="delete-btn" onclick="deleteMyMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
 
                 container.innerHTML += `
@@ -483,7 +474,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                    let w = img.width, h = img.height; const max = 600; // Optimized for stability
+                    let w = img.width, h = img.height; const max = 600; 
                     if(w > max || h > max) { if(w > h) { h = (max/w)*h; w = max; } else { w = (max/h)*w; h = max; } }
                     canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h);
                     const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -520,7 +511,7 @@
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lb-download').href = src;
-            document.getElementById('lb-download').download = "7martham_photo_" + Date.now() + ".jpg";
+            document.getElementById('lb-download').download = "7marutham_photo_" + Date.now() + ".jpg";
             document.getElementById('lightbox').classList.add('active');
         }
     </script>
