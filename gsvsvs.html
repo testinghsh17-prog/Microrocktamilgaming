@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>School Hub - 7-Martham</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        /* CORE SETUP & MOBILE FIX */
+        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #e5e5e5; position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
+        * { box-sizing: border-box; }
+        
+        /* MODALS */
+        .modal-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #2c3e50, #3498db); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+        .modal-box { background: white; padding: 35px; border-radius: 16px; width: 340px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .modal-box h2 { margin-top: 0; color: #2c3e50; text-align: center; margin-bottom: 25px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: #7f8c8d; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dcdde1; font-size: 15px; outline: none; background: #f8f9fa; transition: 0.2s; }
+        .modal-box button.primary { background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 8px; font-size: 16px; margin-top: 10px; transition: 0.2s; }
+        .modal-box button.secondary { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; font-weight: bold; cursor: pointer; padding: 10px; border-radius: 8px; margin-top: 10px; }
+        .credits { text-align: center; font-size: 12px; color: #95a5a6; margin-top: 20px; font-weight: 500; }
+
+        /* MAIN APP LAYOUT */
+        #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
+
+        /* LEFT SIDEBAR */
+        .sidebar { width: 320px; background: white; display: flex; flex-direction: column; border-right: 1px solid #dcdde1; z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #dcdde1; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-title { font-weight: bold; color: #2c3e50; font-size: 18px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .edit-btn { background: #ecf0f1; color: #2c3e50; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .close-sidebar-btn { display: none; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; }
+        
+        .user-list { flex: 1; overflow-y: auto; padding: 10px; background: white; }
+        .user-item { display: flex; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 5px; background: #f8f9fa; border-left: 4px solid transparent; }
+        .user-item.online-border { border-left-color: #2ecc71; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin-right: 15px; text-transform: uppercase; }
+        .user-details { flex: 1; min-width: 0; }
+        .name-text { font-weight: 600; color: #2f3640; font-size: 15px; }
+        .status-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; margin-top: 4px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot.online { background: #2ecc71; box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
+        .dot.offline { background: #e74c3c; }
+        .credits-sidebar { padding: 15px; background: #f8f9fa; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #dcdde1; font-weight: 500;}
+
+        /* RIGHT SECTION */
+        .chat-section { flex: 1; display: flex; flex-direction: column; background: #e5e5e5; position: relative; width: 100%; background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); }
+        .chat-header { padding: 12px 20px; background: white; border-bottom: 1px solid #dcdde1; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;}
+        .menu-btn { display: none; font-size: 24px; cursor: pointer; color: #2f3640; }
+        .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+        .header-title { font-weight: bold; color: #2f3640; font-size: 16px; }
+        .header-subtitle { font-size: 12px; color: #3498db; font-weight: 600; margin-top: 2px; }
+        
+        #conn-status { font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; background: #f39c12; color: white; }
+
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        #typing-indicator { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 0 20px; height: 20px; display: flex; align-items: center; }
+        .sys-msg { align-self: center; background: rgba(0,0,0,0.1); color: #555; padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center;}
+
+        /* Chat Bubbles */
+        .msg-bubble { background: white; padding: 10px 14px; border-radius: 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; border-top-left-radius: 2px; }
+        .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
+        .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; }
+        .msg-bubble.me .msg-sender { color: #27ae60; }
+        .msg-text { font-size: 15px; color: #2f3640; line-height: 1.4; word-wrap: break-word; }
+        .msg-time { font-size: 10px; color: rgba(0,0,0,0.45); text-align: right; margin-top: 4px; }
+        
+        /* DELETED MESSAGE STYLING */
+        .deleted-text { font-style: italic; color: #7f8c8d; font-size: 14px; display: flex; align-items: center; gap: 5px;}
+        
+        .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(231, 76, 60, 0.1); border: none; color: #e74c3c; font-size: 14px; cursor: pointer; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .delete-btn:hover { background: #e74c3c; color: white; }
+
+        .msg-image { margin-top: 5px; cursor: pointer; }
+        .msg-image img { max-width: 200px; max-height: 250px; border-radius: 8px; display: block; object-fit: cover; }
+        .msg-text a { color: #3498db; }
+        audio { height: 40px; max-width: 200px; margin-top: 5px; outline: none; }
+
+        /* Input Area */
+        .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+        .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
+        .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
+        .send-btn.recording { background: #e74c3c; animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; top: 0; left: 0; height: 100dvh; transform: translateX(-100%); width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 2000; }
+            .sidebar.open { transform: translateX(0); }
+            .menu-btn { display: block; }
+            .close-sidebar-btn { display: flex; }
+        }
+
+        /* Lightbox */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
+        #lightbox.active { display: flex; }
+        #lightbox img { max-width: 90%; max-height: 75%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .lb-actions { display: flex; gap: 15px; margin-top: 20px; }
+        .lb-btn { padding: 10px 25px; color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div id="lightbox">
+        <img id="lightbox-img" src="">
+        <div class="lb-actions">
+            <a id="lb-download" href="" download="" class="lb-btn" style="background: #2ecc71;">⬇ Download</a>
+            <button onclick="document.getElementById('lightbox').classList.remove('active')" class="lb-btn" style="background: #e74c3c;">✕ Close</button>
+        </div>
+    </div>
+
+    <input type="file" id="image-picker" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+
+    <div id="login-screen" class="modal-screen">
+        <div class="modal-box">
+            <h2>7-Martham Hub</h2>
+            <div class="input-group"><label>Student Name</label><input type="text" id="nameInput" placeholder="Enter full name"></div>
+            <div class="input-group"><label>Gender</label><select id="genderInput"><option>Male</option><option>Female</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="dobInput" placeholder="e.g. 15/08/2005"></div>
+            <button class="primary" onclick="login()">Enter Group Chat</button>
+            <div class="credits">Made by Vishnuram and Prasanth</div>
+        </div>
+    </div>
+
+    <div id="edit-screen" class="modal-screen" style="display: none;">
+        <div class="modal-box">
+            <h2>Edit Profile</h2>
+            <div class="input-group"><label>Name</label><input type="text" id="editName"></div>
+            <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
+            <button class="primary" onclick="saveProfile()">Save Changes</button>
+            <button class="secondary" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
+            <div class="credits">Made by Vishnuram and Prasanth</div>
+        </div>
+    </div>
+
+    <div id="app-screen">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Students</div>
+                <div class="header-actions">
+                    <button class="edit-btn" onclick="openEditProfile()">Edit</button>
+                    <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+                </div>
+            </div>
+            <div class="user-list" id="users-container"></div>
+            <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+                <div class="header-info">
+                    <div>
+                        <div class="header-title">7-Martham Group Chat</div>
+                        <div class="header-subtitle">Made by Vishnuram and Prasanth</div>
+                    </div>
+                    <div id="conn-status">🟠 Connecting...</div>
+                </div>
+            </div>
+            
+            <div class="messages-container" id="messages">
+                <div class="sys-msg">🔒 This group is exclusively for 7-Martham.</div>
+            </div>
+            
+            <div id="typing-indicator"></div>
+
+            <div class="input-bar">
+                <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
+                <input type="text" id="chatInput" placeholder="Type a message..." oninput="handleTypingInput()">
+                <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+        // Unique version to avoid conflicts with old deleted messages
+        const ROOM_TOPIC = 'school_hub_7_martham_exclusive_v19_final'; 
+        
+        let client;
+        let myProfile = null;
+        let typingTimeout = null;
+
+        // SAFE MEMORY LOADING
+        let savedChatHistory = [];
+        let classmates = {};
+        try {
+            savedChatHistory = JSON.parse(localStorage.getItem('7martham_chat_history_v4')) || [];
+            classmates = JSON.parse(localStorage.getItem('7martham_classmates_v4')) || {};
+        } catch(e) {
+            localStorage.removeItem('7martham_chat_history_v4');
+            localStorage.removeItem('7martham_classmates_v4');
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('school_user');
+            if (saved) { myProfile = JSON.parse(saved); startApp(); }
+        };
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        function login() {
+            try {
+                const name = document.getElementById('nameInput').value.trim();
+                const gender = document.getElementById('genderInput').value;
+                const dob = document.getElementById('dobInput').value.trim();
+                if (!name || !dob) return alert("Please fill all fields.");
+
+                myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob };
+                localStorage.setItem('school_user', JSON.stringify(myProfile));
+                startApp();
+            } catch (error) { alert("Login Error: " + error.message); }
+        }
+
+        function openEditProfile() {
+            document.getElementById('editName').value = myProfile.name;
+            document.getElementById('editGender').value = myProfile.gender;
+            document.getElementById('editDob').value = myProfile.dob;
+            document.getElementById('edit-screen').style.display = 'flex';
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('editName').value.trim();
+            if (!name) return alert("Name cannot be empty");
+            myProfile.name = name; myProfile.gender = document.getElementById('editGender').value; myProfile.dob = document.getElementById('editDob').value.trim();
+            localStorage.setItem('school_user', JSON.stringify(myProfile));
+            broadcast('presence', { status: 'online' }); 
+            document.getElementById('edit-screen').style.display = 'none';
+            renderUserList();
+        }
+
+        function startApp() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'flex';
+            
+            renderFullHistory();
+            classmates[myProfile.id] = { ...myProfile, online: true, lastSeen: Date.now() };
+            renderUserList();
+
+            client = mqtt.connect(BROKER, { keepalive: 30 });
+            
+            client.on('connect', () => {
+                document.getElementById('conn-status').innerText = '🟢 Connected';
+                document.getElementById('conn-status').style.background = '#2ecc71';
+                client.subscribe(ROOM_TOPIC);
+                broadcast('system', { text: `${myProfile.name} joined 7-Martham` });
+                broadcast('presence', { status: 'online' });
+                
+                // Offline catch-up request
+                const lastTime = savedChatHistory.length > 0 ? savedChatHistory[savedChatHistory.length-1].payload.timestamp : 0;
+                broadcast('sync_req', { lastTime: lastTime }); 
+                broadcast('rollcall', {}); 
+                
+                setInterval(() => broadcast('presence', { status: 'ping' }), 10000);
+            });
+
+            client.on('offline', () => {
+                document.getElementById('conn-status').innerText = '🔴 Reconnecting...';
+                document.getElementById('conn-status').style.background = '#e74c3c';
+            });
+
+            client.on('message', (topic, message) => {
+                try {
+                    const packet = JSON.parse(message.toString());
+                    handleIncoming(packet);
+                } catch(e){}
+            });
+
+            setInterval(checkOffline, 15000);
+        }
+
+        function broadcast(type, payload) {
+            if (client && client.connected) {
+                client.publish(ROOM_TOPIC, JSON.stringify({ type, sender: myProfile, payload }));
+            }
+        }
+
+        function handleIncoming(packet) {
+            const { type, sender, payload } = packet;
+            
+            if(sender && type !== 'typing') {
+                classmates[sender.id] = { ...sender, online: true, lastSeen: Date.now() };
+                saveClassmates(); renderUserList();
+            }
+
+            // SENDER DELETES MESSAGE (APPLIES TO EVERYONE)
+            if (type === 'delete_event') {
+                applyDeleteLocally(payload.msgId);
+            }
+            // CHUNKING SYNC FIX (Prevents crashes)
+            else if (type === 'sync_req' && sender.id !== myProfile.id) {
+                const missingMessages = savedChatHistory.filter(m => m.payload.timestamp > payload.lastTime).slice(-20);
+                if(missingMessages.length > 0) {
+                    // Send in safe chunks of 5 messages
+                    for(let i=0; i<missingMessages.length; i+=5) {
+                        let chunk = missingMessages.slice(i, i+5);
+                        setTimeout(() => {
+                            broadcast('sync_batch', { targetId: sender.id, messages: chunk });
+                        }, i * 150);
+                    }
+                }
+            } 
+            else if (type === 'sync_batch' && payload.targetId === myProfile.id) {
+                let addedNew = false;
+                payload.messages.forEach(incomingMsg => {
+                    if (!savedChatHistory.find(m => m.payload.msgId === incomingMsg.payload.msgId)) {
+                        savedChatHistory.push(incomingMsg);
+                        addedNew = true;
+                    }
+                });
+                if(addedNew) {
+                    savedChatHistory.sort((a, b) => a.payload.timestamp - b.payload.timestamp);
+                    saveHistory();
+                    renderFullHistory(); // Refresh to show new messages
+                }
+            }
+            else if (type === 'rollcall' && sender.id !== myProfile.id) {
+                broadcast('presence', { status: 'online' });
+            }
+            else if (type === 'chat') {
+                renderMessage(sender, payload, false); 
+                if(sender.id !== myProfile.id) document.getElementById('typing-indicator').innerText = ''; 
+            } 
+            else if (type === 'system') {
+                const box = document.getElementById('messages');
+                box.innerHTML += `<div class="sys-msg">${payload.text}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }
+            else if (type === 'typing' && sender.id !== myProfile.id) {
+                const ind = document.getElementById('typing-indicator');
+                ind.innerText = `${sender.name} is typing...`;
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => ind.innerText = '', 2000);
+            }
+        }
+
+        function checkOffline() {
+            const now = Date.now(); let changed = false;
+            for (let id in classmates) {
+                if (id !== myProfile.id && classmates[id].online && (now - classmates[id].lastSeen > 20000)) {
+                    classmates[id].online = false; changed = true;
+                }
+            }
+            if(changed) { saveClassmates(); renderUserList(); }
+        }
+
+        function saveHistory() { localStorage.setItem('7martham_chat_history_v4', JSON.stringify(savedChatHistory)); }
+        function saveClassmates() { localStorage.setItem('7martham_classmates_v4', JSON.stringify(classmates)); }
+
+        function renderUserList() {
+            const container = document.getElementById('users-container'); container.innerHTML = '';
+            const sortedIds = Object.keys(classmates).sort((a, b) => {
+                if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
+                if(classmates[a].online && !classmates[b].online) return -1;
+                if(!classmates[a].online && classmates[b].online) return 1;
+                return classmates[b].lastSeen - classmates[a].lastSeen;
+            });
+
+            sortedIds.forEach(id => {
+                const u = classmates[id]; const isMe = id === myProfile.id;
+                const displayName = isMe ? `${u.name} (You)` : u.name;
+                const initial = u.name.charAt(0).toUpperCase();
+                const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
+                const timeString = isMe ? "Now" : new Date(u.lastSeen).toLocaleTimeString('en-IN', {hour:'numeric', minute:'numeric', hour12:true, timeZone:'Asia/Kolkata'});
+
+                container.innerHTML += `
+                    <div class="user-item ${u.online ? 'online-border' : ''}">
+                        <div class="avatar">${initial}</div>
+                        <div class="user-details">
+                            <div class="user-name-row"><span class="name-text">${displayName}</span></div>
+                            <div class="status-indicator">${statusDot} • ${u.gender}</div>
+                            ${!u.online ? `<div class="last-seen">Last seen ${timeString}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function getIST() { return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' }); }
+
+        function handleTypingInput() {
+            const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
+            if (text) {
+                btn.innerText = '➤'; btn.style.background = '#3498db';
+                if(!btn.dataset.typing || Date.now() - btn.dataset.typing > 2000) { broadcast('typing', {}); btn.dataset.typing = Date.now(); }
+            } else { btn.innerText = '🎤'; btn.style.background = '#075e54'; }
+        }
+
+        function handleActionClick() {
+            const text = document.getElementById('chatInput').value.trim();
+            if (text) {
+                const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                broadcast('chat', { msgId, text, type: 'text', time: getIST(), timestamp: Date.now() });
+                document.getElementById('chatInput').value = ''; handleTypingInput(); 
+            } else { toggleVoiceRecord(); }
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
+
+        // --- NEW DELETION SYSTEM ---
+        function deleteMyMessage(msgId) {
+            if(confirm("Delete this message? It will show as deleted for everyone in 7-Martham.")) {
+                broadcast('delete_event', { msgId });
+                applyDeleteLocally(msgId);
+            }
+        }
+
+        function applyDeleteLocally(msgId) {
+            // 1. Update Memory
+            let msg = savedChatHistory.find(m => m.payload.msgId === msgId);
+            if(msg) {
+                msg.payload.type = 'deleted';
+                msg.payload.text = '🚫 This message was deleted';
+                msg.payload.data = null; // Wipe the image/voice to save space
+                saveHistory();
+            }
+            
+            // 2. Update the Screen instantly
+            let msgEl = document.getElementById('msg_' + msgId);
+            if(msgEl) {
+                let textEl = msgEl.querySelector('.msg-text');
+                if(textEl) textEl.innerHTML = '<span class="deleted-text">🚫 This message was deleted</span>';
+                
+                // Hide the delete trash can if it exists
+                let delBtn = msgEl.querySelector('.delete-btn');
+                if(delBtn) delBtn.style.display = 'none';
+            }
+        }
+
+        function renderFullHistory() {
+            const container = document.getElementById('messages');
+            container.innerHTML = '<div class="sys-msg">🔒 This group is exclusively for 7-Martham.</div>';
+            savedChatHistory.forEach(msg => renderMessage(msg.sender, msg.payload, true));
+        }
+
+        function renderMessage(sender, payload, isHistoryLoad) {
+            const container = document.getElementById('messages');
+            const isMe = sender.id === myProfile.id;
+            
+            let bodyHtml = '';
+            if(payload.type === 'deleted') {
+                bodyHtml = '<span class="deleted-text">🚫 This message was deleted</span>';
+            }
+            else if(payload.type === 'text') {
+                bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
+            } else if (payload.type === 'image') {
+                bodyHtml = `<div class="msg-image" onclick="openLightbox('${payload.data}')"><img src="${payload.data}"></div>`;
+            } else if (payload.type === 'voice') {
+                bodyHtml = `<audio controls src="${payload.data}"></audio>`;
+            }
+
+            if (!document.getElementById('msg_' + payload.msgId)) {
+                // DELETE TRASH CAN ONLY APPEARS ON "MY" MESSAGES, AND ONLY IF NOT ALREADY DELETED
+                const deleteBtnHtml = (isMe && payload.type !== 'deleted') ? `<button class="delete-btn" onclick="deleteMyMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
+
+                container.innerHTML += `
+                    <div class="msg-bubble ${isMe ? 'me' : ''}" id="msg_${payload.msgId}">
+                        ${deleteBtnHtml}
+                        ${isMe ? '' : `<div class="msg-sender">${sender.name}</div>`}
+                        <div class="msg-text">${bodyHtml}</div>
+                        <div class="msg-time">${payload.time}</div>
+                    </div>
+                `;
+                container.scrollTop = container.scrollHeight;
+            }
+
+            if (!isHistoryLoad) {
+                if(!payload.msgId) payload.msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                if (!savedChatHistory.find(m => m.payload.msgId === payload.msgId)) {
+                    savedChatHistory.push({ sender: sender, payload: payload });
+                    if (savedChatHistory.length > 80) savedChatHistory.shift();
+                    saveHistory();
+                }
+            }
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    let w = img.width, h = img.height; const max = 600; // Optimized for stability
+                    if(w > max || h > max) { if(w > h) { h = (max/w)*h; w = max; } else { w = (max/h)*w; h = max; } }
+                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h);
+                    const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    broadcast('chat', { msgId, type: 'image', data: canvas.toDataURL('image/jpeg', 0.6), time: getIST(), timestamp: Date.now() });
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        let mediaRecorder; let audioChunks = []; let isRecording = false;
+        function toggleVoiceRecord() {
+            const btn = document.getElementById('action-btn');
+            if(!isRecording) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true; 
+                    btn.classList.add('recording'); btn.innerText = '⏹'; audioChunks = [];
+                    mediaRecorder.addEventListener("dataavailable", e => audioChunks.push(e.data));
+                    mediaRecorder.addEventListener("stop", () => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                            broadcast('chat', { msgId, type: 'voice', data: e.target.result, time: getIST(), timestamp: Date.now() });
+                        };
+                        reader.readAsDataURL(new Blob(audioChunks, { type: "audio/ogg" }));
+                        stream.getTracks().forEach(t => t.stop());
+                    });
+                }).catch(e => alert("Recording error: " + e.message));
+            } else {
+                mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording'); btn.innerText = '🎤';
+            }
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lb-download').href = src; you
+            document.getElementById('lb-download').download = "7martham_photo_" + Date.now() + ".jpg";
+            document.getElementById('lightbox').classList.add('active');
+        }
+    </script>
+</body>
+</html>
