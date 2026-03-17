@@ -71,6 +71,10 @@
         .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
         .msg-bubble.me.owner-bubble { background: #ffeaa7; border: 2px solid #f1c40f; }
         
+        /* DM BUBBLE STYLE */
+        .msg-bubble.dm-bubble { background: #f3e5f5; border: 2px dashed #9b59b6; }
+        .msg-bubble.dm-bubble.me { background: #f5eeff; border: 2px dashed #8e44ad; }
+
         .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
         
         .role-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
@@ -167,6 +171,7 @@
             <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
             <p style="font-size:11px; color:#7f8c8d; text-align:center;">Usernames cannot be changed after creation.</p>
             <button class="primary" onclick="saveProfile()">Save Changes</button>
+            <button class="secondary" style="border-color: #f39c12; color: #f39c12;" onclick="logoutApp()">🚪 Log Out Safely</button>
             <button class="secondary" style="border-color: #c0392b; color: #c0392b;" onclick="deleteMyAccount()">🚨 Delete My Account</button>
             <button class="secondary" style="border:none; color:#7f8c8d;" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
         </div>
@@ -195,13 +200,16 @@
         <div class="modal-box">
             <h2 style="color:#2c3e50; margin-bottom: 10px;">⌨️ Command Guide</h2>
             <div style="font-size:13px; line-height:1.6; color:#2f3640; margin-bottom: 15px;">
+                <p><b>/dm [name] [msg]</b><br><span style="color:#7f8c8d;">Send a private secret message.</span></p>
                 <p><b>/alert [msg]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Red global announcement.</span></p>
                 <p><b>/timeout [name] [minutes]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Mutes a student. Ex: /timeout Alex 5</span></p>
                 <p><b>/untimeout [name]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Unmutes a student.</span></p>
+                <p><b>/promote [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly make someone Admin.</span></p>
+                <p><b>/demote [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Remove Admin powers.</span></p>
                 <p><b>/lock & /unlock</b><br><span style="color:#7f8c8d;">(Owner Only) Lock/Unlock chat for students.</span></p>
                 <p><b>/kick [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly ban a student.</span></p>
                 <p><b>/clear</b><br><span style="color:#7f8c8d;">(Everyone) Wipes your local screen clean.</span></p>
-                <p><b>/nuke</b><br><span style="color:#7f8c8d;">(Owner Only) Clear database (Requires 2013 PIN).</span></p>
+                <p><b>/shrug & /tableflip</b><br><span style="color:#7f8c8d;">(Everyone) Fun text macros!</span></p>
             </div>
             <button class="primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
         </div>
@@ -227,6 +235,10 @@
                 <button onclick="nukeChat()" style="width:100%; padding:10px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">☢️ Clear Entire Chat</button>
             </div>
             
+            <div style="padding:10px; background: #f8f9fa; border-top: 1px solid #dcdde1;">
+                <button onclick="logoutApp()" style="width:100%; padding:10px; background:transparent; color:#e74c3c; border:2px solid #e74c3c; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">🚪 Log Out</button>
+            </div>
+
             <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
         </div>
 
@@ -287,7 +299,6 @@
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
-                // Security Check: If they somehow got in without a password saved, kick them out.
                 if(!myProfile.password) {
                     localStorage.clear();
                     return;
@@ -309,7 +320,6 @@
         }
 
         function formatKey(name) {
-            // Removes spaces and special chars so database can search it easily
             return name.toLowerCase().replace(/[^a-z0-9]/g, '');
         }
 
@@ -321,7 +331,6 @@
 
             if(!name || !pwd || !dob) return alert("Please fill all fields!");
             
-            // SECURITY: Master Password Check for Owner Name
             if(name.toLowerCase().includes('vishnuram')) {
                 if(pwd !== "vishnuram2013@") {
                     return alert("❌ ACCESS DENIED: You cannot use the Owner's name without the master password.");
@@ -330,16 +339,13 @@
 
             const safeKey = formatKey(name);
             
-            // DEEP SEARCH: Check if username exists
             db.ref('accounts/' + safeKey).once('value').then(snap => {
                 if(snap.exists()) {
                     alert("❌ ERROR: This username is already taken! Please choose a different name.");
                 } else {
-                    // Create New Account
                     let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
                     let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0 };
                     
-                    // Save to permanent vault
                     db.ref('accounts/' + safeKey).set(newProfile);
                     
                     myProfile = newProfile;
@@ -363,18 +369,27 @@
                     alert("❌ Account not found. Please go to Sign Up and create one.");
                 } else {
                     let acc = snap.val();
-                    
                     if(acc.password !== pwd) {
                         return alert("❌ Incorrect Password!");
                     }
-                    
-                    // Success!
                     myProfile = acc;
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner';
                     startApp();
                 }
             });
+        }
+        
+        // --- SAFE LOGOUT ---
+        function logoutApp() {
+            if(confirm("Are you sure you want to log out?")) {
+                db.ref('users/' + myProfile.id).update({
+                    online: false, 
+                    lastSeen: firebase.database.ServerValue.TIMESTAMP
+                });
+                localStorage.removeItem('school_user');
+                location.reload();
+            }
         }
         // ---------------------------------
 
@@ -407,7 +422,7 @@
             } else {
                 document.getElementById('owner-badge').innerText = "Made by Vishnuram and Prasanth";
                 document.getElementById('owner-super-controls').style.display = 'none';
-                document.getElementById('admin-tools-section').style.display = 'none';
+                document.getElementById('admin-tools-section').style.display = 'flex'; // Let everyone see command guide
             }
         }
 
@@ -429,8 +444,8 @@
 
         function deleteMyAccount() {
             if(confirm("🚨 WARNING: Are you sure you want to permanently delete your account?")) {
-                db.ref('accounts/' + myProfile.id).remove(); // Wipe from Vault
-                db.ref('users/' + myProfile.id).remove(); // Wipe from Online list
+                db.ref('accounts/' + myProfile.id).remove(); 
+                db.ref('users/' + myProfile.id).remove(); 
                 localStorage.clear();
                 location.reload();
             }
@@ -565,7 +580,6 @@
                     document.getElementById('conn-status').style.background = '#2ecc71';
                     
                     myStatusRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
-                    // Sync our permanent account data to the live users node
                     myStatusRef.set({ ...myProfile, online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                 } else {
                     document.getElementById('conn-status').innerText = '🔴 Reconnecting';
@@ -588,7 +602,6 @@
                 checkInputStatus();
             });
 
-            // Listen to My Own Permanent Account Data for Kicks/Timeouts
             db.ref('accounts/' + myProfile.id).on('value', (snap) => {
                 if(isAppReady && !snap.exists()) {
                     myStatusRef.onDisconnect().cancel(); 
@@ -705,6 +718,31 @@
                         if(!arg) return alert("⚠️ Please type a message after /alert");
                         sendMsgToDB('alert', arg);
                     }
+                    else if(cmd === '/dm') {
+                        let spaceIdx = arg.indexOf(' ');
+                        if(spaceIdx === -1) return alert("⚠️ Usage: /dm [name] [message]");
+                        let targetName = arg.substring(0, spaceIdx);
+                        let dmText = arg.substring(spaceIdx + 1);
+                        let foundId = findUserByName(targetName);
+                        if(foundId) {
+                            sendMsgToDB('dm', dmText, foundId);
+                            alert(`✅ DM sent to ${targetName}`);
+                        } else { alert(`❌ Could not find "${targetName}".`); }
+                    }
+                    else if(cmd === '/promote') {
+                        if(!isOwner) return alert("❌ Owner only.");
+                        let foundId = findUserByName(arg);
+                        if(foundId) {
+                            setAdminStatus(foundId, 'admin');
+                        } else { alert(`❌ Could not find "${arg}".`); }
+                    }
+                    else if(cmd === '/demote') {
+                        if(!isOwner) return alert("❌ Owner only.");
+                        let foundId = findUserByName(arg);
+                        if(foundId) {
+                            setAdminStatus(foundId, 'user');
+                        } else { alert(`❌ Could not find "${arg}".`); }
+                    }
                     else if(cmd === '/lock') {
                         if(!isOwner) return alert("❌ Owner only.");
                         db.ref('settings/chatLocked').set(true);
@@ -715,6 +753,12 @@
                     }
                     else if(cmd === '/clear') {
                         document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>';
+                    }
+                    else if(cmd === '/shrug') {
+                        sendMsgToDB('text', '¯\\_(ツ)_/¯');
+                    }
+                    else if(cmd === '/tableflip') {
+                        sendMsgToDB('text', '(╯°□°)╯︵ ┻━┻');
                     }
                     else if(cmd === '/timeout') {
                         if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
@@ -768,10 +812,12 @@
             } else { toggleVoiceRecord(); }
         }
 
-        function sendMsgToDB(msgType, msgContent) {
+        // --- NEW DB SENDER WITH RECEIVER ID FOR DMs ---
+        function sendMsgToDB(msgType, msgContent, receiverId = null) {
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             db.ref('messages/' + msgId).set({
                 msgId: msgId, sender: myProfile, type: msgType, text: msgContent, data: null,
+                receiverId: receiverId, // Used for DMs
                 isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         }
@@ -811,8 +857,11 @@
                 if(isOwner || isAdmin) bodyHtml += ` <button onclick="recoverMessage('${payload.msgId}')" style="background:#2ecc71; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:10px;">♻️ Recover</button>`;
                 if(isOwner) bodyHtml += ` <button onclick="hardDeleteMessage('${payload.msgId}')" style="background:#c0392b; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:5px;">🔥 Erase</button>`;
             } else {
-                if(payload.type === 'text') {
+                if(payload.type === 'text' || payload.type === 'dm') {
                     bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
+                    if(payload.type === 'dm') {
+                        bodyHtml = `<div style="font-size:10px; color:#8e44ad; font-weight:bold; margin-bottom:4px;">🕵️ Private Message</div>` + bodyHtml;
+                    }
                 } else if (payload.type === 'image') {
                     bodyHtml = `<div class="msg-image" onclick="openLightbox('${payload.data}')"><img src="${payload.data}"></div>`;
                 } else if (payload.type === 'voice') {
@@ -826,6 +875,7 @@
             let bubbleClass = `msg-bubble ${isMe ? 'me' : ''}`;
             if(isMe && isOwner) bubbleClass += " owner-bubble"; 
             if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
+            if(payload.type === 'dm') bubbleClass += " dm-bubble";
             
             const senderHTML = isMe ? '' : `<div class="msg-sender">${payload.sender.name} ${getRoleBadge(payload.sender)}</div>`;
 
@@ -840,6 +890,13 @@
         }
 
         function renderMessage(payload) {
+            // --- SECURITY: Hide DMs unless you sent it, received it, or are the Owner ---
+            if(payload.receiverId) {
+                if(payload.sender.id !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) {
+                    return; // Ignore this message
+                }
+            }
+
             const container = document.getElementById('messages');
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
             
