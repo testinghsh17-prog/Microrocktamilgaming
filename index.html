@@ -53,9 +53,12 @@
         .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
         .header-title { font-weight: bold; color: #2f3640; font-size: 16px; }
         .header-subtitle { font-size: 12px; color: #3498db; font-weight: 600; margin-top: 2px; }
+        
+        .status-pill { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
         #conn-status { font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; background: #f39c12; color: white; }
+        #online-counter { font-size: 10px; font-weight: bold; color: #7f8c8d; background: #ecf0f1; padding: 2px 8px; border-radius: 10px;}
 
-        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         .sys-msg { align-self: center; background: rgba(0,0,0,0.1); color: #555; padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center;}
 
         /* BUBBLES & ROLES */
@@ -84,11 +87,12 @@
         .msg-text a { color: #3498db; }
         audio { height: 40px; max-width: 200px; margin-top: 5px; outline: none; }
 
-        /* TYPING INDICATOR */
+        /* TYPING INDICATOR & SCROLL TO BOTTOM */
         .typing-box { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 2px 20px; min-height: 20px; background: #e5e5e5; }
+        #scroll-bottom-btn { position: absolute; bottom: 80px; right: 20px; background: #3498db; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2000;}
 
         /* INPUT AREA */
-        .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+        .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); z-index: 100;}
         .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
         .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
         .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
@@ -188,19 +192,24 @@
                         <div class="header-title">7-Marutham Group Chat</div>
                         <div class="header-subtitle" id="owner-badge">Made by Vishnuram and Prasanth</div>
                     </div>
-                    <div id="conn-status">🟠 Connecting to Firebase...</div>
+                    <div class="status-pill">
+                        <div id="conn-status">🟠 Connecting...</div>
+                        <div id="online-counter">👥 0 Online</div>
+                    </div>
                 </div>
             </div>
             
-            <div class="messages-container" id="messages">
+            <div class="messages-container" id="messages" onscroll="checkScroll()">
                 <div class="sys-msg">🔒 Firebase Central Database Active.</div>
             </div>
+            
+            <button id="scroll-bottom-btn" onclick="scrollToBottom()">⬇</button>
 
             <div class="typing-box" id="typing-indicator"></div>
 
             <div class="input-bar">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                <input type="text" id="chatInput" placeholder="Type a message... (Type /alert to announce)" oninput="handleTypingInput()">
+                <input type="text" id="chatInput" placeholder="Type a message..." oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
             </div>
         </div>
@@ -237,6 +246,22 @@
         };
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        function checkScroll() {
+            const container = document.getElementById('messages');
+            const btn = document.getElementById('scroll-bottom-btn');
+            // Show button if we scrolled up more than 150px from bottom
+            if(container.scrollHeight - container.scrollTop - container.clientHeight > 150) {
+                btn.style.display = 'flex';
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('messages');
+            container.scrollTop = container.scrollHeight;
+        }
 
         function updateHeaderBadge() {
             if(isOwner) {
@@ -334,17 +359,21 @@
         function adminDeleteUser() {
             let targetId = document.getElementById('adminEditId').value;
             if(confirm("🚨 Are you sure you want to permanently kick this user from the app?")) {
-                db.ref('users/' + targetId).remove(); // This triggers the Force-Kick logic on their phone
+                db.ref('users/' + targetId).remove(); // Triggers Force-Kick on their phone
                 document.getElementById('admin-edit-screen').style.display = 'none';
                 alert("User deleted and kicked successfully!");
             }
         }
 
-        // OWNER NUKE CHAT
+        // NEW: SECURE NUKE CHAT WITH PIN
         function nukeChat() {
-            if(confirm("☢️ WARNING: This will permanently delete ALL messages in the database. Are you sure?")) {
+            const pin = prompt("☢️ WARNING: This will permanently delete ALL messages in the database. Enter 4-digit PIN to confirm:");
+            if (pin === "2013") {
                 db.ref('messages').remove();
-                document.getElementById('messages').innerHTML = '<div class="sys-msg">🔒 Firebase Central Database Active.</div>';
+                document.getElementById('messages').innerHTML = '<div class="sys-msg">🔒 Database completely wiped by Owner.</div>';
+                alert("Chat successfully erased.");
+            } else if (pin !== null) {
+                alert("❌ Incorrect PIN. Aborting operation.");
             }
         }
 
@@ -357,20 +386,20 @@
             
             connectedRef.on('value', (snap) => {
                 if (snap.val() === true) {
-                    document.getElementById('conn-status').innerText = '🟢 Firebase Connected';
+                    document.getElementById('conn-status').innerText = '🟢 Connected';
                     document.getElementById('conn-status').style.background = '#2ecc71';
                     myStatusRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                     myStatusRef.set({ ...myProfile, online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                 } else {
-                    document.getElementById('conn-status').innerText = '🔴 Reconnecting...';
+                    document.getElementById('conn-status').innerText = '🔴 Reconnecting';
                     document.getElementById('conn-status').style.background = '#e74c3c';
                 }
             });
 
-            // THE FORCE-KICK SYSTEM (Fixes Delete Profile)
+            // FORCE-KICK SYSTEM
             db.ref('users/' + myProfile.id).on('value', (snap) => {
                 if(isAppReady && !snap.exists()) {
-                    myStatusRef.onDisconnect().cancel(); // Stop them from showing online
+                    myStatusRef.onDisconnect().cancel(); 
                     localStorage.clear();
                     alert("🚨 Your account has been permanently deleted or banned by the Owner.");
                     window.location.reload();
@@ -382,7 +411,7 @@
                 classmates = snapshot.val() || {};
                 let meData = classmates[myProfile.id];
                 isAdmin = meData && meData.role === 'admin';
-                myProfile.role = meData ? meData.role : 'user'; // keep local profile updated
+                myProfile.role = meData ? meData.role : 'user'; 
                 updateHeaderBadge();
                 renderUserList();
             });
@@ -421,12 +450,16 @@
                 return classmates[b].lastSeen - classmates[a].lastSeen;
             });
 
+            let onlineCount = 0;
+
             sortedIds.forEach(id => {
                 const u = classmates[id]; const isMe = id === myProfile.id;
                 const displayName = isMe ? `${u.name} (You)` : u.name;
                 const initial = u.name.charAt(0).toUpperCase();
-                const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
                 
+                if(u.online) onlineCount++;
+
+                const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
                 let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '🎓 Student');
                 const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
@@ -440,6 +473,9 @@
                     </div>
                 `;
             });
+
+            // Update live counter
+            document.getElementById('online-counter').innerText = `👥 ${onlineCount} Online`;
         }
 
         function getIST() { return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' }); }
@@ -448,7 +484,6 @@
         function handleTypingInput() {
             const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
             
-            // Send typing status to database
             db.ref('typing/' + myProfile.id).set(text.length > 0);
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
@@ -462,12 +497,18 @@
             if (text) {
                 const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                 
-                // SYSTEM ANNOUNCEMENT FEATURE
                 let msgType = 'text';
                 let msgContent = text;
-                if((isOwner || isAdmin) && text.toLowerCase().startsWith('/alert ')) {
-                    msgType = 'alert';
-                    msgContent = text.substring(7); // Remove "/alert "
+                
+                // NEW: STRICT ALERT COMMAND CHECK
+                if(text.toLowerCase().startsWith('/alert ')) {
+                    if (isOwner || isAdmin) {
+                        msgType = 'alert';
+                        msgContent = text.substring(7); // Remove "/alert "
+                    } else {
+                        alert("❌ Permission Denied: Only Owners and Admins can send /alert announcements.");
+                        return; // Completely blocks the message from sending
+                    }
                 }
 
                 db.ref('messages/' + msgId).set({
@@ -476,7 +517,7 @@
                 });
                 
                 document.getElementById('chatInput').value = ''; 
-                db.ref('typing/' + myProfile.id).set(false); // Stop typing status immediately
+                db.ref('typing/' + myProfile.id).set(false); 
                 handleTypingInput(); 
             } else { toggleVoiceRecord(); }
         }
@@ -495,7 +536,6 @@
             }
         }
 
-        // GENERATE BADGE FOR SENDER
         function getRoleBadge(senderData) {
             if(senderData.name.toLowerCase().includes('vishnuram')) return '<span class="role-tag owner">👑 Owner</span>';
             if(senderData.role === 'admin') return '<span class="role-tag admin">🛡️ Admin</span>';
@@ -517,7 +557,7 @@
                 if(isOwner || isAdmin) {
                     bodyHtml += ` <button onclick="recoverMessage('${payload.msgId}')" style="background:#2ecc71; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:10px;">♻️ Recover</button>`;
                 }
-                if(isOwner) { // Only OWNER gets the fire erase button
+                if(isOwner) { 
                     bodyHtml += ` <button onclick="hardDeleteMessage('${payload.msgId}')" style="background:#c0392b; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:5px;">🔥 Erase</button>`;
                 }
             } else {
@@ -537,11 +577,14 @@
             if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
             
             const roleBadgeHTML = getRoleBadge(payload.sender);
+            
+            // BUG FIX: Shows your own name and rank above your message!
+            const senderNameStr = isMe ? `${payload.sender.name} (You)` : payload.sender.name;
 
             return `
                 <div class="${bubbleClass}" id="${payload.msgId}" style="position:relative; ${(!isMe && (isOwner || isAdmin)) ? 'padding-right: 35px;' : ''}">
                     ${deleteBtnHtml}
-                    ${isMe ? `<div class="msg-sender">${roleBadgeHTML}</div>` : `<div class="msg-sender">${payload.sender.name} ${roleBadgeHTML}</div>`}
+                    <div class="msg-sender">${senderNameStr} ${roleBadgeHTML}</div>
                     <div class="msg-text">${bodyHtml}</div>
                     <div class="msg-time">${payload.time}</div>
                 </div>
@@ -550,9 +593,17 @@
 
         function renderMessage(payload) {
             const container = document.getElementById('messages');
+            
+            // Calculate if we are currently at the bottom BEFORE adding the new message
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            
             if (!document.getElementById(payload.msgId)) {
                 container.insertAdjacentHTML('beforeend', createMessageHTML(payload));
-                container.scrollTop = container.scrollHeight;
+                
+                // If we were at the bottom (or it's my own message), auto-scroll down
+                if (isAtBottom || payload.sender.id === myProfile.id) {
+                    container.scrollTop = container.scrollHeight;
+                }
             }
         }
 
