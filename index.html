@@ -13,10 +13,15 @@
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #e5e5e5; position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
         * { box-sizing: border-box; }
         
-        /* MODALS */
+        /* MODALS & AUTH TABS */
         .modal-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #2c3e50, #3498db); display: flex; align-items: center; justify-content: center; z-index: 3000; }
         .modal-box { background: white; padding: 35px; border-radius: 16px; width: 340px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto;}
-        .modal-box h2 { margin-top: 0; color: #2c3e50; text-align: center; margin-bottom: 25px; }
+        .modal-box h2 { margin-top: 0; color: #2c3e50; text-align: center; margin-bottom: 20px; }
+        
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 10px; border: none; background: #ecf0f1; color: #7f8c8d; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
+        .tab.active { background: #3498db; color: white; }
+
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: #7f8c8d; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
         .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dcdde1; font-size: 15px; outline: none; background: #f8f9fa; transition: 0.2s; }
@@ -73,7 +78,6 @@
         .role-tag.admin { background: #81ecec; color: #00b894; border: 1px solid #55efc4; }
         .role-tag.student { background: #dfe6e9; color: #636e72; border: 1px solid #b2bec3; }
 
-        /* SPECIAL ANNOUNCEMENT ALERT */
         .sys-alert-msg { align-self: center; background: #ff7675; color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; margin: 10px 0; text-align: center; box-shadow: 0 4px 15px rgba(214, 48, 49, 0.4); border: 2px solid #d63031; width: 90%; max-width: 400px;}
 
         .msg-text { font-size: 15px; color: #2f3640; line-height: 1.4; word-wrap: break-word; }
@@ -88,7 +92,6 @@
         .msg-text a { color: #3498db; }
         audio { height: 40px; max-width: 200px; margin-top: 5px; outline: none; }
 
-        /* TYPING INDICATOR & SCROLL TO BOTTOM */
         .typing-box { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 2px 20px; min-height: 20px; background: #e5e5e5; }
         #scroll-bottom-btn { position: absolute; bottom: 80px; right: 20px; background: #3498db; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2000;}
 
@@ -97,7 +100,6 @@
         .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
         .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: 0.3s;}
         
-        /* TIMEOUT / LOCKED STATE */
         .input-bar input:disabled { background: #dcdde1; cursor: not-allowed; }
         .input-bar.timeout-active input { background: #fadbd8; border: 1px solid #e74c3c; color: #c0392b;}
 
@@ -112,7 +114,6 @@
             .close-sidebar-btn { display: flex; }
         }
 
-        /* LIGHTBOX */
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
         #lightbox.active { display: flex; }
         #lightbox img { max-width: 90%; max-height: 75%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -135,10 +136,26 @@
     <div id="login-screen" class="modal-screen">
         <div class="modal-box">
             <h2>7-Marutham Hub</h2>
-            <div class="input-group"><label>Student Name</label><input type="text" id="nameInput" placeholder="Enter full name"></div>
-            <div class="input-group"><label>Gender</label><select id="genderInput"><option>Male</option><option>Female</option></select></div>
-            <div class="input-group"><label>Date of Birth</label><input type="text" id="dobInput" placeholder="e.g. 15/08/2005"></div>
-            <button class="primary" onclick="login()">Enter Group Chat</button>
+            
+            <div class="tab-container">
+                <button id="tab-login" class="tab active" onclick="switchAuthTab('login')">Login</button>
+                <button id="tab-signup" class="tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+
+            <div id="form-login">
+                <div class="input-group"><label>Username</label><input type="text" id="logName" placeholder="Enter your username"></div>
+                <div class="input-group"><label>Password</label><input type="password" id="logPwd" placeholder="Enter your password"></div>
+                <button class="primary" style="width:100%" onclick="doLogin()">Secure Login</button>
+            </div>
+
+            <div id="form-signup" style="display:none;">
+                <div class="input-group"><label>New Username</label><input type="text" id="regName" placeholder="Create a username"></div>
+                <div class="input-group"><label>Create Password</label><input type="password" id="regPwd" placeholder="Create a password"></div>
+                <div class="input-group"><label>Gender</label><select id="regGender"><option>Male</option><option>Female</option></select></div>
+                <div class="input-group"><label>Date of Birth</label><input type="text" id="regDob" placeholder="e.g. 15/08/2005"></div>
+                <button class="primary" style="width:100%; background:#2ecc71;" onclick="doSignUp()">Create Account</button>
+            </div>
+
             <div class="credits">Made by Vishnuram and Prasanth</div>
         </div>
     </div>
@@ -146,9 +163,9 @@
     <div id="edit-screen" class="modal-screen" style="display: none;">
         <div class="modal-box">
             <h2>Edit Profile</h2>
-            <div class="input-group"><label>Name</label><input type="text" id="editName"></div>
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
+            <p style="font-size:11px; color:#7f8c8d; text-align:center;">Usernames cannot be changed after creation.</p>
             <button class="primary" onclick="saveProfile()">Save Changes</button>
             <button class="secondary" style="border-color: #c0392b; color: #c0392b;" onclick="deleteMyAccount()">🚨 Delete My Account</button>
             <button class="secondary" style="border:none; color:#7f8c8d;" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
@@ -160,7 +177,7 @@
             <h2 style="color:#e74c3c; margin-bottom: 5px;">👑 Admin Panel</h2>
             <p style="font-size:12px; color:#7f8c8d; text-align:center; margin-top:0px; margin-bottom: 20px;">Editing Student Profile</p>
             <input type="hidden" id="adminEditId">
-            <div class="input-group"><label>Name</label><input type="text" id="adminEditName"></div>
+            <div class="input-group"><label>Username</label><input type="text" id="adminEditName" disabled style="background:#ecf0f1; cursor:not-allowed;"></div>
             <div class="input-group"><label>Gender</label><select id="adminEditGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="adminEditDob"></div>
             <button class="primary" style="background:#e74c3c;" onclick="saveAdminEdit()">Force Save Changes</button>
@@ -233,7 +250,6 @@
             </div>
             
             <button id="scroll-bottom-btn" onclick="scrollToBottom()">⬇</button>
-
             <div class="typing-box" id="typing-indicator"></div>
 
             <div class="input-bar" id="input-bar-container">
@@ -271,10 +287,96 @@
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
+                // Security Check: If they somehow got in without a password saved, kick them out.
+                if(!myProfile.password) {
+                    localStorage.clear();
+                    return;
+                }
                 isOwner = myProfile.name.toLowerCase().includes('vishnuram');
                 startApp(); 
             }
         };
+
+        // --- AUTHENTICATION SYSTEM ---
+        function switchAuthTab(tab) {
+            document.getElementById('tab-login').classList.remove('active');
+            document.getElementById('tab-signup').classList.remove('active');
+            document.getElementById('form-login').style.display = 'none';
+            document.getElementById('form-signup').style.display = 'none';
+
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('form-' + tab).style.display = 'block';
+        }
+
+        function formatKey(name) {
+            // Removes spaces and special chars so database can search it easily
+            return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        function doSignUp() {
+            const name = document.getElementById('regName').value.trim();
+            const pwd = document.getElementById('regPwd').value;
+            const gender = document.getElementById('regGender').value;
+            const dob = document.getElementById('regDob').value.trim();
+
+            if(!name || !pwd || !dob) return alert("Please fill all fields!");
+            
+            // SECURITY: Master Password Check for Owner Name
+            if(name.toLowerCase().includes('vishnuram')) {
+                if(pwd !== "vishnuram2013@") {
+                    return alert("❌ ACCESS DENIED: You cannot use the Owner's name without the master password.");
+                }
+            }
+
+            const safeKey = formatKey(name);
+            
+            // DEEP SEARCH: Check if username exists
+            db.ref('accounts/' + safeKey).once('value').then(snap => {
+                if(snap.exists()) {
+                    alert("❌ ERROR: This username is already taken! Please choose a different name.");
+                } else {
+                    // Create New Account
+                    let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
+                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0 };
+                    
+                    // Save to permanent vault
+                    db.ref('accounts/' + safeKey).set(newProfile);
+                    
+                    myProfile = newProfile;
+                    localStorage.setItem('school_user', JSON.stringify(myProfile));
+                    isOwner = role === 'owner';
+                    startApp();
+                }
+            });
+        }
+
+        function doLogin() {
+            const name = document.getElementById('logName').value.trim();
+            const pwd = document.getElementById('logPwd').value;
+            
+            if(!name || !pwd) return alert("Please enter username and password.");
+
+            const safeKey = formatKey(name);
+            
+            db.ref('accounts/' + safeKey).once('value').then(snap => {
+                if(!snap.exists()) {
+                    alert("❌ Account not found. Please go to Sign Up and create one.");
+                } else {
+                    let acc = snap.val();
+                    
+                    if(acc.password !== pwd) {
+                        return alert("❌ Incorrect Password!");
+                    }
+                    
+                    // Success!
+                    myProfile = acc;
+                    localStorage.setItem('school_user', JSON.stringify(myProfile));
+                    isOwner = myProfile.role === 'owner';
+                    startApp();
+                }
+            });
+        }
+        // ---------------------------------
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
@@ -309,59 +411,26 @@
             }
         }
 
-        // --- NEW PASSWORD VAULT ON LOGIN ---
-        function login() {
-            const name = document.getElementById('nameInput').value.trim();
-            const gender = document.getElementById('genderInput').value;
-            const dob = document.getElementById('dobInput').value.trim();
-            if (!name || !dob) return alert("Please fill all fields.");
-
-            if (name.toLowerCase().includes('vishnuram')) {
-                const pwd = prompt("👑 Owner Name Detected. Enter Vault Password:");
-                if (pwd !== "vishnuram2013@") {
-                    alert("❌ Incorrect Password. Access Denied.");
-                    return; // Blocks login!
-                }
-            }
-
-            myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob, role: 'user', timeoutUntil: 0 };
-            localStorage.setItem('school_user', JSON.stringify(myProfile));
-            isOwner = myProfile.name.toLowerCase().includes('vishnuram');
-            startApp();
-        }
-
         function openEditProfile() {
-            document.getElementById('editName').value = myProfile.name;
             document.getElementById('editGender').value = myProfile.gender;
             document.getElementById('editDob').value = myProfile.dob;
             document.getElementById('edit-screen').style.display = 'flex';
         }
 
         function saveProfile() {
-            let newName = document.getElementById('editName').value.trim();
-            
-            // Check password again if trying to change name TO Vishnuram
-            if (!isOwner && newName.toLowerCase().includes('vishnuram')) {
-                const pwd = prompt("👑 Changing to Owner Name. Enter Vault Password:");
-                if (pwd !== "vishnuram2013@") {
-                    alert("❌ Incorrect Password. Access Denied.");
-                    return;
-                }
-            }
-
-            myProfile.name = newName; 
             myProfile.gender = document.getElementById('editGender').value; 
             myProfile.dob = document.getElementById('editDob').value.trim();
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             
-            isOwner = myProfile.name.toLowerCase().includes('vishnuram');
-            db.ref('users/' + myProfile.id).update({name: myProfile.name, gender: myProfile.gender, dob: myProfile.dob});
+            db.ref('accounts/' + myProfile.id).update({ gender: myProfile.gender, dob: myProfile.dob});
+            db.ref('users/' + myProfile.id).update({ gender: myProfile.gender, dob: myProfile.dob});
             document.getElementById('edit-screen').style.display = 'none';
         }
 
         function deleteMyAccount() {
             if(confirm("🚨 WARNING: Are you sure you want to permanently delete your account?")) {
-                db.ref('users/' + myProfile.id).remove();
+                db.ref('accounts/' + myProfile.id).remove(); // Wipe from Vault
+                db.ref('users/' + myProfile.id).remove(); // Wipe from Online list
                 localStorage.clear();
                 location.reload();
             }
@@ -397,15 +466,17 @@
 
         function saveAdminEdit() {
             let targetId = document.getElementById('adminEditId').value;
-            db.ref('users/' + targetId).update({ 
-                name: document.getElementById('adminEditName').value.trim(), 
+            let updates = { 
                 gender: document.getElementById('adminEditGender').value, 
                 dob: document.getElementById('adminEditDob').value.trim() 
-            });
+            };
+            db.ref('accounts/' + targetId).update(updates);
+            db.ref('users/' + targetId).update(updates);
             document.getElementById('admin-edit-screen').style.display = 'none';
         }
 
         function setAdminStatus(targetId, newRole) {
+            db.ref('accounts/' + targetId).update({ role: newRole });
             db.ref('users/' + targetId).update({ role: newRole });
             alert(newRole === 'admin' ? "User is now an Admin!" : "Admin powers removed.");
             document.getElementById('admin-edit-screen').style.display = 'none';
@@ -414,6 +485,7 @@
         function adminDeleteUser() {
             let targetId = document.getElementById('adminEditId').value;
             if(confirm("🚨 Are you sure you want to permanently kick this user from the app?")) {
+                db.ref('accounts/' + targetId).remove(); 
                 db.ref('users/' + targetId).remove(); 
                 document.getElementById('admin-edit-screen').style.display = 'none';
                 alert("User deleted and kicked successfully!");
@@ -439,7 +511,6 @@
             }
         }
 
-        // Helper to find user by name for commands
         function findUserByName(name) {
             for(let id in classmates) {
                 if(classmates[id].name.toLowerCase() === name.toLowerCase()) return id;
@@ -453,7 +524,6 @@
             const attachBtn = document.getElementById('btn-attach');
             const now = Date.now();
 
-            // 1. Check Timeout first
             if (myTimeoutTime > now) {
                 let remainingMins = Math.ceil((myTimeoutTime - now) / 60000);
                 inputBar.placeholder = `⏱️ You are timed out for ${remainingMins} min(s)`;
@@ -461,7 +531,6 @@
                 attachBtn.style.display = 'none';
                 container.classList.add('timeout-active');
                 
-                // Keep checking every 10 seconds to update the minutes
                 if(!timeoutInterval) {
                     timeoutInterval = setInterval(checkInputStatus, 10000);
                 }
@@ -471,7 +540,6 @@
                 container.classList.remove('timeout-active');
             }
 
-            // 2. Check Chat Lock
             if (window.chatLocked && !isOwner && !isAdmin) {
                 inputBar.placeholder = "🔒 Chat is currently locked by the Owner.";
                 inputBar.disabled = true;
@@ -479,7 +547,6 @@
                 return;
             }
 
-            // 3. Normal State
             inputBar.placeholder = "Type a message or /command...";
             inputBar.disabled = false;
             attachBtn.style.display = 'flex';
@@ -496,7 +563,9 @@
                 if (snap.val() === true) {
                     document.getElementById('conn-status').innerText = '🟢 Connected';
                     document.getElementById('conn-status').style.background = '#2ecc71';
+                    
                     myStatusRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+                    // Sync our permanent account data to the live users node
                     myStatusRef.set({ ...myProfile, online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                 } else {
                     document.getElementById('conn-status').innerText = '🔴 Reconnecting';
@@ -519,8 +588,8 @@
                 checkInputStatus();
             });
 
-            // Listen to My Own Data (For Kicks and Timeouts)
-            db.ref('users/' + myProfile.id).on('value', (snap) => {
+            // Listen to My Own Permanent Account Data for Kicks/Timeouts
+            db.ref('accounts/' + myProfile.id).on('value', (snap) => {
                 if(isAppReady && !snap.exists()) {
                     myStatusRef.onDisconnect().cancel(); 
                     localStorage.clear();
@@ -528,17 +597,12 @@
                     window.location.reload();
                 } else if (snap.exists()) {
                     let data = snap.val();
-                    if(data.timeoutUntil) {
-                        myTimeoutTime = data.timeoutUntil;
-                    } else {
-                        myTimeoutTime = 0;
-                    }
+                    myTimeoutTime = data.timeoutUntil || 0;
                     checkInputStatus();
                 }
                 isAppReady = true;
             });
 
-            // Listen to ALL users for the side list
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {};
                 let meData = classmates[myProfile.id];
@@ -576,8 +640,6 @@
             const container = document.getElementById('users-container'); container.innerHTML = '';
             
             let onlineCount = 0;
-            
-            // First loop to accurately count online users based on current Firebase snapshot
             for(let id in classmates) {
                 if(classmates[id].online === true) onlineCount++;
             }
@@ -598,9 +660,7 @@
                 const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
                 let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '🎓 Student');
                 
-                // Add tiny timeout indicator if they are timed out
                 let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px;">⏱️ Muted</span>` : '';
-
                 const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
                 container.innerHTML += `
@@ -630,20 +690,11 @@
         }
 
         function handleActionClick() {
-            if (myTimeoutTime > Date.now()) {
-                alert("⏱️ You are in timeout. You cannot send messages right now.");
-                return;
-            }
-
-            if(window.chatLocked && !isOwner && !isAdmin) {
-                alert("🔒 The chat is currently locked. Only admins can send messages.");
-                return;
-            }
+            if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout. You cannot send messages right now.");
+            if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 The chat is currently locked.");
 
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
-                
-                // --- THE COMMAND ENGINE ---
                 if(text.startsWith('/')) {
                     let parts = text.split(' ');
                     let cmd = parts[0].toLowerCase();
@@ -663,30 +714,30 @@
                         db.ref('settings/chatLocked').set(false);
                     }
                     else if(cmd === '/clear') {
-                        document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared. (Messages still exist in database)</div>';
+                        document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>';
                     }
                     else if(cmd === '/timeout') {
                         if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
                         if(!arg) return alert("⚠️ Usage: /timeout [name] [minutes]");
                         let argParts = arg.split(' ');
                         let targetName = argParts[0];
-                        let mins = parseInt(argParts[1]) || 5; // Default 5 minutes
+                        let mins = parseInt(argParts[1]) || 5; 
                         
                         let foundId = findUserByName(targetName);
                         if(foundId) {
-                            let banTime = firebase.database.ServerValue.TIMESTAMP;
+                            db.ref('accounts/' + foundId).update({ timeoutUntil: Date.now() + (mins * 60000) });
                             db.ref('users/' + foundId).update({ timeoutUntil: Date.now() + (mins * 60000) });
                             alert(`⏱️ ${targetName} is muted for ${mins} minutes.`);
-                        } else { alert(`❌ Could not find a student named "${targetName}".`); }
+                        } else { alert(`❌ Could not find "${targetName}".`); }
                     }
                     else if(cmd === '/untimeout') {
                         if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
-                        let targetName = arg;
-                        let foundId = findUserByName(targetName);
+                        let foundId = findUserByName(arg);
                         if(foundId) {
+                            db.ref('accounts/' + foundId).update({ timeoutUntil: 0 });
                             db.ref('users/' + foundId).update({ timeoutUntil: 0 });
-                            alert(`✅ Untimed-out ${targetName}.`);
-                        } else { alert(`❌ Could not find "${targetName}".`); }
+                            alert(`✅ Untimed-out ${arg}.`);
+                        } else { alert(`❌ Could not find "${arg}".`); }
                     }
                     else if(cmd === '/nuke') {
                         if(!isOwner) return alert("❌ Owner only.");
@@ -697,15 +748,12 @@
                         if(!arg) return alert("⚠️ Type the exact name of the student.");
                         let foundId = findUserByName(arg);
                         if(foundId) {
+                            db.ref('accounts/' + foundId).remove();
                             db.ref('users/' + foundId).remove();
                             alert(`✅ Kicked ${arg} successfully.`);
-                        } else {
-                            alert(`❌ Could not find a student named "${arg}".`);
-                        }
+                        } else { alert(`❌ Could not find "${arg}".`); }
                     }
-                    else {
-                        alert("❌ Unknown command. Click 'Command Guide' in the menu.");
-                    }
+                    else { alert("❌ Unknown command."); }
                     
                     document.getElementById('chatInput').value = ''; 
                     db.ref('typing/' + myProfile.id).set(false); 
@@ -713,7 +761,6 @@
                     return; 
                 }
                 
-                // Normal Text Message
                 sendMsgToDB('text', text);
                 document.getElementById('chatInput').value = ''; 
                 db.ref('typing/' + myProfile.id).set(false); 
@@ -761,12 +808,8 @@
             
             if(payload.isDeleted) {
                 bodyHtml = '<span class="deleted-text">🚫 This message was deleted</span>';
-                if(isOwner || isAdmin) {
-                    bodyHtml += ` <button onclick="recoverMessage('${payload.msgId}')" style="background:#2ecc71; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:10px;">♻️ Recover</button>`;
-                }
-                if(isOwner) { 
-                    bodyHtml += ` <button onclick="hardDeleteMessage('${payload.msgId}')" style="background:#c0392b; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:5px;">🔥 Erase</button>`;
-                }
+                if(isOwner || isAdmin) bodyHtml += ` <button onclick="recoverMessage('${payload.msgId}')" style="background:#2ecc71; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:10px;">♻️ Recover</button>`;
+                if(isOwner) bodyHtml += ` <button onclick="hardDeleteMessage('${payload.msgId}')" style="background:#c0392b; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:5px;">🔥 Erase</button>`;
             } else {
                 if(payload.type === 'text') {
                     bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
@@ -816,8 +859,8 @@
         }
 
         function handleImageUpload(e) {
+            if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
             if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
-            if(myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
             
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
@@ -842,8 +885,8 @@
 
         let mediaRecorder; let audioChunks = []; let isRecording = false;
         function toggleVoiceRecord() {
+            if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
             if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
-            if(myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
 
             const btn = document.getElementById('action-btn');
             if(!isRecording) {
