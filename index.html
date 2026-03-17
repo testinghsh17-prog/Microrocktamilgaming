@@ -142,6 +142,12 @@
             <div class="input-group"><label>Gender</label><select id="adminEditGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="adminEditDob"></div>
             <button class="primary" style="background:#e74c3c;" onclick="saveAdminEdit()">Force Save Changes</button>
+            
+            <div id="owner-only-controls" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; display: none;">
+                <button id="btn-toggle-admin" class="primary" style="background:#f39c12; width:100%; margin-bottom:10px; margin-top:0;">Make Admin</button>
+                <button class="secondary" style="border-color:#c0392b; color:#c0392b; width:100%; margin-top:0;" onclick="adminDeleteUser()">🚨 Delete User Account</button>
+            </div>
+
             <button class="secondary" style="border:none; color:#7f8c8d;" onclick="document.getElementById('admin-edit-screen').style.display='none'">Cancel</button>
         </div>
     </div>
@@ -201,24 +207,24 @@
         let myProfile = null;
         let classmates = {};
         let isOwner = false;
+        let isAdmin = false;
 
         window.onload = () => {
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
-                checkOwnerStatus();
+                isOwner = myProfile.name.toLowerCase().includes('vishnuram');
                 startApp(); 
             }
         };
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // CHECK IF LOGGED IN USER IS VISHNURAM
-        function checkOwnerStatus() {
-            const n = myProfile.name.toLowerCase();
-            isOwner = n.includes('vishnuram');
+        function updateHeaderBadge() {
             if(isOwner) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#e74c3c; font-weight:bold;'>👑 VISHNURAM (OWNER) ACTIVE</span>";
+            } else if (isAdmin) {
+                document.getElementById('owner-badge').innerHTML = "<span style='color:#f39c12; font-weight:bold;'>🛡️ ADMIN ACTIVE</span>";
             } else {
                 document.getElementById('owner-badge').innerText = "Made by Vishnuram and Prasanth";
             }
@@ -230,9 +236,10 @@
             const dob = document.getElementById('dobInput').value.trim();
             if (!name || !dob) return alert("Please fill all fields.");
 
-            myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob };
+            // Assign default 'user' role on creation
+            myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob, role: 'user' };
             localStorage.setItem('school_user', JSON.stringify(myProfile));
-            checkOwnerStatus();
+            isOwner = myProfile.name.toLowerCase().includes('vishnuram');
             startApp();
         }
 
@@ -249,31 +256,46 @@
             myProfile.dob = document.getElementById('editDob').value.trim();
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             
-            checkOwnerStatus();
+            isOwner = myProfile.name.toLowerCase().includes('vishnuram');
             db.ref('users/' + myProfile.id).update(myProfile);
             document.getElementById('edit-screen').style.display = 'none';
         }
 
-        // NEW: DELETE MY ACCOUNT FEATURE
         function deleteMyAccount() {
-            if(confirm("🚨 WARNING: Are you sure you want to permanently delete your account? You will be removed from the class list.")) {
-                if(window.db) {
-                    db.ref('users/' + myProfile.id).remove();
-                }
+            if(confirm("🚨 WARNING: Are you sure you want to permanently delete your account?")) {
+                db.ref('users/' + myProfile.id).remove();
                 localStorage.removeItem('school_user');
-                location.reload(); // Reload page to take them back to login screen
+                location.reload();
             }
         }
 
-        // NEW: OWNER EDITING SOMEONE ELSE'S PROFILE
+        // OWNER/ADMIN EDITING SOMEONE ELSE'S PROFILE
         function openAdminEdit(userId) {
-            if(!isOwner || userId === myProfile.id) return; // Only owner can click others
+            if(!isOwner && !isAdmin) return; 
+            if(userId === myProfile.id) return;
             let u = classmates[userId];
             if(!u) return;
+
             document.getElementById('adminEditId').value = userId;
             document.getElementById('adminEditName').value = u.name;
             document.getElementById('adminEditGender').value = u.gender;
             document.getElementById('adminEditDob').value = u.dob;
+            
+            // Only Owner gets to see the Promote to Admin and Delete Account buttons
+            if(isOwner) {
+                document.getElementById('owner-only-controls').style.display = 'block';
+                let btn = document.getElementById('btn-toggle-admin');
+                if(u.role === 'admin') {
+                    btn.innerText = "Remove Admin Power";
+                    btn.onclick = () => setAdminStatus(userId, 'user');
+                } else {
+                    btn.innerText = "Make Admin";
+                    btn.onclick = () => setAdminStatus(userId, 'admin');
+                }
+            } else {
+                document.getElementById('owner-only-controls').style.display = 'none';
+            }
+
             document.getElementById('admin-edit-screen').style.display = 'flex';
         }
 
@@ -285,6 +307,20 @@
             
             db.ref('users/' + targetId).update({ name: name, gender: gender, dob: dob });
             document.getElementById('admin-edit-screen').style.display = 'none';
+        }
+
+        function setAdminStatus(targetId, newRole) {
+            db.ref('users/' + targetId).update({ role: newRole });
+            alert(newRole === 'admin' ? "User is now an Admin!" : "Admin powers removed.");
+            document.getElementById('admin-edit-screen').style.display = 'none';
+        }
+
+        function adminDeleteUser() {
+            let targetId = document.getElementById('adminEditId').value;
+            if(confirm("🚨 Are you sure you want to permanently delete this user from the app?")) {
+                db.ref('users/' + targetId).remove();
+                document.getElementById('admin-edit-screen').style.display = 'none';
+            }
         }
 
         function startApp() {
@@ -307,18 +343,22 @@
                 }
             });
 
+            // Listen for user changes (Detects if you get promoted to Admin live)
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {};
+                let meData = classmates[myProfile.id];
+                isAdmin = meData && meData.role === 'admin';
+                updateHeaderBadge();
                 renderUserList();
             });
 
-            db.ref('messages').on('child_added', (snapshot) => {
-                renderMessage(snapshot.val());
-            });
-
-            // UPDATED: Listen for changes (Deletes and Recovers)
-            db.ref('messages').on('child_changed', (snapshot) => {
-                updateMessageOnScreen(snapshot.val());
+            db.ref('messages').on('child_added', (snapshot) => { renderMessage(snapshot.val()); });
+            db.ref('messages').on('child_changed', (snapshot) => { updateMessageOnScreen(snapshot.val()); });
+            
+            // NEW: Listen for permanent Hard Deletes
+            db.ref('messages').on('child_removed', (snapshot) => {
+                const el = document.getElementById(snapshot.key);
+                if (el) el.remove();
             });
         }
 
@@ -336,18 +376,19 @@
                 const displayName = isMe ? `${u.name} (You)` : u.name;
                 const initial = u.name.charAt(0).toUpperCase();
                 const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
-                const timeString = isMe ? "Now" : new Date(u.lastSeen).toLocaleTimeString('en-IN', {hour:'numeric', minute:'numeric', hour12:true, timeZone:'Asia/Kolkata'});
-
-                // If user is owner, clicking a name opens the Admin Editor
-                const clickAction = (isOwner && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
+                
+                // Show role badges in the list
+                let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : 'Student');
+                
+                // If user is owner/admin, clicking a name opens the Editor
+                const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
                 container.innerHTML += `
                     <div class="user-item ${u.online ? 'online-border' : ''}" ${clickAction}>
                         <div class="avatar">${initial}</div>
                         <div class="user-details">
                             <div class="user-name-row"><span class="name-text">${displayName}</span></div>
-                            <div class="status-indicator">${statusDot} • ${u.gender}</div>
-                            ${!u.online ? `<div class="last-seen">Last seen ${timeString}</div>` : ''}
+                            <div class="status-indicator">${statusDot} • ${u.gender} • ${roleBadge}</div>
                         </div>
                     </div>
                 `;
@@ -366,48 +407,42 @@
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
                 const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                
                 db.ref('messages/' + msgId).set({
-                    msgId: msgId,
-                    sender: myProfile,
-                    type: 'text',
-                    text: text,
-                    data: null,
-                    isDeleted: false, // NEW FLAG TO HIDE/SHOW
-                    time: getIST(),
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                    msgId: msgId, sender: myProfile, type: 'text', text: text, data: null,
+                    isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
-
                 document.getElementById('chatInput').value = ''; handleTypingInput(); 
             } else { toggleVoiceRecord(); }
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
 
-        // NEW: OWNER CAN DELETE ANYONE'S MESSAGE
         function deleteMessage(msgId) {
-            if(confirm("Delete this message?")) {
-                db.ref('messages/' + msgId).update({ isDeleted: true });
-            }
+            if(confirm("Hide this message?")) db.ref('messages/' + msgId).update({ isDeleted: true });
         }
 
-        // NEW: OWNER CAN RECOVER HIDDEN MESSAGES
         function recoverMessage(msgId) {
-            if(confirm("Recover this message so everyone can see it again?")) {
-                db.ref('messages/' + msgId).update({ isDeleted: false });
+            if(confirm("Recover this message?")) db.ref('messages/' + msgId).update({ isDeleted: false });
+        }
+
+        // NEW: HARD DELETE (ERASE)
+        function hardDeleteMessage(msgId) {
+            if(confirm("🔥 ERASING MESSAGE: This will permanently wipe it from the database for everyone. Continue?")) {
+                db.ref('messages/' + msgId).remove();
             }
         }
 
-        // HELPER TO CREATE HTML FOR A MESSAGE
         function createMessageHTML(payload) {
             const isMe = payload.sender.id === myProfile.id;
             let bodyHtml = '';
             
             if(payload.isDeleted) {
                 bodyHtml = '<span class="deleted-text">🚫 This message was deleted</span>';
-                if(isOwner) {
-                    // Owner gets the magic Recover button
+                if(isOwner || isAdmin) {
                     bodyHtml += ` <button onclick="recoverMessage('${payload.msgId}')" style="background:#2ecc71; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:10px;">♻️ Recover</button>`;
+                }
+                if(isOwner) {
+                    bodyHtml += ` <button onclick="hardDeleteMessage('${payload.msgId}')" style="background:#c0392b; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:5px;">🔥 Erase</button>`;
                 }
             } else {
                 if(payload.type === 'text') {
@@ -419,16 +454,14 @@
                 }
             }
 
-            // Owner sees trash can on ALL messages. Normal user sees it only on their own.
-            const canDelete = isMe || isOwner;
+            const canDelete = isMe || isOwner || isAdmin;
             const deleteBtnHtml = (canDelete && !payload.isDeleted) ? `<button class="delete-btn" onclick="deleteMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
-
-            // Give owner bubble extra padding on the right for the delete button if needed
+            
             let bubbleClass = `msg-bubble ${isMe ? 'me' : ''}`;
-            if(!isMe && isOwner) bubbleClass += " owner-view"; 
+            if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
 
             return `
-                <div class="${bubbleClass}" id="${payload.msgId}" style="position:relative; ${(!isMe && isOwner) ? 'padding-right: 35px;' : ''}">
+                <div class="${bubbleClass}" id="${payload.msgId}" style="position:relative; ${(!isMe && (isOwner || isAdmin)) ? 'padding-right: 35px;' : ''}">
                     ${deleteBtnHtml}
                     ${isMe ? '' : `<div class="msg-sender">${payload.sender.name}</div>`}
                     <div class="msg-text">${bodyHtml}</div>
@@ -445,12 +478,9 @@
             }
         }
 
-        // LIVE UPDATE SCREEN WHEN DELETED OR RECOVERED
         function updateMessageOnScreen(data) {
             let oldBubble = document.getElementById(data.msgId);
-            if(oldBubble) {
-                oldBubble.outerHTML = createMessageHTML(data);
-            }
+            if(oldBubble) oldBubble.outerHTML = createMessageHTML(data);
         }
 
         function handleImageUpload(e) {
@@ -465,16 +495,9 @@
                     canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h);
                     
                     const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                    
                     db.ref('messages/' + msgId).set({
-                        msgId: msgId,
-                        sender: myProfile,
-                        type: 'image',
-                        text: '',
-                        data: canvas.toDataURL('image/jpeg', 0.8),
-                        isDeleted: false,
-                        time: getIST(),
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                        msgId: msgId, sender: myProfile, type: 'image', text: '', data: canvas.toDataURL('image/jpeg', 0.8),
+                        isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                 };
                 img.src = evt.target.result;
@@ -485,7 +508,6 @@
         let mediaRecorder; let audioChunks = []; let isRecording = false;
         function toggleVoiceRecord() {
             const btn = document.getElementById('action-btn');
-            
             if(!isRecording) {
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                     mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true; 
@@ -496,14 +518,8 @@
                         reader.onload = (e) => {
                             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                             db.ref('messages/' + msgId).set({
-                                msgId: msgId,
-                                sender: myProfile,
-                                type: 'voice',
-                                text: '',
-                                data: e.target.result,
-                                isDeleted: false,
-                                time: getIST(),
-                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                                msgId: msgId, sender: myProfile, type: 'voice', text: '', data: e.target.result,
+                                isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
                             });
                         };
                         reader.readAsDataURL(new Blob(audioChunks, { type: "audio/ogg" }));
