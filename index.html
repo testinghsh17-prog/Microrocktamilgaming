@@ -11,7 +11,7 @@
     <style>
         /* CORE SETUP & CSS VARIABLES */
         :root {
-            --bg-overlay: rgba(229, 229, 229, 0.6);
+            --bg-overlay: rgba(229, 229, 229, 0.65);
             --bg-panel: rgba(255, 255, 255, 0.95);
             --bg-sidebar: rgba(248, 249, 250, 0.95);
             --text-main: #2f3640;
@@ -27,7 +27,7 @@
         }
 
         .dark-theme {
-            --bg-overlay: rgba(30, 39, 46, 0.7);
+            --bg-overlay: rgba(15, 20, 25, 0.75);
             --bg-panel: rgba(47, 54, 64, 0.95);
             --bg-sidebar: rgba(53, 59, 72, 0.95);
             --text-main: #f5f6fa;
@@ -45,11 +45,11 @@
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: transparent; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
         * { box-sizing: border-box; }
         
-        /* 🎥 YOUTUBE VIDEO BACKGROUND 🎥 */
+        /* 🎥 HIGH QUALITY YOUTUBE BACKGROUND 🎥 */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--bg-overlay); z-index: -5; transition: background 0.3s;
-            pointer-events: none; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+            pointer-events: none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
         }
         #video-background {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -57,7 +57,7 @@
             width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.77vh;
         }
 
-        /* MODALS & AUTH TABS (GLASSMORPHISM) */
+        /* MODALS & AUTH TABS */
         .modal-screen { position: fixed; inset: 0; background: rgba(44, 62, 80, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 3000; }
         .modal-box { background: var(--bg-panel); color: var(--text-main); padding: 35px; border-radius: 16px; width: 340px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto;}
         .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; }
@@ -84,7 +84,6 @@
         .edit-btn { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         .close-sidebar-btn { display: none; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; }
         
-        /* YOUTUBE PROMO BLOCK */
         .yt-promo { padding: 15px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); text-align: center; }
         .yt-promo p { margin: 0 0 8px 0; font-size: 11px; font-weight: 800; color: var(--text-sub); letter-spacing: 1px; }
         .yt-btn { display: block; width: 100%; background: #ff0000; color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2); }
@@ -191,7 +190,7 @@
 <body>
 
     <div class="bg-overlay"></div>
-    <iframe id="video-background" src="https://www.youtube.com/embed/lkqyHdmUpBY?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=lkqyHdmUpBY&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <iframe id="video-background" src="https://www.youtube.com/embed/Y_yBhw1v3b8?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=Y_yBhw1v3b8&playsinline=1&vq=hd1080" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
     <div id="lightbox">
         <img id="lightbox-img" src="">
@@ -369,14 +368,27 @@
         let myTimeoutTime = 0;
         let timeoutInterval = null;
 
-        // --- BACKGROUND SWITCHER SCRIPT ---
-        const bgVideos = ['lkqyHdmUpBY', 'pegZ1w5W9N4'];
+        // 🌟 THE 10 HIGH-QUALITY BACKGROUND VIDEO IDs 🌟
+        const bgVideos = [
+            'Y_yBhw1v3b8', // 1. Retro Synthwave Sun
+            'aw_w_OebmP0', // 2. Cyberpunk Street
+            '3nQNiWdeH2Q', // 3. Lofi Room
+            '_4kLioMoYQk', // 4. Abstract Fluid
+            'gQ2p-0o4r08', // 5. Galaxy Stars
+            '7N1J168yMvI', // 6. Matrix Code
+            'S4aDnt2k-E0', // 7. Clouds
+            '8qQxR1wV_z8', // 8. Neon Grid
+            'Fx0i2TXY-V4', // 9. Floating Particles
+            '1A3ZpGfL05o'  // 10. Sunset Outrun
+        ];
+        
         let currentBgIndex = 0;
 
         function switchBackground() {
             currentBgIndex = (currentBgIndex + 1) % bgVideos.length;
             const vidId = bgVideos[currentBgIndex];
-            document.getElementById('video-background').src = `https://www.youtube.com/embed/${vidId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${vidId}&playsinline=1`;
+            // Added vq=hd1080 to FORCE High Quality!
+            document.getElementById('video-background').src = `https://www.youtube.com/embed/${vidId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${vidId}&playsinline=1&vq=hd1080`;
         }
 
         // INITIALIZE DARK MODE ON LOAD
