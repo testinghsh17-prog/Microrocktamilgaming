@@ -96,7 +96,11 @@
         .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); z-index: 100;}
         .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
         .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: 0.3s;}
+        
+        /* TIMEOUT / LOCKED STATE */
         .input-bar input:disabled { background: #dcdde1; cursor: not-allowed; }
+        .input-bar.timeout-active input { background: #fadbd8; border: 1px solid #e74c3c; color: #c0392b;}
+
         .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
         .send-btn.recording { background: #e74c3c; animation: pulse 1s infinite alternate; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
@@ -174,11 +178,13 @@
         <div class="modal-box">
             <h2 style="color:#2c3e50; margin-bottom: 10px;">⌨️ Command Guide</h2>
             <div style="font-size:13px; line-height:1.6; color:#2f3640; margin-bottom: 15px;">
-                <p><b>/alert [message]</b><br><span style="color:#7f8c8d;">(Owner & Admin) Send a red global announcement.</span></p>
-                <p><b>/lock</b><br><span style="color:#7f8c8d;">(Owner Only) Lock chat so students cannot type.</span></p>
-                <p><b>/unlock</b><br><span style="color:#7f8c8d;">(Owner Only) Unlock chat.</span></p>
-                <p><b>/kick [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly ban a student by their exact name.</span></p>
-                <p><b>/nuke</b><br><span style="color:#7f8c8d;">(Owner Only) Clear entire chat database (Requires 2013 PIN).</span></p>
+                <p><b>/alert [msg]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Red global announcement.</span></p>
+                <p><b>/timeout [name] [minutes]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Mutes a student. Ex: /timeout Alex 5</span></p>
+                <p><b>/untimeout [name]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Unmutes a student.</span></p>
+                <p><b>/lock & /unlock</b><br><span style="color:#7f8c8d;">(Owner Only) Lock/Unlock chat for students.</span></p>
+                <p><b>/kick [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly ban a student.</span></p>
+                <p><b>/clear</b><br><span style="color:#7f8c8d;">(Everyone) Wipes your local screen clean.</span></p>
+                <p><b>/nuke</b><br><span style="color:#7f8c8d;">(Owner Only) Clear database (Requires 2013 PIN).</span></p>
             </div>
             <button class="primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
         </div>
@@ -230,8 +236,8 @@
 
             <div class="typing-box" id="typing-indicator"></div>
 
-            <div class="input-bar">
-                <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
+            <div class="input-bar" id="input-bar-container">
+                <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image" id="btn-attach">📎</button>
                 <input type="text" id="chatInput" placeholder="Type a message or /command..." oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
             </div>
@@ -258,6 +264,8 @@
         let isOwner = false;
         let isAdmin = false;
         let isAppReady = false; 
+        let myTimeoutTime = 0;
+        let timeoutInterval = null;
 
         window.onload = () => {
             const saved = localStorage.getItem('school_user');
@@ -301,13 +309,22 @@
             }
         }
 
+        // --- NEW PASSWORD VAULT ON LOGIN ---
         function login() {
             const name = document.getElementById('nameInput').value.trim();
             const gender = document.getElementById('genderInput').value;
             const dob = document.getElementById('dobInput').value.trim();
             if (!name || !dob) return alert("Please fill all fields.");
 
-            myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob, role: 'user' };
+            if (name.toLowerCase().includes('vishnuram')) {
+                const pwd = prompt("👑 Owner Name Detected. Enter Vault Password:");
+                if (pwd !== "vishnuram2013@") {
+                    alert("❌ Incorrect Password. Access Denied.");
+                    return; // Blocks login!
+                }
+            }
+
+            myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob, role: 'user', timeoutUntil: 0 };
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             isOwner = myProfile.name.toLowerCase().includes('vishnuram');
             startApp();
@@ -321,13 +338,24 @@
         }
 
         function saveProfile() {
-            myProfile.name = document.getElementById('editName').value.trim(); 
+            let newName = document.getElementById('editName').value.trim();
+            
+            // Check password again if trying to change name TO Vishnuram
+            if (!isOwner && newName.toLowerCase().includes('vishnuram')) {
+                const pwd = prompt("👑 Changing to Owner Name. Enter Vault Password:");
+                if (pwd !== "vishnuram2013@") {
+                    alert("❌ Incorrect Password. Access Denied.");
+                    return;
+                }
+            }
+
+            myProfile.name = newName; 
             myProfile.gender = document.getElementById('editGender').value; 
             myProfile.dob = document.getElementById('editDob').value.trim();
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             
             isOwner = myProfile.name.toLowerCase().includes('vishnuram');
-            db.ref('users/' + myProfile.id).update(myProfile);
+            db.ref('users/' + myProfile.id).update({name: myProfile.name, gender: myProfile.gender, dob: myProfile.dob});
             document.getElementById('edit-screen').style.display = 'none';
         }
 
@@ -411,6 +439,52 @@
             }
         }
 
+        // Helper to find user by name for commands
+        function findUserByName(name) {
+            for(let id in classmates) {
+                if(classmates[id].name.toLowerCase() === name.toLowerCase()) return id;
+            }
+            return null;
+        }
+
+        function checkInputStatus() {
+            const inputBar = document.getElementById('chatInput');
+            const container = document.getElementById('input-bar-container');
+            const attachBtn = document.getElementById('btn-attach');
+            const now = Date.now();
+
+            // 1. Check Timeout first
+            if (myTimeoutTime > now) {
+                let remainingMins = Math.ceil((myTimeoutTime - now) / 60000);
+                inputBar.placeholder = `⏱️ You are timed out for ${remainingMins} min(s)`;
+                inputBar.disabled = true;
+                attachBtn.style.display = 'none';
+                container.classList.add('timeout-active');
+                
+                // Keep checking every 10 seconds to update the minutes
+                if(!timeoutInterval) {
+                    timeoutInterval = setInterval(checkInputStatus, 10000);
+                }
+                return;
+            } else {
+                if(timeoutInterval) { clearInterval(timeoutInterval); timeoutInterval = null; }
+                container.classList.remove('timeout-active');
+            }
+
+            // 2. Check Chat Lock
+            if (window.chatLocked && !isOwner && !isAdmin) {
+                inputBar.placeholder = "🔒 Chat is currently locked by the Owner.";
+                inputBar.disabled = true;
+                attachBtn.style.display = 'none';
+                return;
+            }
+
+            // 3. Normal State
+            inputBar.placeholder = "Type a message or /command...";
+            inputBar.disabled = false;
+            attachBtn.style.display = 'flex';
+        }
+
         function startApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
@@ -432,37 +506,39 @@
 
             db.ref('settings/chatLocked').on('value', (snap) => {
                 window.chatLocked = snap.val() === true;
-                const inputBar = document.getElementById('chatInput');
                 const lockBtn = document.getElementById('lock-chat-btn');
                 const lockIcon = document.getElementById('chat-lock-icon');
                 
                 if(window.chatLocked) {
                     lockIcon.style.display = 'inline';
                     if(lockBtn) { lockBtn.innerText = "🔓 Unlock Chat"; lockBtn.style.background = "#2ecc71"; }
-                    if(!isOwner && !isAdmin) {
-                        inputBar.placeholder = "🔒 Chat is currently locked by the Owner.";
-                        inputBar.disabled = true;
-                    }
                 } else {
                     lockIcon.style.display = 'none';
                     if(lockBtn) { lockBtn.innerText = "🔒 Lock Chat for Students"; lockBtn.style.background = "#f39c12"; }
-                    if(!isOwner && !isAdmin) {
-                        inputBar.placeholder = "Type a message or /command...";
-                        inputBar.disabled = false;
-                    }
                 }
+                checkInputStatus();
             });
 
+            // Listen to My Own Data (For Kicks and Timeouts)
             db.ref('users/' + myProfile.id).on('value', (snap) => {
                 if(isAppReady && !snap.exists()) {
                     myStatusRef.onDisconnect().cancel(); 
                     localStorage.clear();
                     alert("🚨 Your account has been permanently deleted or banned by the Owner.");
                     window.location.reload();
+                } else if (snap.exists()) {
+                    let data = snap.val();
+                    if(data.timeoutUntil) {
+                        myTimeoutTime = data.timeoutUntil;
+                    } else {
+                        myTimeoutTime = 0;
+                    }
+                    checkInputStatus();
                 }
                 isAppReady = true;
             });
 
+            // Listen to ALL users for the side list
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {};
                 let meData = classmates[myProfile.id];
@@ -498,6 +574,15 @@
 
         function renderUserList() {
             const container = document.getElementById('users-container'); container.innerHTML = '';
+            
+            let onlineCount = 0;
+            
+            // First loop to accurately count online users based on current Firebase snapshot
+            for(let id in classmates) {
+                if(classmates[id].online === true) onlineCount++;
+            }
+            document.getElementById('online-counter').innerText = `👥 ${onlineCount} Online`;
+
             const sortedIds = Object.keys(classmates).sort((a, b) => {
                 if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
                 if(classmates[a].online && !classmates[b].online) return -1;
@@ -505,17 +590,17 @@
                 return classmates[b].lastSeen - classmates[a].lastSeen;
             });
 
-            let onlineCount = 0;
-
             sortedIds.forEach(id => {
                 const u = classmates[id]; const isMe = id === myProfile.id;
                 const displayName = isMe ? `${u.name} (You)` : u.name;
                 const initial = u.name.charAt(0).toUpperCase();
-                
-                if(u.online) onlineCount++;
 
                 const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
                 let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '🎓 Student');
+                
+                // Add tiny timeout indicator if they are timed out
+                let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px;">⏱️ Muted</span>` : '';
+
                 const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
                 container.innerHTML += `
@@ -523,13 +608,11 @@
                         <div class="avatar">${initial}</div>
                         <div class="user-details">
                             <div class="user-name-row"><span class="name-text">${displayName}</span></div>
-                            <div class="status-indicator">${statusDot} • ${u.gender} • ${roleBadge}</div>
+                            <div class="status-indicator">${statusDot} • ${u.gender} • ${roleBadge} ${timeoutBadge}</div>
                         </div>
                     </div>
                 `;
             });
-
-            document.getElementById('online-counter').innerText = `👥 ${onlineCount} Online`;
         }
 
         function getIST() { return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' }); }
@@ -547,6 +630,11 @@
         }
 
         function handleActionClick() {
+            if (myTimeoutTime > Date.now()) {
+                alert("⏱️ You are in timeout. You cannot send messages right now.");
+                return;
+            }
+
             if(window.chatLocked && !isOwner && !isAdmin) {
                 alert("🔒 The chat is currently locked. Only admins can send messages.");
                 return;
@@ -555,7 +643,7 @@
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
                 
-                // --- NEW COMMAND ENGINE ---
+                // --- THE COMMAND ENGINE ---
                 if(text.startsWith('/')) {
                     let parts = text.split(' ');
                     let cmd = parts[0].toLowerCase();
@@ -574,6 +662,32 @@
                         if(!isOwner) return alert("❌ Owner only.");
                         db.ref('settings/chatLocked').set(false);
                     }
+                    else if(cmd === '/clear') {
+                        document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared. (Messages still exist in database)</div>';
+                    }
+                    else if(cmd === '/timeout') {
+                        if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
+                        if(!arg) return alert("⚠️ Usage: /timeout [name] [minutes]");
+                        let argParts = arg.split(' ');
+                        let targetName = argParts[0];
+                        let mins = parseInt(argParts[1]) || 5; // Default 5 minutes
+                        
+                        let foundId = findUserByName(targetName);
+                        if(foundId) {
+                            let banTime = firebase.database.ServerValue.TIMESTAMP;
+                            db.ref('users/' + foundId).update({ timeoutUntil: Date.now() + (mins * 60000) });
+                            alert(`⏱️ ${targetName} is muted for ${mins} minutes.`);
+                        } else { alert(`❌ Could not find a student named "${targetName}".`); }
+                    }
+                    else if(cmd === '/untimeout') {
+                        if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
+                        let targetName = arg;
+                        let foundId = findUserByName(targetName);
+                        if(foundId) {
+                            db.ref('users/' + foundId).update({ timeoutUntil: 0 });
+                            alert(`✅ Untimed-out ${targetName}.`);
+                        } else { alert(`❌ Could not find "${targetName}".`); }
+                    }
                     else if(cmd === '/nuke') {
                         if(!isOwner) return alert("❌ Owner only.");
                         nukeChat();
@@ -581,10 +695,7 @@
                     else if(cmd === '/kick') {
                         if(!isOwner) return alert("❌ Owner only.");
                         if(!arg) return alert("⚠️ Type the exact name of the student.");
-                        let foundId = null;
-                        for(let id in classmates) {
-                            if(classmates[id].name.toLowerCase() === arg.toLowerCase()) { foundId = id; break; }
-                        }
+                        let foundId = findUserByName(arg);
                         if(foundId) {
                             db.ref('users/' + foundId).remove();
                             alert(`✅ Kicked ${arg} successfully.`);
@@ -599,7 +710,7 @@
                     document.getElementById('chatInput').value = ''; 
                     db.ref('typing/' + myProfile.id).set(false); 
                     handleTypingInput();
-                    return; // Stop the command from being sent as a normal text message!
+                    return; 
                 }
                 
                 // Normal Text Message
@@ -706,6 +817,8 @@
 
         function handleImageUpload(e) {
             if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
+            if(myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
+            
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
@@ -730,6 +843,8 @@
         let mediaRecorder; let audioChunks = []; let isRecording = false;
         function toggleVoiceRecord() {
             if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
+            if(myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
+
             const btn = document.getElementById('action-btn');
             if(!isRecording) {
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
