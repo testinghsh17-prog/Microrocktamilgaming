@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>School Hub - 7-Marutham</title>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         /* CORE SETUP & MOBILE FIX */
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background: #e5e5e5; position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
@@ -55,7 +58,6 @@
         #conn-status { font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; background: #f39c12; color: white; }
 
         .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        #typing-indicator { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 0 20px; height: 20px; display: flex; align-items: center; }
         .sys-msg { align-self: center; background: rgba(0,0,0,0.1); color: #555; padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center;}
 
         /* Chat Bubbles */
@@ -68,7 +70,6 @@
         
         /* DELETED MESSAGE STYLING */
         .deleted-text { font-style: italic; color: #7f8c8d; font-size: 14px; display: flex; align-items: center; gap: 5px;}
-        
         .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(231, 76, 60, 0.1); border: none; color: #e74c3c; font-size: 14px; cursor: pointer; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .delete-btn:hover { background: #e74c3c; color: white; }
 
@@ -105,7 +106,7 @@
     <div id="lightbox">
         <img id="lightbox-img" src="">
         <div class="lb-actions">
-            <a id="lb-download" href="" download="" class="lb-btn" style="background: #2ecc71;">⬇ Download</a>
+            <a id="lb-download" href="" download="" class="lb-btn" style="background: #2ecc71;">⬇ Download HD</a>
             <button onclick="document.getElementById('lightbox').classList.remove('active')" class="lb-btn" style="background: #e74c3c;">✕ Close</button>
         </div>
     </div>
@@ -156,15 +157,13 @@
                         <div class="header-title">7-Marutham Group Chat</div>
                         <div class="header-subtitle">Made by Vishnuram and Prasanth</div>
                     </div>
-                    <div id="conn-status">🟠 Connecting...</div>
+                    <div id="conn-status">🟠 Connecting to Firebase...</div>
                 </div>
             </div>
             
             <div class="messages-container" id="messages">
-                <div class="sys-msg">🔒 This group is exclusively for 7-Marutham.</div>
+                <div class="sys-msg">🔒 Firebase Central Database Active.</div>
             </div>
-            
-            <div id="typing-indicator"></div>
 
             <div class="input-bar">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
@@ -175,24 +174,25 @@
     </div>
 
     <script>
-        const BROKER = 'wss://broker.hivemq.com:8884/mqtt';
-        // Updated topic to guarantee a fresh room
-        const ROOM_TOPIC = 'school_hub_7_marutham_exclusive_v20'; 
+        // ==========================================
+        // YOUR FIREBASE KEYS ARE WIRED IN HERE!
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyARYTP4FmIXEcCS3asAKo8xgE0h2jbzZsc",
+            authDomain: "marutham-17a59.firebaseapp.com",
+            databaseURL: "https://marutham-17a59-default-rtdb.firebaseio.com",
+            projectId: "marutham-17a59",
+            storageBucket: "marutham-17a59.firebasestorage.app",
+            messagingSenderId: "615501973443",
+            appId: "1:615501973443:web:59d99f46d7d586287e9f76"
+        };
         
-        let client;
-        let myProfile = null;
-        let typingTimeout = null;
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.database();
 
-        // SAFE MEMORY LOADING (Updated keys for 7-Marutham)
-        let savedChatHistory = [];
+        let myProfile = null;
         let classmates = {};
-        try {
-            savedChatHistory = JSON.parse(localStorage.getItem('7marutham_chat_history_v5')) || [];
-            classmates = JSON.parse(localStorage.getItem('7marutham_classmates_v5')) || {};
-        } catch(e) {
-            localStorage.removeItem('7marutham_chat_history_v5');
-            localStorage.removeItem('7marutham_classmates_v5');
-        }
 
         window.onload = () => {
             const saved = localStorage.getItem('school_user');
@@ -202,16 +202,14 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function login() {
-            try {
-                const name = document.getElementById('nameInput').value.trim();
-                const gender = document.getElementById('genderInput').value;
-                const dob = document.getElementById('dobInput').value.trim();
-                if (!name || !dob) return alert("Please fill all fields.");
+            const name = document.getElementById('nameInput').value.trim();
+            const gender = document.getElementById('genderInput').value;
+            const dob = document.getElementById('dobInput').value.trim();
+            if (!name || !dob) return alert("Please fill all fields.");
 
-                myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob };
-                localStorage.setItem('school_user', JSON.stringify(myProfile));
-                startApp();
-            } catch (error) { alert("Login Error: " + error.message); }
+            myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob };
+            localStorage.setItem('school_user', JSON.stringify(myProfile));
+            startApp();
         }
 
         function openEditProfile() {
@@ -222,128 +220,55 @@
         }
 
         function saveProfile() {
-            const name = document.getElementById('editName').value.trim();
-            if (!name) return alert("Name cannot be empty");
-            myProfile.name = name; myProfile.gender = document.getElementById('editGender').value; myProfile.dob = document.getElementById('editDob').value.trim();
+            myProfile.name = document.getElementById('editName').value.trim(); 
+            myProfile.gender = document.getElementById('editGender').value; 
+            myProfile.dob = document.getElementById('editDob').value.trim();
             localStorage.setItem('school_user', JSON.stringify(myProfile));
-            broadcast('presence', { status: 'online' }); 
+            
+            // Update profile in Firebase
+            db.ref('users/' + myProfile.id).update(myProfile);
             document.getElementById('edit-screen').style.display = 'none';
-            renderUserList();
         }
 
         function startApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
-            
-            renderFullHistory();
-            classmates[myProfile.id] = { ...myProfile, online: true, lastSeen: Date.now() };
-            renderUserList();
 
-            client = mqtt.connect(BROKER, { keepalive: 30 });
+            // 1. Setup Online Status (Presence)
+            const myStatusRef = db.ref('users/' + myProfile.id);
+            const connectedRef = db.ref('.info/connected');
             
-            client.on('connect', () => {
-                document.getElementById('conn-status').innerText = '🟢 Connected';
-                document.getElementById('conn-status').style.background = '#2ecc71';
-                client.subscribe(ROOM_TOPIC);
-                broadcast('system', { text: `${myProfile.name} joined 7-Marutham` });
-                broadcast('presence', { status: 'online' });
-                
-                const lastTime = savedChatHistory.length > 0 ? savedChatHistory[savedChatHistory.length-1].payload.timestamp : 0;
-                broadcast('sync_req', { lastTime: lastTime }); 
-                broadcast('rollcall', {}); 
-                
-                setInterval(() => broadcast('presence', { status: 'ping' }), 10000);
+            connectedRef.on('value', (snap) => {
+                if (snap.val() === true) {
+                    document.getElementById('conn-status').innerText = '🟢 Firebase Connected';
+                    document.getElementById('conn-status').style.background = '#2ecc71';
+                    
+                    myStatusRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+                    myStatusRef.set({ ...myProfile, online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+                } else {
+                    document.getElementById('conn-status').innerText = '🔴 Reconnecting...';
+                    document.getElementById('conn-status').style.background = '#e74c3c';
+                }
             });
 
-            client.on('offline', () => {
-                document.getElementById('conn-status').innerText = '🔴 Reconnecting...';
-                document.getElementById('conn-status').style.background = '#e74c3c';
+            // 2. Listen for other users
+            db.ref('users').on('value', (snapshot) => {
+                classmates = snapshot.val() || {};
+                renderUserList();
             });
 
-            client.on('message', (topic, message) => {
-                try {
-                    const packet = JSON.parse(message.toString());
-                    handleIncoming(packet);
-                } catch(e){}
+            // 3. Listen for new messages (This automatically grabs the whole history!)
+            db.ref('messages').on('child_added', (snapshot) => {
+                const data = snapshot.val();
+                renderMessage(data);
             });
 
-            setInterval(checkOffline, 15000);
+            // 4. Listen for deleted messages
+            db.ref('messages').on('child_changed', (snapshot) => {
+                const data = snapshot.val();
+                updateMessageOnScreen(data);
+            });
         }
-
-        function broadcast(type, payload) {
-            if (client && client.connected) {
-                client.publish(ROOM_TOPIC, JSON.stringify({ type, sender: myProfile, payload }));
-            }
-        }
-
-        function handleIncoming(packet) {
-            const { type, sender, payload } = packet;
-            
-            if(sender && type !== 'typing') {
-                classmates[sender.id] = { ...sender, online: true, lastSeen: Date.now() };
-                saveClassmates(); renderUserList();
-            }
-
-            if (type === 'delete_event') {
-                applyDeleteLocally(payload.msgId);
-            }
-            else if (type === 'sync_req' && sender.id !== myProfile.id) {
-                const missingMessages = savedChatHistory.filter(m => m.payload.timestamp > payload.lastTime).slice(-20);
-                if(missingMessages.length > 0) {
-                    for(let i=0; i<missingMessages.length; i+=5) {
-                        let chunk = missingMessages.slice(i, i+5);
-                        setTimeout(() => {
-                            broadcast('sync_batch', { targetId: sender.id, messages: chunk });
-                        }, i * 150);
-                    }
-                }
-            } 
-            else if (type === 'sync_batch' && payload.targetId === myProfile.id) {
-                let addedNew = false;
-                payload.messages.forEach(incomingMsg => {
-                    if (!savedChatHistory.find(m => m.payload.msgId === incomingMsg.payload.msgId)) {
-                        savedChatHistory.push(incomingMsg);
-                        addedNew = true;
-                    }
-                });
-                if(addedNew) {
-                    savedChatHistory.sort((a, b) => a.payload.timestamp - b.payload.timestamp);
-                    saveHistory();
-                    renderFullHistory(); 
-                }
-            }
-            else if (type === 'rollcall' && sender.id !== myProfile.id) {
-                broadcast('presence', { status: 'online' });
-            }
-            else if (type === 'chat') {
-                renderMessage(sender, payload, false); 
-                if(sender.id !== myProfile.id) document.getElementById('typing-indicator').innerText = ''; 
-            } 
-            else if (type === 'system') {
-                const box = document.getElementById('messages');
-                box.innerHTML += `<div class="sys-msg">${payload.text}</div>`;
-                box.scrollTop = box.scrollHeight;
-            }
-            else if (type === 'typing' && sender.id !== myProfile.id) {
-                const ind = document.getElementById('typing-indicator');
-                ind.innerText = `${sender.name} is typing...`;
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => ind.innerText = '', 2000);
-            }
-        }
-
-        function checkOffline() {
-            const now = Date.now(); let changed = false;
-            for (let id in classmates) {
-                if (id !== myProfile.id && classmates[id].online && (now - classmates[id].lastSeen > 20000)) {
-                    classmates[id].online = false; changed = true;
-                }
-            }
-            if(changed) { saveClassmates(); renderUserList(); }
-        }
-
-        function saveHistory() { localStorage.setItem('7marutham_chat_history_v5', JSON.stringify(savedChatHistory)); }
-        function saveClassmates() { localStorage.setItem('7marutham_classmates_v5', JSON.stringify(classmates)); }
 
         function renderUserList() {
             const container = document.getElementById('users-container'); container.innerHTML = '';
@@ -380,15 +305,29 @@
             const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
             if (text) {
                 btn.innerText = '➤'; btn.style.background = '#3498db';
-                if(!btn.dataset.typing || Date.now() - btn.dataset.typing > 2000) { broadcast('typing', {}); btn.dataset.typing = Date.now(); }
-            } else { btn.innerText = '🎤'; btn.style.background = '#075e54'; }
+            } else { 
+                btn.innerText = '🎤'; btn.style.background = '#075e54'; 
+            }
         }
 
         function handleActionClick() {
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
-                const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                broadcast('chat', { msgId, text, type: 'text', time: getIST(), timestamp: Date.now() });
+                const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                
+                // Send directly to Firebase Database
+                db.ref('messages/' + msgId).set({
+                    msgId: msgId,
+                    sender: myProfile,
+                    type: 'text',
+                    text: text,
+                    data: null,
+                    time: getIST(),
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                }).catch(error => {
+                    alert("Error sending: " + error.message + " (Check your Firebase Security Rules!)");
+                });
+
                 document.getElementById('chatInput').value = ''; handleTypingInput(); 
             } else { toggleVoiceRecord(); }
         }
@@ -397,39 +336,27 @@
 
         function deleteMyMessage(msgId) {
             if(confirm("Delete this message? It will show as deleted for everyone in 7-Marutham.")) {
-                broadcast('delete_event', { msgId });
-                applyDeleteLocally(msgId);
+                db.ref('messages/' + msgId).update({
+                    type: 'deleted',
+                    text: '🚫 This message was deleted',
+                    data: null
+                });
             }
         }
 
-        function applyDeleteLocally(msgId) {
-            let msg = savedChatHistory.find(m => m.payload.msgId === msgId);
-            if(msg) {
-                msg.payload.type = 'deleted';
-                msg.payload.text = '🚫 This message was deleted';
-                msg.payload.data = null; 
-                saveHistory();
-            }
-            
-            let msgEl = document.getElementById('msg_' + msgId);
-            if(msgEl) {
+        function updateMessageOnScreen(data) {
+            let msgEl = document.getElementById(data.msgId);
+            if(msgEl && data.type === 'deleted') {
                 let textEl = msgEl.querySelector('.msg-text');
                 if(textEl) textEl.innerHTML = '<span class="deleted-text">🚫 This message was deleted</span>';
-                
                 let delBtn = msgEl.querySelector('.delete-btn');
                 if(delBtn) delBtn.style.display = 'none';
             }
         }
 
-        function renderFullHistory() {
+        function renderMessage(payload) {
             const container = document.getElementById('messages');
-            container.innerHTML = '<div class="sys-msg">🔒 This group is exclusively for 7-Marutham.</div>';
-            savedChatHistory.forEach(msg => renderMessage(msg.sender, msg.payload, true));
-        }
-
-        function renderMessage(sender, payload, isHistoryLoad) {
-            const container = document.getElementById('messages');
-            const isMe = sender.id === myProfile.id;
+            const isMe = payload.sender.id === myProfile.id;
             
             let bodyHtml = '';
             if(payload.type === 'deleted') {
@@ -443,42 +370,46 @@
                 bodyHtml = `<audio controls src="${payload.data}"></audio>`;
             }
 
-            if (!document.getElementById('msg_' + payload.msgId)) {
+            if (!document.getElementById(payload.msgId)) {
                 const deleteBtnHtml = (isMe && payload.type !== 'deleted') ? `<button class="delete-btn" onclick="deleteMyMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
 
                 container.innerHTML += `
-                    <div class="msg-bubble ${isMe ? 'me' : ''}" id="msg_${payload.msgId}">
+                    <div class="msg-bubble ${isMe ? 'me' : ''}" id="${payload.msgId}">
                         ${deleteBtnHtml}
-                        ${isMe ? '' : `<div class="msg-sender">${sender.name}</div>`}
+                        ${isMe ? '' : `<div class="msg-sender">${payload.sender.name}</div>`}
                         <div class="msg-text">${bodyHtml}</div>
                         <div class="msg-time">${payload.time}</div>
                     </div>
                 `;
                 container.scrollTop = container.scrollHeight;
             }
-
-            if (!isHistoryLoad) {
-                if(!payload.msgId) payload.msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                if (!savedChatHistory.find(m => m.payload.msgId === payload.msgId)) {
-                    savedChatHistory.push({ sender: sender, payload: payload });
-                    if (savedChatHistory.length > 80) savedChatHistory.shift();
-                    saveHistory();
-                }
-            }
         }
 
         function handleImageUpload(e) {
             const file = e.target.files[0]; if(!file) return;
+            
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                    let w = img.width, h = img.height; const max = 600; 
+                    let w = img.width, h = img.height; const max = 800; // Increased size for HD images
                     if(w > max || h > max) { if(w > h) { h = (max/w)*h; w = max; } else { w = (max/h)*w; h = max; } }
                     canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h);
-                    const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                    broadcast('chat', { msgId, type: 'image', data: canvas.toDataURL('image/jpeg', 0.6), time: getIST(), timestamp: Date.now() });
+                    
+                    const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    
+                    db.ref('messages/' + msgId).set({
+                        msgId: msgId,
+                        sender: myProfile,
+                        type: 'image',
+                        text: '',
+                        data: canvas.toDataURL('image/jpeg', 0.8),
+                        time: getIST(),
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    }).catch(error => {
+                        alert("Error uploading image: " + error.message);
+                    });
                 };
                 img.src = evt.target.result;
             };
@@ -488,6 +419,7 @@
         let mediaRecorder; let audioChunks = []; let isRecording = false;
         function toggleVoiceRecord() {
             const btn = document.getElementById('action-btn');
+            
             if(!isRecording) {
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
                     mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true; 
@@ -496,8 +428,18 @@
                     mediaRecorder.addEventListener("stop", () => {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            const msgId = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                            broadcast('chat', { msgId, type: 'voice', data: e.target.result, time: getIST(), timestamp: Date.now() });
+                            const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                            db.ref('messages/' + msgId).set({
+                                msgId: msgId,
+                                sender: myProfile,
+                                type: 'voice',
+                                text: '',
+                                data: e.target.result,
+                                time: getIST(),
+                                timestamp: firebase.database.ServerValue.TIMESTAMP
+                            }).catch(error => {
+                                alert("Error sending voice note: " + error.message);
+                            });
                         };
                         reader.readAsDataURL(new Blob(audioChunks, { type: "audio/ogg" }));
                         stream.getTracks().forEach(t => t.stop());
@@ -511,7 +453,7 @@
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lb-download').href = src;
-            document.getElementById('lb-download').download = "7marutham_photo_" + Date.now() + ".jpg";
+            document.getElementById('lb-download').download = "7marutham_HD_photo_" + Date.now() + ".jpg";
             document.getElementById('lightbox').classList.add('active');
         }
     </script>
