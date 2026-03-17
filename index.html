@@ -64,7 +64,7 @@
         /* BUBBLES & ROLES */
         .msg-bubble { background: white; padding: 10px 14px; border-radius: 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; border-top-left-radius: 2px; }
         .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
-        .msg-bubble.me.owner-bubble { background: #ffeaa7; border: 2px solid #f1c40f; } /* GOLD BUBBLE FOR OWNER */
+        .msg-bubble.me.owner-bubble { background: #ffeaa7; border: 2px solid #f1c40f; }
         
         .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
         
@@ -170,6 +170,20 @@
         </div>
     </div>
 
+    <div id="cmd-screen" class="modal-screen" style="display: none;">
+        <div class="modal-box">
+            <h2 style="color:#2c3e50; margin-bottom: 10px;">⌨️ Command Guide</h2>
+            <div style="font-size:13px; line-height:1.6; color:#2f3640; margin-bottom: 15px;">
+                <p><b>/alert [message]</b><br><span style="color:#7f8c8d;">(Owner & Admin) Send a red global announcement.</span></p>
+                <p><b>/lock</b><br><span style="color:#7f8c8d;">(Owner Only) Lock chat so students cannot type.</span></p>
+                <p><b>/unlock</b><br><span style="color:#7f8c8d;">(Owner Only) Unlock chat.</span></p>
+                <p><b>/kick [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly ban a student by their exact name.</span></p>
+                <p><b>/nuke</b><br><span style="color:#7f8c8d;">(Owner Only) Clear entire chat database (Requires 2013 PIN).</span></p>
+            </div>
+            <button class="primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
+        </div>
+    </div>
+
     <div id="app-screen">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -181,9 +195,13 @@
             </div>
             <div class="user-list" id="users-container"></div>
             
-            <div id="owner-super-controls" style="display:none; padding:10px; gap: 8px; flex-direction: column; background: #f8f9fa; border-top: 2px solid #dcdde1;">
-                <button id="lock-chat-btn" onclick="toggleChatLock()" style="width:100%; padding:12px; background:#f39c12; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">🔒 Lock Chat</button>
-                <button onclick="nukeChat()" style="width:100%; padding:12px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">☢️ Clear Entire Chat</button>
+            <div id="admin-tools-section" style="display:none; padding:10px; border-top: 2px solid #dcdde1; background: #f8f9fa; display: flex; flex-direction: column; gap: 8px;">
+                <button onclick="document.getElementById('cmd-screen').style.display='flex'" style="width:100%; padding:10px; background:#34495e; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">⌨️ Command Guide</button>
+            </div>
+            
+            <div id="owner-super-controls" style="display:none; padding:10px; padding-top:0; gap: 8px; flex-direction: column; background: #f8f9fa;">
+                <button id="lock-chat-btn" onclick="toggleChatLock()" style="width:100%; padding:10px; background:#f39c12; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">🔒 Lock Chat</button>
+                <button onclick="nukeChat()" style="width:100%; padding:10px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">☢️ Clear Entire Chat</button>
             </div>
             
             <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
@@ -214,7 +232,7 @@
 
             <div class="input-bar">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                <input type="text" id="chatInput" placeholder="Type a message... (Type /alert to announce)" oninput="handleTypingInput()">
+                <input type="text" id="chatInput" placeholder="Type a message or /command..." oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
             </div>
         </div>
@@ -271,12 +289,15 @@
             if(isOwner) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#e74c3c; font-weight:bold;'>👑 VISHNURAM (OWNER) ACTIVE</span>";
                 document.getElementById('owner-super-controls').style.display = 'flex';
+                document.getElementById('admin-tools-section').style.display = 'flex';
             } else if (isAdmin) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#f39c12; font-weight:bold;'>🛡️ ADMIN ACTIVE</span>";
                 document.getElementById('owner-super-controls').style.display = 'none';
+                document.getElementById('admin-tools-section').style.display = 'flex';
             } else {
                 document.getElementById('owner-badge').innerText = "Made by Vishnuram and Prasanth";
                 document.getElementById('owner-super-controls').style.display = 'none';
+                document.getElementById('admin-tools-section').style.display = 'none';
             }
         }
 
@@ -371,7 +392,6 @@
             }
         }
 
-        // CHAT LOCK SYSTEM
         function toggleChatLock() {
             if(window.chatLocked) {
                 db.ref('settings/chatLocked').set(false);
@@ -380,9 +400,8 @@
             }
         }
 
-        // SECURE NUKE WITH PIN
         function nukeChat() {
-            const pin = prompt("☢️ WARNING: This will permanently delete ALL messages in the database. Enter 4-digit PIN to confirm:");
+            const pin = prompt("☢️ WARNING: This will permanently delete ALL messages. Enter 4-digit PIN (2013):");
             if (pin === "2013") {
                 db.ref('messages').remove();
                 document.getElementById('messages').innerHTML = '<div class="sys-msg">🔒 Database completely wiped by Owner.</div>';
@@ -411,7 +430,6 @@
                 }
             });
 
-            // LIVE CHAT LOCK LISTENER
             db.ref('settings/chatLocked').on('value', (snap) => {
                 window.chatLocked = snap.val() === true;
                 const inputBar = document.getElementById('chatInput');
@@ -429,13 +447,12 @@
                     lockIcon.style.display = 'none';
                     if(lockBtn) { lockBtn.innerText = "🔒 Lock Chat for Students"; lockBtn.style.background = "#f39c12"; }
                     if(!isOwner && !isAdmin) {
-                        inputBar.placeholder = "Type a message...";
+                        inputBar.placeholder = "Type a message or /command...";
                         inputBar.disabled = false;
                     }
                 }
             });
 
-            // FORCE-KICK SYSTEM
             db.ref('users/' + myProfile.id).on('value', (snap) => {
                 if(isAppReady && !snap.exists()) {
                     myStatusRef.onDisconnect().cancel(); 
@@ -521,7 +538,7 @@
         function handleTypingInput() {
             const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
             
-            db.ref('typing/' + myProfile.id).set(text.length > 0);
+            db.ref('typing/' + myProfile.id).set(text.length > 0 && !text.startsWith('/'));
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
 
@@ -530,7 +547,6 @@
         }
 
         function handleActionClick() {
-            // Check Lock
             if(window.chatLocked && !isOwner && !isAdmin) {
                 alert("🔒 The chat is currently locked. Only admins can send messages.");
                 return;
@@ -538,35 +554,68 @@
 
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
-                const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                 
-                let msgType = 'text';
-                let msgContent = text;
-                
-                // BUG FIX: Safer Alert Check
-                if(text.toLowerCase().startsWith('/alert')) {
-                    if (isOwner || isAdmin) {
-                        msgType = 'alert';
-                        msgContent = text.replace(/^\/alert\s*/i, ''); 
-                        if(msgContent === "") {
-                            alert("⚠️ Please type a message after /alert");
-                            return;
-                        }
-                    } else {
-                        alert("❌ Permission Denied: Only Owners and Admins can send announcements.");
-                        return;
-                    }
-                }
+                // --- NEW COMMAND ENGINE ---
+                if(text.startsWith('/')) {
+                    let parts = text.split(' ');
+                    let cmd = parts[0].toLowerCase();
+                    let arg = text.substring(cmd.length).trim();
 
-                db.ref('messages/' + msgId).set({
-                    msgId: msgId, sender: myProfile, type: msgType, text: msgContent, data: null,
-                    isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
+                    if(cmd === '/alert') {
+                        if(!isOwner && !isAdmin) return alert("❌ Only Owners and Admins can send announcements.");
+                        if(!arg) return alert("⚠️ Please type a message after /alert");
+                        sendMsgToDB('alert', arg);
+                    }
+                    else if(cmd === '/lock') {
+                        if(!isOwner) return alert("❌ Owner only.");
+                        db.ref('settings/chatLocked').set(true);
+                    }
+                    else if(cmd === '/unlock') {
+                        if(!isOwner) return alert("❌ Owner only.");
+                        db.ref('settings/chatLocked').set(false);
+                    }
+                    else if(cmd === '/nuke') {
+                        if(!isOwner) return alert("❌ Owner only.");
+                        nukeChat();
+                    }
+                    else if(cmd === '/kick') {
+                        if(!isOwner) return alert("❌ Owner only.");
+                        if(!arg) return alert("⚠️ Type the exact name of the student.");
+                        let foundId = null;
+                        for(let id in classmates) {
+                            if(classmates[id].name.toLowerCase() === arg.toLowerCase()) { foundId = id; break; }
+                        }
+                        if(foundId) {
+                            db.ref('users/' + foundId).remove();
+                            alert(`✅ Kicked ${arg} successfully.`);
+                        } else {
+                            alert(`❌ Could not find a student named "${arg}".`);
+                        }
+                    }
+                    else {
+                        alert("❌ Unknown command. Click 'Command Guide' in the menu.");
+                    }
+                    
+                    document.getElementById('chatInput').value = ''; 
+                    db.ref('typing/' + myProfile.id).set(false); 
+                    handleTypingInput();
+                    return; // Stop the command from being sent as a normal text message!
+                }
                 
+                // Normal Text Message
+                sendMsgToDB('text', text);
                 document.getElementById('chatInput').value = ''; 
                 db.ref('typing/' + myProfile.id).set(false); 
                 handleTypingInput(); 
             } else { toggleVoiceRecord(); }
+        }
+
+        function sendMsgToDB(msgType, msgContent) {
+            const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            db.ref('messages/' + msgId).set({
+                msgId: msgId, sender: myProfile, type: msgType, text: msgContent, data: null,
+                isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
@@ -621,10 +670,9 @@
             const deleteBtnHtml = (canDelete && !payload.isDeleted) ? `<button class="delete-btn" onclick="deleteMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
             
             let bubbleClass = `msg-bubble ${isMe ? 'me' : ''}`;
-            if(isMe && isOwner) bubbleClass += " owner-bubble"; // GOLD BUBBLE
+            if(isMe && isOwner) bubbleClass += " owner-bubble"; 
             if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
             
-            // WHATSAPP STYLE: Hide your own name above your own messages!
             const senderHTML = isMe ? '' : `<div class="msg-sender">${payload.sender.name} ${getRoleBadge(payload.sender)}</div>`;
 
             return `
