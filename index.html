@@ -51,7 +51,7 @@
         .chat-header { padding: 12px 20px; background: white; border-bottom: 1px solid #dcdde1; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;}
         .menu-btn { display: none; font-size: 24px; cursor: pointer; color: #2f3640; }
         .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
-        .header-title { font-weight: bold; color: #2f3640; font-size: 16px; }
+        .header-title { font-weight: bold; color: #2f3640; font-size: 16px; display: flex; align-items: center; gap: 8px;}
         .header-subtitle { font-size: 12px; color: #3498db; font-weight: 600; margin-top: 2px; }
         
         .status-pill { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
@@ -64,8 +64,9 @@
         /* BUBBLES & ROLES */
         .msg-bubble { background: white; padding: 10px 14px; border-radius: 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; border-top-left-radius: 2px; }
         .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
+        .msg-bubble.me.owner-bubble { background: #ffeaa7; border: 2px solid #f1c40f; } /* GOLD BUBBLE FOR OWNER */
+        
         .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-        .msg-bubble.me .msg-sender { color: #27ae60; justify-content: flex-end; }
         
         .role-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .role-tag.owner { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
@@ -94,7 +95,8 @@
         /* INPUT AREA */
         .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); z-index: 100;}
         .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
-        .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: 0.3s;}
+        .input-bar input:disabled { background: #dcdde1; cursor: not-allowed; }
         .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
         .send-btn.recording { background: #e74c3c; animation: pulse 1s infinite alternate; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
@@ -178,9 +180,12 @@
                 </div>
             </div>
             <div class="user-list" id="users-container"></div>
-            <div id="owner-nuke-btn" style="display:none; padding:10px;">
-                <button onclick="nukeChat()" style="width:100%; padding:10px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">☢️ Clear Entire Chat</button>
+            
+            <div id="owner-super-controls" style="display:none; padding:10px; gap: 8px; flex-direction: column; background: #f8f9fa; border-top: 2px solid #dcdde1;">
+                <button id="lock-chat-btn" onclick="toggleChatLock()" style="width:100%; padding:12px; background:#f39c12; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">🔒 Lock Chat</button>
+                <button onclick="nukeChat()" style="width:100%; padding:12px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">☢️ Clear Entire Chat</button>
             </div>
+            
             <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
         </div>
 
@@ -189,7 +194,7 @@
                 <span class="menu-btn" onclick="toggleSidebar()">☰</span>
                 <div class="header-info">
                     <div>
-                        <div class="header-title">7-Marutham Group Chat</div>
+                        <div class="header-title">7-Marutham Group Chat <span id="chat-lock-icon" style="display:none;">🔒</span></div>
                         <div class="header-subtitle" id="owner-badge">Made by Vishnuram and Prasanth</div>
                     </div>
                     <div class="status-pill">
@@ -209,7 +214,7 @@
 
             <div class="input-bar">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                <input type="text" id="chatInput" placeholder="Type a message..." oninput="handleTypingInput()">
+                <input type="text" id="chatInput" placeholder="Type a message... (Type /alert to announce)" oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
             </div>
         </div>
@@ -250,7 +255,6 @@
         function checkScroll() {
             const container = document.getElementById('messages');
             const btn = document.getElementById('scroll-bottom-btn');
-            // Show button if we scrolled up more than 150px from bottom
             if(container.scrollHeight - container.scrollTop - container.clientHeight > 150) {
                 btn.style.display = 'flex';
             } else {
@@ -266,11 +270,13 @@
         function updateHeaderBadge() {
             if(isOwner) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#e74c3c; font-weight:bold;'>👑 VISHNURAM (OWNER) ACTIVE</span>";
-                document.getElementById('owner-nuke-btn').style.display = 'block';
+                document.getElementById('owner-super-controls').style.display = 'flex';
             } else if (isAdmin) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#f39c12; font-weight:bold;'>🛡️ ADMIN ACTIVE</span>";
+                document.getElementById('owner-super-controls').style.display = 'none';
             } else {
                 document.getElementById('owner-badge').innerText = "Made by Vishnuram and Prasanth";
+                document.getElementById('owner-super-controls').style.display = 'none';
             }
         }
 
@@ -359,13 +365,22 @@
         function adminDeleteUser() {
             let targetId = document.getElementById('adminEditId').value;
             if(confirm("🚨 Are you sure you want to permanently kick this user from the app?")) {
-                db.ref('users/' + targetId).remove(); // Triggers Force-Kick on their phone
+                db.ref('users/' + targetId).remove(); 
                 document.getElementById('admin-edit-screen').style.display = 'none';
                 alert("User deleted and kicked successfully!");
             }
         }
 
-        // NEW: SECURE NUKE CHAT WITH PIN
+        // CHAT LOCK SYSTEM
+        function toggleChatLock() {
+            if(window.chatLocked) {
+                db.ref('settings/chatLocked').set(false);
+            } else {
+                db.ref('settings/chatLocked').set(true);
+            }
+        }
+
+        // SECURE NUKE WITH PIN
         function nukeChat() {
             const pin = prompt("☢️ WARNING: This will permanently delete ALL messages in the database. Enter 4-digit PIN to confirm:");
             if (pin === "2013") {
@@ -396,6 +411,30 @@
                 }
             });
 
+            // LIVE CHAT LOCK LISTENER
+            db.ref('settings/chatLocked').on('value', (snap) => {
+                window.chatLocked = snap.val() === true;
+                const inputBar = document.getElementById('chatInput');
+                const lockBtn = document.getElementById('lock-chat-btn');
+                const lockIcon = document.getElementById('chat-lock-icon');
+                
+                if(window.chatLocked) {
+                    lockIcon.style.display = 'inline';
+                    if(lockBtn) { lockBtn.innerText = "🔓 Unlock Chat"; lockBtn.style.background = "#2ecc71"; }
+                    if(!isOwner && !isAdmin) {
+                        inputBar.placeholder = "🔒 Chat is currently locked by the Owner.";
+                        inputBar.disabled = true;
+                    }
+                } else {
+                    lockIcon.style.display = 'none';
+                    if(lockBtn) { lockBtn.innerText = "🔒 Lock Chat for Students"; lockBtn.style.background = "#f39c12"; }
+                    if(!isOwner && !isAdmin) {
+                        inputBar.placeholder = "Type a message...";
+                        inputBar.disabled = false;
+                    }
+                }
+            });
+
             // FORCE-KICK SYSTEM
             db.ref('users/' + myProfile.id).on('value', (snap) => {
                 if(isAppReady && !snap.exists()) {
@@ -423,7 +462,6 @@
                 if (el) el.remove();
             });
 
-            // LIVE TYPING LISTENER
             db.ref('typing').on('value', (snapshot) => {
                 const typingData = snapshot.val() || {};
                 let typers = [];
@@ -474,7 +512,6 @@
                 `;
             });
 
-            // Update live counter
             document.getElementById('online-counter').innerText = `👥 ${onlineCount} Online`;
         }
 
@@ -493,6 +530,12 @@
         }
 
         function handleActionClick() {
+            // Check Lock
+            if(window.chatLocked && !isOwner && !isAdmin) {
+                alert("🔒 The chat is currently locked. Only admins can send messages.");
+                return;
+            }
+
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
                 const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -500,14 +543,18 @@
                 let msgType = 'text';
                 let msgContent = text;
                 
-                // NEW: STRICT ALERT COMMAND CHECK
-                if(text.toLowerCase().startsWith('/alert ')) {
+                // BUG FIX: Safer Alert Check
+                if(text.toLowerCase().startsWith('/alert')) {
                     if (isOwner || isAdmin) {
                         msgType = 'alert';
-                        msgContent = text.substring(7); // Remove "/alert "
+                        msgContent = text.replace(/^\/alert\s*/i, ''); 
+                        if(msgContent === "") {
+                            alert("⚠️ Please type a message after /alert");
+                            return;
+                        }
                     } else {
-                        alert("❌ Permission Denied: Only Owners and Admins can send /alert announcements.");
-                        return; // Completely blocks the message from sending
+                        alert("❌ Permission Denied: Only Owners and Admins can send announcements.");
+                        return;
                     }
                 }
 
@@ -574,17 +621,16 @@
             const deleteBtnHtml = (canDelete && !payload.isDeleted) ? `<button class="delete-btn" onclick="deleteMessage('${payload.msgId}')" title="Delete message">🗑️</button>` : '';
             
             let bubbleClass = `msg-bubble ${isMe ? 'me' : ''}`;
+            if(isMe && isOwner) bubbleClass += " owner-bubble"; // GOLD BUBBLE
             if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
             
-            const roleBadgeHTML = getRoleBadge(payload.sender);
-            
-            // BUG FIX: Shows your own name and rank above your message!
-            const senderNameStr = isMe ? `${payload.sender.name} (You)` : payload.sender.name;
+            // WHATSAPP STYLE: Hide your own name above your own messages!
+            const senderHTML = isMe ? '' : `<div class="msg-sender">${payload.sender.name} ${getRoleBadge(payload.sender)}</div>`;
 
             return `
                 <div class="${bubbleClass}" id="${payload.msgId}" style="position:relative; ${(!isMe && (isOwner || isAdmin)) ? 'padding-right: 35px;' : ''}">
                     ${deleteBtnHtml}
-                    <div class="msg-sender">${senderNameStr} ${roleBadgeHTML}</div>
+                    ${senderHTML}
                     <div class="msg-text">${bodyHtml}</div>
                     <div class="msg-time">${payload.time}</div>
                 </div>
@@ -593,14 +639,10 @@
 
         function renderMessage(payload) {
             const container = document.getElementById('messages');
-            
-            // Calculate if we are currently at the bottom BEFORE adding the new message
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
             
             if (!document.getElementById(payload.msgId)) {
                 container.insertAdjacentHTML('beforeend', createMessageHTML(payload));
-                
-                // If we were at the bottom (or it's my own message), auto-scroll down
                 if (isAtBottom || payload.sender.id === myProfile.id) {
                     container.scrollTop = container.scrollHeight;
                 }
@@ -609,10 +651,13 @@
 
         function updateMessageOnScreen(data) {
             let oldBubble = document.getElementById(data.msgId);
-            if(oldBubble) oldBubble.outerHTML = createMessageHTML(data);
+            if(oldBubble) {
+                oldBubble.outerHTML = createMessageHTML(data);
+            }
         }
 
         function handleImageUpload(e) {
+            if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
@@ -636,6 +681,7 @@
 
         let mediaRecorder; let audioChunks = []; let isRecording = false;
         function toggleVoiceRecord() {
+            if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
             const btn = document.getElementById('action-btn');
             if(!isRecording) {
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
