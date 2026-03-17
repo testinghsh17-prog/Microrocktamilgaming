@@ -58,11 +58,20 @@
         .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .sys-msg { align-self: center; background: rgba(0,0,0,0.1); color: #555; padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center;}
 
-        /* BUBBLES */
+        /* BUBBLES & ROLES */
         .msg-bubble { background: white; padding: 10px 14px; border-radius: 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; border-top-left-radius: 2px; }
         .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
-        .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; }
-        .msg-bubble.me .msg-sender { color: #27ae60; }
+        .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .msg-bubble.me .msg-sender { color: #27ae60; justify-content: flex-end; }
+        
+        .role-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
+        .role-tag.owner { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
+        .role-tag.admin { background: #81ecec; color: #00b894; border: 1px solid #55efc4; }
+        .role-tag.student { background: #dfe6e9; color: #636e72; border: 1px solid #b2bec3; }
+
+        /* SPECIAL ANNOUNCEMENT ALERT */
+        .sys-alert-msg { align-self: center; background: #ff7675; color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; margin: 10px 0; text-align: center; box-shadow: 0 4px 15px rgba(214, 48, 49, 0.4); border: 2px solid #d63031; width: 90%; max-width: 400px;}
+
         .msg-text { font-size: 15px; color: #2f3640; line-height: 1.4; word-wrap: break-word; }
         .msg-time { font-size: 10px; color: rgba(0,0,0,0.45); text-align: right; margin-top: 4px; }
         
@@ -74,6 +83,9 @@
         .msg-image img { max-width: 200px; max-height: 250px; border-radius: 8px; display: block; object-fit: cover; }
         .msg-text a { color: #3498db; }
         audio { height: 40px; max-width: 200px; margin-top: 5px; outline: none; }
+
+        /* TYPING INDICATOR */
+        .typing-box { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 2px 20px; min-height: 20px; background: #e5e5e5; }
 
         /* INPUT AREA */
         .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
@@ -145,7 +157,7 @@
             
             <div id="owner-only-controls" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; display: none;">
                 <button id="btn-toggle-admin" class="primary" style="background:#f39c12; width:100%; margin-bottom:10px; margin-top:0;">Make Admin</button>
-                <button class="secondary" style="border-color:#c0392b; color:#c0392b; width:100%; margin-top:0;" onclick="adminDeleteUser()">🚨 Delete User Account</button>
+                <button class="secondary" style="border-color:#c0392b; color:#c0392b; width:100%; margin-top:0; background:#fadbd8;" onclick="adminDeleteUser()">🚨 Permanently Delete & Kick User</button>
             </div>
 
             <button class="secondary" style="border:none; color:#7f8c8d;" onclick="document.getElementById('admin-edit-screen').style.display='none'">Cancel</button>
@@ -162,6 +174,9 @@
                 </div>
             </div>
             <div class="user-list" id="users-container"></div>
+            <div id="owner-nuke-btn" style="display:none; padding:10px;">
+                <button onclick="nukeChat()" style="width:100%; padding:10px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">☢️ Clear Entire Chat</button>
+            </div>
             <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
         </div>
 
@@ -181,9 +196,11 @@
                 <div class="sys-msg">🔒 Firebase Central Database Active.</div>
             </div>
 
+            <div class="typing-box" id="typing-indicator"></div>
+
             <div class="input-bar">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                <input type="text" id="chatInput" placeholder="Type a message..." oninput="handleTypingInput()">
+                <input type="text" id="chatInput" placeholder="Type a message... (Type /alert to announce)" oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
             </div>
         </div>
@@ -208,6 +225,7 @@
         let classmates = {};
         let isOwner = false;
         let isAdmin = false;
+        let isAppReady = false; 
 
         window.onload = () => {
             const saved = localStorage.getItem('school_user');
@@ -223,6 +241,7 @@
         function updateHeaderBadge() {
             if(isOwner) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#e74c3c; font-weight:bold;'>👑 VISHNURAM (OWNER) ACTIVE</span>";
+                document.getElementById('owner-nuke-btn').style.display = 'block';
             } else if (isAdmin) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#f39c12; font-weight:bold;'>🛡️ ADMIN ACTIVE</span>";
             } else {
@@ -236,7 +255,6 @@
             const dob = document.getElementById('dobInput').value.trim();
             if (!name || !dob) return alert("Please fill all fields.");
 
-            // Assign default 'user' role on creation
             myProfile = { id: 'std_' + Math.random().toString(36).substr(2, 9), name, gender, dob, role: 'user' };
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             isOwner = myProfile.name.toLowerCase().includes('vishnuram');
@@ -264,12 +282,11 @@
         function deleteMyAccount() {
             if(confirm("🚨 WARNING: Are you sure you want to permanently delete your account?")) {
                 db.ref('users/' + myProfile.id).remove();
-                localStorage.removeItem('school_user');
+                localStorage.clear();
                 location.reload();
             }
         }
 
-        // OWNER/ADMIN EDITING SOMEONE ELSE'S PROFILE
         function openAdminEdit(userId) {
             if(!isOwner && !isAdmin) return; 
             if(userId === myProfile.id) return;
@@ -281,7 +298,6 @@
             document.getElementById('adminEditGender').value = u.gender;
             document.getElementById('adminEditDob').value = u.dob;
             
-            // Only Owner gets to see the Promote to Admin and Delete Account buttons
             if(isOwner) {
                 document.getElementById('owner-only-controls').style.display = 'block';
                 let btn = document.getElementById('btn-toggle-admin');
@@ -301,11 +317,11 @@
 
         function saveAdminEdit() {
             let targetId = document.getElementById('adminEditId').value;
-            let name = document.getElementById('adminEditName').value.trim();
-            let gender = document.getElementById('adminEditGender').value;
-            let dob = document.getElementById('adminEditDob').value.trim();
-            
-            db.ref('users/' + targetId).update({ name: name, gender: gender, dob: dob });
+            db.ref('users/' + targetId).update({ 
+                name: document.getElementById('adminEditName').value.trim(), 
+                gender: document.getElementById('adminEditGender').value, 
+                dob: document.getElementById('adminEditDob').value.trim() 
+            });
             document.getElementById('admin-edit-screen').style.display = 'none';
         }
 
@@ -317,9 +333,18 @@
 
         function adminDeleteUser() {
             let targetId = document.getElementById('adminEditId').value;
-            if(confirm("🚨 Are you sure you want to permanently delete this user from the app?")) {
-                db.ref('users/' + targetId).remove();
+            if(confirm("🚨 Are you sure you want to permanently kick this user from the app?")) {
+                db.ref('users/' + targetId).remove(); // This triggers the Force-Kick logic on their phone
                 document.getElementById('admin-edit-screen').style.display = 'none';
+                alert("User deleted and kicked successfully!");
+            }
+        }
+
+        // OWNER NUKE CHAT
+        function nukeChat() {
+            if(confirm("☢️ WARNING: This will permanently delete ALL messages in the database. Are you sure?")) {
+                db.ref('messages').remove();
+                document.getElementById('messages').innerHTML = '<div class="sys-msg">🔒 Firebase Central Database Active.</div>';
             }
         }
 
@@ -334,7 +359,6 @@
                 if (snap.val() === true) {
                     document.getElementById('conn-status').innerText = '🟢 Firebase Connected';
                     document.getElementById('conn-status').style.background = '#2ecc71';
-                    
                     myStatusRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                     myStatusRef.set({ ...myProfile, online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                 } else {
@@ -343,22 +367,48 @@
                 }
             });
 
-            // Listen for user changes (Detects if you get promoted to Admin live)
+            // THE FORCE-KICK SYSTEM (Fixes Delete Profile)
+            db.ref('users/' + myProfile.id).on('value', (snap) => {
+                if(isAppReady && !snap.exists()) {
+                    myStatusRef.onDisconnect().cancel(); // Stop them from showing online
+                    localStorage.clear();
+                    alert("🚨 Your account has been permanently deleted or banned by the Owner.");
+                    window.location.reload();
+                }
+                isAppReady = true;
+            });
+
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {};
                 let meData = classmates[myProfile.id];
                 isAdmin = meData && meData.role === 'admin';
+                myProfile.role = meData ? meData.role : 'user'; // keep local profile updated
                 updateHeaderBadge();
                 renderUserList();
             });
 
             db.ref('messages').on('child_added', (snapshot) => { renderMessage(snapshot.val()); });
             db.ref('messages').on('child_changed', (snapshot) => { updateMessageOnScreen(snapshot.val()); });
-            
-            // NEW: Listen for permanent Hard Deletes
             db.ref('messages').on('child_removed', (snapshot) => {
                 const el = document.getElementById(snapshot.key);
                 if (el) el.remove();
+            });
+
+            // LIVE TYPING LISTENER
+            db.ref('typing').on('value', (snapshot) => {
+                const typingData = snapshot.val() || {};
+                let typers = [];
+                for(let id in typingData) {
+                    if(typingData[id] === true && id !== myProfile.id && classmates[id]) {
+                        typers.push(classmates[id].name);
+                    }
+                }
+                const indicator = document.getElementById('typing-indicator');
+                if(typers.length > 0) {
+                    indicator.innerText = typers.join(', ') + (typers.length > 1 ? " are typing..." : " is typing...");
+                } else {
+                    indicator.innerText = "";
+                }
             });
         }
 
@@ -377,10 +427,7 @@
                 const initial = u.name.charAt(0).toUpperCase();
                 const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
                 
-                // Show role badges in the list
-                let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : 'Student');
-                
-                // If user is owner/admin, clicking a name opens the Editor
+                let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '🎓 Student');
                 const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
                 container.innerHTML += `
@@ -397,8 +444,15 @@
 
         function getIST() { return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' }); }
 
+        let typingTimeout = null;
         function handleTypingInput() {
             const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
+            
+            // Send typing status to database
+            db.ref('typing/' + myProfile.id).set(text.length > 0);
+            if(typingTimeout) clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
+
             if (text) { btn.innerText = '➤'; btn.style.background = '#3498db'; } 
             else { btn.innerText = '🎤'; btn.style.background = '#075e54'; }
         }
@@ -407,11 +461,23 @@
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
                 const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                
+                // SYSTEM ANNOUNCEMENT FEATURE
+                let msgType = 'text';
+                let msgContent = text;
+                if((isOwner || isAdmin) && text.toLowerCase().startsWith('/alert ')) {
+                    msgType = 'alert';
+                    msgContent = text.substring(7); // Remove "/alert "
+                }
+
                 db.ref('messages/' + msgId).set({
-                    msgId: msgId, sender: myProfile, type: 'text', text: text, data: null,
+                    msgId: msgId, sender: myProfile, type: msgType, text: msgContent, data: null,
                     isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
-                document.getElementById('chatInput').value = ''; handleTypingInput(); 
+                
+                document.getElementById('chatInput').value = ''; 
+                db.ref('typing/' + myProfile.id).set(false); // Stop typing status immediately
+                handleTypingInput(); 
             } else { toggleVoiceRecord(); }
         }
 
@@ -420,19 +486,29 @@
         function deleteMessage(msgId) {
             if(confirm("Hide this message?")) db.ref('messages/' + msgId).update({ isDeleted: true });
         }
-
         function recoverMessage(msgId) {
             if(confirm("Recover this message?")) db.ref('messages/' + msgId).update({ isDeleted: false });
         }
-
-        // NEW: HARD DELETE (ERASE)
         function hardDeleteMessage(msgId) {
             if(confirm("🔥 ERASING MESSAGE: This will permanently wipe it from the database for everyone. Continue?")) {
                 db.ref('messages/' + msgId).remove();
             }
         }
 
+        // GENERATE BADGE FOR SENDER
+        function getRoleBadge(senderData) {
+            if(senderData.name.toLowerCase().includes('vishnuram')) return '<span class="role-tag owner">👑 Owner</span>';
+            if(senderData.role === 'admin') return '<span class="role-tag admin">🛡️ Admin</span>';
+            return '<span class="role-tag student">🎓 Student</span>';
+        }
+
         function createMessageHTML(payload) {
+            if(payload.type === 'alert' && !payload.isDeleted) {
+                const canDelete = isOwner || isAdmin;
+                const delBtn = canDelete ? `<button class="delete-btn" onclick="hardDeleteMessage('${payload.msgId}')">🗑️</button>` : '';
+                return `<div class="sys-alert-msg" id="${payload.msgId}" style="position:relative;">${delBtn}🚨 ANNOUNCEMENT:<br>${payload.text}</div>`;
+            }
+
             const isMe = payload.sender.id === myProfile.id;
             let bodyHtml = '';
             
@@ -441,7 +517,7 @@
                 if(isOwner || isAdmin) {
                     bodyHtml += ` <button onclick="recoverMessage('${payload.msgId}')" style="background:#2ecc71; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:10px;">♻️ Recover</button>`;
                 }
-                if(isOwner) {
+                if(isOwner) { // Only OWNER gets the fire erase button
                     bodyHtml += ` <button onclick="hardDeleteMessage('${payload.msgId}')" style="background:#c0392b; color:white; border:none; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer; padding:4px 8px; margin-left:5px;">🔥 Erase</button>`;
                 }
             } else {
@@ -459,11 +535,13 @@
             
             let bubbleClass = `msg-bubble ${isMe ? 'me' : ''}`;
             if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
+            
+            const roleBadgeHTML = getRoleBadge(payload.sender);
 
             return `
                 <div class="${bubbleClass}" id="${payload.msgId}" style="position:relative; ${(!isMe && (isOwner || isAdmin)) ? 'padding-right: 35px;' : ''}">
                     ${deleteBtnHtml}
-                    ${isMe ? '' : `<div class="msg-sender">${payload.sender.name}</div>`}
+                    ${isMe ? `<div class="msg-sender">${roleBadgeHTML}</div>` : `<div class="msg-sender">${payload.sender.name} ${roleBadgeHTML}</div>`}
                     <div class="msg-text">${bodyHtml}</div>
                     <div class="msg-time">${payload.time}</div>
                 </div>
