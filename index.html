@@ -9,110 +9,152 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* CORE SETUP */
-        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #e5e5e5; position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
+        /* CORE SETUP & CSS VARIABLES FOR THEMES */
+        :root {
+            --bg-main: #e5e5e5;
+            --bg-panel: #ffffff;
+            --bg-sidebar: #f8f9fa;
+            --text-main: #2f3640;
+            --text-sub: #7f8c8d;
+            --border-color: #dcdde1;
+            --bubble-other: #ffffff;
+            --bubble-me: #dcf8c6;
+            --bubble-dm: #f3e5f5;
+            --bubble-dm-me: #f5eeff;
+            --input-bg: #f0f2f5;
+            --input-field: #ffffff;
+        }
+
+        /* DARK THEME OVERRIDES */
+        .dark-theme {
+            --bg-main: #1e272e;
+            --bg-panel: #2f3640;
+            --bg-sidebar: #353b48;
+            --text-main: #f5f6fa;
+            --text-sub: #dcdde1;
+            --border-color: #485460;
+            --bubble-other: #353b48;
+            --bubble-me: #05c46b;
+            --bubble-dm: #8e44ad;
+            --bubble-dm-me: #9b59b6;
+            --input-bg: #2f3640;
+            --input-field: #353b48;
+        }
+
+        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: var(--bg-main); color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; transition: background 0.3s; }
         * { box-sizing: border-box; }
         
         /* MODALS & AUTH TABS */
         .modal-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #2c3e50, #3498db); display: flex; align-items: center; justify-content: center; z-index: 3000; }
-        .modal-box { background: white; padding: 35px; border-radius: 16px; width: 340px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto;}
-        .modal-box h2 { margin-top: 0; color: #2c3e50; text-align: center; margin-bottom: 20px; }
+        .modal-box { background: var(--bg-panel); color: var(--text-main); padding: 35px; border-radius: 16px; width: 340px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto;}
+        .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; }
         
         .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab { flex: 1; padding: 10px; border: none; background: #ecf0f1; color: #7f8c8d; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
+        .tab { flex: 1; padding: 10px; border: none; background: var(--bg-sidebar); color: var(--text-sub); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
         .tab.active { background: #3498db; color: white; }
 
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: #7f8c8d; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
-        .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dcdde1; font-size: 15px; outline: none; background: #f8f9fa; transition: 0.2s; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 15px; outline: none; background: var(--input-field); color: var(--text-main); transition: 0.2s; }
+        .modal-box input:focus { border-color: #3498db; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
         .modal-box button.primary { background: #3498db; color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 8px; font-size: 16px; margin-top: 10px; transition: 0.2s; }
+        .modal-box button.primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4); }
         .modal-box button.secondary { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; font-weight: bold; cursor: pointer; padding: 10px; border-radius: 8px; margin-top: 10px; }
-        .credits { text-align: center; font-size: 12px; color: #95a5a6; margin-top: 20px; font-weight: 500; }
+        .credits { text-align: center; font-size: 12px; color: var(--text-sub); margin-top: 20px; font-weight: 500; }
 
         /* APP LAYOUT */
         #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
-        .sidebar { width: 320px; background: white; display: flex; flex-direction: column; border-right: 1px solid #dcdde1; z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar-header { padding: 15px 20px; background: #f8f9fa; border-bottom: 1px solid #dcdde1; display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-title { font-weight: bold; color: #2c3e50; font-size: 18px; }
+        .sidebar { width: 320px; background: var(--bg-panel); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
+        .sidebar-header { padding: 15px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-title { font-weight: bold; font-size: 18px; }
         .header-actions { display: flex; align-items: center; gap: 10px; }
-        .edit-btn { background: #ecf0f1; color: #2c3e50; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .edit-btn { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
         .close-sidebar-btn { display: none; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; }
         
-        .user-list { flex: 1; overflow-y: auto; padding: 10px; background: white; }
-        .user-item { display: flex; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 5px; background: #f8f9fa; border-left: 4px solid transparent; transition: 0.2s; }
-        .user-item:hover { background: #ecf0f1; }
+        /* YOUTUBE PROMO BLOCK */
+        .yt-promo { padding: 15px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-color); text-align: center; }
+        .yt-promo p { margin: 0 0 8px 0; font-size: 11px; font-weight: 800; color: var(--text-sub); letter-spacing: 1px; }
+        .yt-btn { display: block; width: 100%; background: #ff0000; color: white; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2); }
+        .yt-btn:hover { background: #cc0000; transform: scale(1.02); }
+
+        .user-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .user-item { display: flex; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 5px; background: var(--bg-sidebar); border-left: 4px solid transparent; transition: 0.2s; }
+        .user-item:hover { transform: translateX(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .user-item.online-border { border-left-color: #2ecc71; }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin-right: 15px; text-transform: uppercase; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; margin-right: 15px; text-transform: uppercase; position: relative; }
+        .avatar.online-ring { border: 2px solid #2ecc71; padding: 2px; background-clip: content-box; }
         .user-details { flex: 1; min-width: 0; }
-        .name-text { font-weight: 600; color: #2f3640; font-size: 15px; }
-        .status-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; margin-top: 4px; }
+        .name-text { font-weight: 600; font-size: 15px; }
+        .status-indicator { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: bold; margin-top: 4px; color: var(--text-sub); }
         .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .dot.online { background: #2ecc71; box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
         .dot.offline { background: #e74c3c; }
-        .credits-sidebar { padding: 15px; background: #f8f9fa; text-align: center; font-size: 12px; color: #7f8c8d; border-top: 1px solid #dcdde1; font-weight: 500;}
 
         /* CHAT SECTION */
-        .chat-section { flex: 1; display: flex; flex-direction: column; background: #e5e5e5; position: relative; width: 100%; background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); }
-        .chat-header { padding: 12px 20px; background: white; border-bottom: 1px solid #dcdde1; display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;}
-        .menu-btn { display: none; font-size: 24px; cursor: pointer; color: #2f3640; }
+        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); }
+        .chat-header { padding: 12px 20px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;}
+        .menu-btn { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
         .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
-        .header-title { font-weight: bold; color: #2f3640; font-size: 16px; display: flex; align-items: center; gap: 8px;}
+        .header-title { font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 8px;}
         .header-subtitle { font-size: 12px; color: #3498db; font-weight: 600; margin-top: 2px; }
         
         .status-pill { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
         #conn-status { font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; background: #f39c12; color: white; }
-        #online-counter { font-size: 10px; font-weight: bold; color: #7f8c8d; background: #ecf0f1; padding: 2px 8px; border-radius: 10px;}
+        #online-counter { font-size: 10px; font-weight: bold; color: var(--text-sub); background: var(--bg-sidebar); padding: 2px 8px; border-radius: 10px;}
 
-        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-        .sys-msg { align-self: center; background: rgba(0,0,0,0.1); color: #555; padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center;}
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
+        .sys-msg { align-self: center; background: var(--bg-sidebar); color: var(--text-sub); padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: bold; margin: 5px 0; text-align: center; border: 1px solid var(--border-color); }
 
         /* BUBBLES & ROLES */
-        .msg-bubble { background: white; padding: 10px 14px; border-radius: 12px; max-width: 85%; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; border-top-left-radius: 2px; }
-        .msg-bubble.me { background: #dcf8c6; align-self: flex-end; border-top-left-radius: 12px; border-top-right-radius: 2px; padding-right: 35px; }
-        .msg-bubble.me.owner-bubble { background: #ffeaa7; border: 2px solid #f1c40f; }
+        .msg-bubble { background: var(--bubble-other); padding: 12px 16px; border-radius: 16px; max-width: 85%; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.08); position: relative; border-top-left-radius: 4px; transition: background 0.3s; }
+        .msg-bubble.me { background: var(--bubble-me); align-self: flex-end; border-top-left-radius: 16px; border-top-right-radius: 4px; padding-right: 35px; color: var(--text-main); }
+        .dark-theme .msg-bubble.me { color: white; } /* Keep text white in dark mode for green bubble */
+        .msg-bubble.me.owner-bubble { background: #ffeaa7; border: 2px solid #f1c40f; color: #d35400; }
         
-        /* DM BUBBLE STYLE */
-        .msg-bubble.dm-bubble { background: #f3e5f5; border: 2px dashed #9b59b6; }
-        .msg-bubble.dm-bubble.me { background: #f5eeff; border: 2px dashed #8e44ad; }
+        .msg-bubble.dm-bubble { background: var(--bubble-dm); border: 2px dashed #9b59b6; }
+        .msg-bubble.dm-bubble.me { background: var(--bubble-dm-me); border: 2px dashed #8e44ad; }
 
-        .msg-sender { font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .msg-sender { font-size: 11px; font-weight: bold; color: var(--text-sub); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 4px; }
         
         .role-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .role-tag.owner { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
         .role-tag.admin { background: #81ecec; color: #00b894; border: 1px solid #55efc4; }
-        .role-tag.student { background: #dfe6e9; color: #636e72; border: 1px solid #b2bec3; }
+        .role-tag.student { background: var(--bg-main); color: var(--text-sub); border: 1px solid var(--border-color); }
 
         .sys-alert-msg { align-self: center; background: #ff7675; color: white; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: bold; margin: 10px 0; text-align: center; box-shadow: 0 4px 15px rgba(214, 48, 49, 0.4); border: 2px solid #d63031; width: 90%; max-width: 400px;}
 
-        .msg-text { font-size: 15px; color: #2f3640; line-height: 1.4; word-wrap: break-word; }
-        .msg-time { font-size: 10px; color: rgba(0,0,0,0.45); text-align: right; margin-top: 4px; }
+        .msg-text { font-size: 15px; line-height: 1.5; word-wrap: break-word; }
+        .msg-time { font-size: 10px; color: var(--text-sub); text-align: right; margin-top: 6px; opacity: 0.8; }
         
-        .deleted-text { font-style: italic; color: #7f8c8d; font-size: 14px; display: flex; align-items: center; gap: 5px;}
+        .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; display: flex; align-items: center; gap: 5px;}
         .delete-btn { position: absolute; top: 8px; right: 8px; background: rgba(231, 76, 60, 0.1); border: none; color: #e74c3c; font-size: 14px; cursor: pointer; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .delete-btn:hover { background: #e74c3c; color: white; }
         
         .msg-image { margin-top: 5px; cursor: pointer; }
-        .msg-image img { max-width: 200px; max-height: 250px; border-radius: 8px; display: block; object-fit: cover; }
-        .msg-text a { color: #3498db; }
+        .msg-image img { max-width: 200px; max-height: 250px; border-radius: 8px; display: block; object-fit: cover; border: 1px solid var(--border-color); }
+        .msg-text a { color: #3498db; text-decoration: underline; }
         audio { height: 40px; max-width: 200px; margin-top: 5px; outline: none; }
 
-        .typing-box { font-size: 12px; color: #7f8c8d; font-style: italic; padding: 2px 20px; min-height: 20px; background: #e5e5e5; }
+        .typing-box { font-size: 12px; color: var(--text-sub); font-style: italic; padding: 2px 20px; min-height: 20px; background: var(--bg-main); transition: background 0.3s; }
         #scroll-bottom-btn { position: absolute; bottom: 80px; right: 20px; background: #3498db; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2000;}
 
         /* INPUT AREA */
-        .input-bar { padding: 12px 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); z-index: 100;}
-        .action-btn { background: transparent; color: #7f8c8d; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; }
-        .input-bar input { flex: 1; padding: 12px 20px; border-radius: 25px; border: none; outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: 0.3s;}
+        .input-bar { padding: 12px 15px; background: var(--input-bg); display: flex; gap: 10px; align-items: center; padding-bottom: max(12px, env(safe-area-inset-bottom)); z-index: 100; border-top: 1px solid var(--border-color); transition: background 0.3s; }
+        .action-btn { background: transparent; color: var(--text-sub); border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: 0.2s; }
+        .action-btn:hover { background: var(--border-color); }
+        .input-bar input { flex: 1; padding: 14px 20px; border-radius: 25px; border: 1px solid var(--border-color); outline: none; font-size: 15px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: 0.3s; background: var(--input-field); color: var(--text-main); }
+        .input-bar input:focus { border-color: #3498db; }
         
-        .input-bar input:disabled { background: #dcdde1; cursor: not-allowed; }
+        .input-bar input:disabled { background: var(--bg-sidebar); cursor: not-allowed; opacity: 0.7;}
         .input-bar.timeout-active input { background: #fadbd8; border: 1px solid #e74c3c; color: #c0392b;}
 
-        .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; }
+        .send-btn { background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+        .send-btn:hover { transform: scale(1.05); }
         .send-btn.recording { background: #e74c3c; animation: pulse 1s infinite alternate; }
         @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
         @media (max-width: 768px) {
-            .sidebar { position: absolute; top: 0; left: 0; height: 100dvh; transform: translateX(-100%); width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); z-index: 2000; }
+            .sidebar { position: absolute; top: 0; left: 0; height: 100dvh; transform: translateX(-100%); width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 2000; }
             .sidebar.open { transform: translateX(0); }
             .menu-btn { display: block; }
             .close-sidebar-btn { display: flex; }
@@ -123,6 +165,12 @@
         #lightbox img { max-width: 90%; max-height: 75%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .lb-actions { display: flex; gap: 15px; margin-top: 20px; }
         .lb-btn { padding: 10px 25px; color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; }
+        
+        /* THEME TOGGLE BTN */
+        .theme-btn-container { padding: 10px; background: var(--bg-panel); border-top: 1px solid var(--border-color); }
+        .theme-toggle-btn { width: 100%; padding: 12px; background: var(--bg-sidebar); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+        .theme-toggle-btn:hover { background: var(--border-color); }
+
     </style>
 </head>
 <body>
@@ -169,47 +217,48 @@
             <h2>Edit Profile</h2>
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
-            <p style="font-size:11px; color:#7f8c8d; text-align:center;">Usernames cannot be changed after creation.</p>
+            <p style="font-size:11px; color: var(--text-sub); text-align:center;">Usernames cannot be changed after creation.</p>
             <button class="primary" onclick="saveProfile()">Save Changes</button>
             <button class="secondary" style="border-color: #f39c12; color: #f39c12;" onclick="logoutApp()">🚪 Log Out Safely</button>
             <button class="secondary" style="border-color: #c0392b; color: #c0392b;" onclick="deleteMyAccount()">🚨 Delete My Account</button>
-            <button class="secondary" style="border:none; color:#7f8c8d;" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
+            <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
         </div>
     </div>
 
     <div id="admin-edit-screen" class="modal-screen" style="display: none;">
         <div class="modal-box">
             <h2 style="color:#e74c3c; margin-bottom: 5px;">👑 Admin Panel</h2>
-            <p style="font-size:12px; color:#7f8c8d; text-align:center; margin-top:0px; margin-bottom: 20px;">Editing Student Profile</p>
+            <p style="font-size:12px; color:var(--text-sub); text-align:center; margin-top:0px; margin-bottom: 20px;">Editing Student Profile</p>
             <input type="hidden" id="adminEditId">
-            <div class="input-group"><label>Username</label><input type="text" id="adminEditName" disabled style="background:#ecf0f1; cursor:not-allowed;"></div>
+            <div class="input-group"><label>Username</label><input type="text" id="adminEditName" disabled style="background:var(--bg-sidebar); cursor:not-allowed; opacity:0.7;"></div>
             <div class="input-group"><label>Gender</label><select id="adminEditGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="adminEditDob"></div>
             <button class="primary" style="background:#e74c3c;" onclick="saveAdminEdit()">Force Save Changes</button>
             
-            <div id="owner-only-controls" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; display: none;">
+            <div id="owner-only-controls" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; display: none;">
                 <button id="btn-toggle-admin" class="primary" style="background:#f39c12; width:100%; margin-bottom:10px; margin-top:0;">Make Admin</button>
-                <button class="secondary" style="border-color:#c0392b; color:#c0392b; width:100%; margin-top:0; background:#fadbd8;" onclick="adminDeleteUser()">🚨 Permanently Delete & Kick User</button>
+                <button class="secondary" style="border-color:#c0392b; color:#c0392b; width:100%; margin-top:0;" onclick="adminDeleteUser()">🚨 Permanently Kick User</button>
             </div>
 
-            <button class="secondary" style="border:none; color:#7f8c8d;" onclick="document.getElementById('admin-edit-screen').style.display='none'">Cancel</button>
+            <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('admin-edit-screen').style.display='none'">Cancel</button>
         </div>
     </div>
 
     <div id="cmd-screen" class="modal-screen" style="display: none;">
         <div class="modal-box">
-            <h2 style="color:#2c3e50; margin-bottom: 10px;">⌨️ Command Guide</h2>
-            <div style="font-size:13px; line-height:1.6; color:#2f3640; margin-bottom: 15px;">
-                <p><b>/dm [name] [msg]</b><br><span style="color:#7f8c8d;">Send a private secret message.</span></p>
-                <p><b>/alert [msg]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Red global announcement.</span></p>
-                <p><b>/timeout [name] [minutes]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Mutes a student. Ex: /timeout Alex 5</span></p>
-                <p><b>/untimeout [name]</b><br><span style="color:#7f8c8d;">(Owner/Admin) Unmutes a student.</span></p>
-                <p><b>/promote [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly make someone Admin.</span></p>
-                <p><b>/demote [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Remove Admin powers.</span></p>
-                <p><b>/lock & /unlock</b><br><span style="color:#7f8c8d;">(Owner Only) Lock/Unlock chat for students.</span></p>
-                <p><b>/kick [name]</b><br><span style="color:#7f8c8d;">(Owner Only) Instantly ban a student.</span></p>
-                <p><b>/clear</b><br><span style="color:#7f8c8d;">(Everyone) Wipes your local screen clean.</span></p>
-                <p><b>/shrug & /tableflip</b><br><span style="color:#7f8c8d;">(Everyone) Fun text macros!</span></p>
+            <h2 style="color:var(--text-main); margin-bottom: 10px;">⌨️ Command Guide</h2>
+            <div style="font-size:13px; line-height:1.6; color:var(--text-main); margin-bottom: 15px;">
+                <p><b>/dm [name] [msg]</b><br><span style="color:var(--text-sub);">Send a private secret message.</span></p>
+                <p><b>/alert [msg]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Red global announcement.</span></p>
+                <p><b>/timeout [name] [mins]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Mutes a student.</span></p>
+                <p><b>/untimeout [name]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Unmutes a student.</span></p>
+                <p><b>/promote [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Instantly make someone Admin.</span></p>
+                <p><b>/demote [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Remove Admin powers.</span></p>
+                <p><b>/lock & /unlock</b><br><span style="color:var(--text-sub);">(Owner Only) Lock/Unlock chat.</span></p>
+                <p><b>/kick [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Instantly ban a student.</span></p>
+                <p><b>/clear</b><br><span style="color:var(--text-sub);">(Everyone) Wipes your local screen clean.</span></p>
+                <p><b>/shrug & /tableflip</b><br><span style="color:var(--text-sub);">(Everyone) Fun text macros!</span></p>
+                <p><b>/nuke</b><br><span style="color:var(--text-sub);">(Owner Only) Clear database (Requires PIN).</span></p>
             </div>
             <button class="primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
         </div>
@@ -218,25 +267,31 @@
     <div id="app-screen">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-title">Students</div>
+                <div class="sidebar-title" id="my-profile-name">Students</div>
                 <div class="header-actions">
-                    <button class="edit-btn" onclick="openEditProfile()">Edit</button>
+                    <button class="edit-btn" onclick="openEditProfile()">Profile</button>
                     <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
                 </div>
             </div>
+            
+            <div class="yt-promo">
+                <p>🔥 CREATOR / OWNER</p>
+                <a href="https://www.youtube.com/@microrocktamilgaming" target="_blank" class="yt-btn">▶ Sub to MicroRockTamilGaming!</a>
+            </div>
+
             <div class="user-list" id="users-container"></div>
             
-            <div id="admin-tools-section" style="display:none; padding:10px; border-top: 2px solid #dcdde1; background: #f8f9fa; display: flex; flex-direction: column; gap: 8px;">
+            <div id="admin-tools-section" style="display:flex; padding:10px; border-top: 1px solid var(--border-color); background: var(--bg-panel); flex-direction: column; gap: 8px;">
                 <button onclick="document.getElementById('cmd-screen').style.display='flex'" style="width:100%; padding:10px; background:#34495e; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">⌨️ Command Guide</button>
             </div>
             
-            <div id="owner-super-controls" style="display:none; padding:10px; padding-top:0; gap: 8px; flex-direction: column; background: #f8f9fa;">
+            <div id="owner-super-controls" style="display:none; padding:10px; padding-top:0; gap: 8px; flex-direction: column; background: var(--bg-panel);">
                 <button id="lock-chat-btn" onclick="toggleChatLock()" style="width:100%; padding:10px; background:#f39c12; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">🔒 Lock Chat</button>
                 <button onclick="nukeChat()" style="width:100%; padding:10px; background:#c0392b; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">☢️ Clear Entire Chat</button>
             </div>
             
-            <div style="padding:10px; background: #f8f9fa; border-top: 1px solid #dcdde1;">
-                <button onclick="logoutApp()" style="width:100%; padding:10px; background:transparent; color:#e74c3c; border:2px solid #e74c3c; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">🚪 Log Out</button>
+            <div class="theme-btn-container">
+                <button class="theme-toggle-btn" id="theme-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
             </div>
 
             <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
@@ -247,7 +302,7 @@
                 <span class="menu-btn" onclick="toggleSidebar()">☰</span>
                 <div class="header-info">
                     <div>
-                        <div class="header-title">7-Marutham Group Chat <span id="chat-lock-icon" style="display:none;">🔒</span></div>
+                        <div class="header-title">7-Marutham Hub <span id="chat-lock-icon" style="display:none;">🔒</span></div>
                         <div class="header-subtitle" id="owner-badge">Made by Vishnuram and Prasanth</div>
                     </div>
                     <div class="status-pill">
@@ -295,6 +350,13 @@
         let myTimeoutTime = 0;
         let timeoutInterval = null;
 
+        // INITIALIZE DARK MODE ON LOAD
+        let isDark = localStorage.getItem('marutham_theme') === 'dark';
+        if(isDark) {
+            document.body.classList.add('dark-theme');
+            document.getElementById('theme-btn').innerText = '☀️ Light Mode';
+        }
+
         window.onload = () => {
             const saved = localStorage.getItem('school_user');
             if (saved) { 
@@ -308,13 +370,19 @@
             }
         };
 
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-theme');
+            let darkNow = document.body.classList.contains('dark-theme');
+            localStorage.setItem('marutham_theme', darkNow ? 'dark' : 'light');
+            document.getElementById('theme-btn').innerText = darkNow ? '☀️ Light Mode' : '🌙 Dark Mode';
+        }
+
         // --- AUTHENTICATION SYSTEM ---
         function switchAuthTab(tab) {
             document.getElementById('tab-login').classList.remove('active');
             document.getElementById('tab-signup').classList.remove('active');
             document.getElementById('form-login').style.display = 'none';
             document.getElementById('form-signup').style.display = 'none';
-
             document.getElementById('tab-' + tab).classList.add('active');
             document.getElementById('form-' + tab).style.display = 'block';
         }
@@ -330,7 +398,6 @@
             const dob = document.getElementById('regDob').value.trim();
 
             if(!name || !pwd || !dob) return alert("Please fill all fields!");
-            
             if(name.toLowerCase().includes('vishnuram')) {
                 if(pwd !== "vishnuram2013@") {
                     return alert("❌ ACCESS DENIED: You cannot use the Owner's name without the master password.");
@@ -338,16 +405,13 @@
             }
 
             const safeKey = formatKey(name);
-            
             db.ref('accounts/' + safeKey).once('value').then(snap => {
                 if(snap.exists()) {
                     alert("❌ ERROR: This username is already taken! Please choose a different name.");
                 } else {
                     let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
                     let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0 };
-                    
                     db.ref('accounts/' + safeKey).set(newProfile);
-                    
                     myProfile = newProfile;
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = role === 'owner';
@@ -359,9 +423,7 @@
         function doLogin() {
             const name = document.getElementById('logName').value.trim();
             const pwd = document.getElementById('logPwd').value;
-            
             if(!name || !pwd) return alert("Please enter username and password.");
-
             const safeKey = formatKey(name);
             
             db.ref('accounts/' + safeKey).once('value').then(snap => {
@@ -369,9 +431,7 @@
                     alert("❌ Account not found. Please go to Sign Up and create one.");
                 } else {
                     let acc = snap.val();
-                    if(acc.password !== pwd) {
-                        return alert("❌ Incorrect Password!");
-                    }
+                    if(acc.password !== pwd) return alert("❌ Incorrect Password!");
                     myProfile = acc;
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner';
@@ -380,31 +440,22 @@
             });
         }
         
-        // --- SAFE LOGOUT ---
         function logoutApp() {
             if(confirm("Are you sure you want to log out?")) {
-                db.ref('users/' + myProfile.id).update({
-                    online: false, 
-                    lastSeen: firebase.database.ServerValue.TIMESTAMP
-                });
+                db.ref('users/' + myProfile.id).update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                 localStorage.removeItem('school_user');
                 location.reload();
             }
         }
-        // ---------------------------------
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function checkScroll() {
             const container = document.getElementById('messages');
             const btn = document.getElementById('scroll-bottom-btn');
-            if(container.scrollHeight - container.scrollTop - container.clientHeight > 150) {
-                btn.style.display = 'flex';
-            } else {
-                btn.style.display = 'none';
-            }
+            if(container.scrollHeight - container.scrollTop - container.clientHeight > 150) btn.style.display = 'flex';
+            else btn.style.display = 'none';
         }
-
         function scrollToBottom() {
             const container = document.getElementById('messages');
             container.scrollTop = container.scrollHeight;
@@ -414,16 +465,14 @@
             if(isOwner) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#e74c3c; font-weight:bold;'>👑 VISHNURAM (OWNER) ACTIVE</span>";
                 document.getElementById('owner-super-controls').style.display = 'flex';
-                document.getElementById('admin-tools-section').style.display = 'flex';
             } else if (isAdmin) {
                 document.getElementById('owner-badge').innerHTML = "<span style='color:#f39c12; font-weight:bold;'>🛡️ ADMIN ACTIVE</span>";
                 document.getElementById('owner-super-controls').style.display = 'none';
-                document.getElementById('admin-tools-section').style.display = 'flex';
             } else {
                 document.getElementById('owner-badge').innerText = "Made by Vishnuram and Prasanth";
                 document.getElementById('owner-super-controls').style.display = 'none';
-                document.getElementById('admin-tools-section').style.display = 'flex'; // Let everyone see command guide
             }
+            document.getElementById('my-profile-name').innerText = "Hi, " + myProfile.name;
         }
 
         function openEditProfile() {
@@ -436,7 +485,6 @@
             myProfile.gender = document.getElementById('editGender').value; 
             myProfile.dob = document.getElementById('editDob').value.trim();
             localStorage.setItem('school_user', JSON.stringify(myProfile));
-            
             db.ref('accounts/' + myProfile.id).update({ gender: myProfile.gender, dob: myProfile.dob});
             db.ref('users/' + myProfile.id).update({ gender: myProfile.gender, dob: myProfile.dob});
             document.getElementById('edit-screen').style.display = 'none';
@@ -481,10 +529,7 @@
 
         function saveAdminEdit() {
             let targetId = document.getElementById('adminEditId').value;
-            let updates = { 
-                gender: document.getElementById('adminEditGender').value, 
-                dob: document.getElementById('adminEditDob').value.trim() 
-            };
+            let updates = { gender: document.getElementById('adminEditGender').value, dob: document.getElementById('adminEditDob').value.trim() };
             db.ref('accounts/' + targetId).update(updates);
             db.ref('users/' + targetId).update(updates);
             document.getElementById('admin-edit-screen').style.display = 'none';
@@ -508,11 +553,8 @@
         }
 
         function toggleChatLock() {
-            if(window.chatLocked) {
-                db.ref('settings/chatLocked').set(false);
-            } else {
-                db.ref('settings/chatLocked').set(true);
-            }
+            if(window.chatLocked) db.ref('settings/chatLocked').set(false);
+            else db.ref('settings/chatLocked').set(true);
         }
 
         function nukeChat() {
@@ -521,9 +563,7 @@
                 db.ref('messages').remove();
                 document.getElementById('messages').innerHTML = '<div class="sys-msg">🔒 Database completely wiped by Owner.</div>';
                 alert("Chat successfully erased.");
-            } else if (pin !== null) {
-                alert("❌ Incorrect PIN. Aborting operation.");
-            }
+            } else if (pin !== null) alert("❌ Incorrect PIN.");
         }
 
         function findUserByName(name) {
@@ -541,14 +581,11 @@
 
             if (myTimeoutTime > now) {
                 let remainingMins = Math.ceil((myTimeoutTime - now) / 60000);
-                inputBar.placeholder = `⏱️ You are timed out for ${remainingMins} min(s)`;
+                inputBar.placeholder = `⏱️ Timed out for ${remainingMins} min(s)`;
                 inputBar.disabled = true;
                 attachBtn.style.display = 'none';
                 container.classList.add('timeout-active');
-                
-                if(!timeoutInterval) {
-                    timeoutInterval = setInterval(checkInputStatus, 10000);
-                }
+                if(!timeoutInterval) timeoutInterval = setInterval(checkInputStatus, 10000);
                 return;
             } else {
                 if(timeoutInterval) { clearInterval(timeoutInterval); timeoutInterval = null; }
@@ -556,7 +593,7 @@
             }
 
             if (window.chatLocked && !isOwner && !isAdmin) {
-                inputBar.placeholder = "🔒 Chat is currently locked by the Owner.";
+                inputBar.placeholder = "🔒 Chat locked by Owner.";
                 inputBar.disabled = true;
                 attachBtn.style.display = 'none';
                 return;
@@ -578,7 +615,6 @@
                 if (snap.val() === true) {
                     document.getElementById('conn-status').innerText = '🟢 Connected';
                     document.getElementById('conn-status').style.background = '#2ecc71';
-                    
                     myStatusRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                     myStatusRef.set({ ...myProfile, online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP });
                 } else {
@@ -591,7 +627,6 @@
                 window.chatLocked = snap.val() === true;
                 const lockBtn = document.getElementById('lock-chat-btn');
                 const lockIcon = document.getElementById('chat-lock-icon');
-                
                 if(window.chatLocked) {
                     lockIcon.style.display = 'inline';
                     if(lockBtn) { lockBtn.innerText = "🔓 Unlock Chat"; lockBtn.style.background = "#2ecc71"; }
@@ -606,7 +641,7 @@
                 if(isAppReady && !snap.exists()) {
                     myStatusRef.onDisconnect().cancel(); 
                     localStorage.clear();
-                    alert("🚨 Your account has been permanently deleted or banned by the Owner.");
+                    alert("🚨 Account permanently deleted or banned.");
                     window.location.reload();
                 } else if (snap.exists()) {
                     let data = snap.val();
@@ -636,26 +671,18 @@
                 const typingData = snapshot.val() || {};
                 let typers = [];
                 for(let id in typingData) {
-                    if(typingData[id] === true && id !== myProfile.id && classmates[id]) {
-                        typers.push(classmates[id].name);
-                    }
+                    if(typingData[id] === true && id !== myProfile.id && classmates[id]) typers.push(classmates[id].name);
                 }
                 const indicator = document.getElementById('typing-indicator');
-                if(typers.length > 0) {
-                    indicator.innerText = typers.join(', ') + (typers.length > 1 ? " are typing..." : " is typing...");
-                } else {
-                    indicator.innerText = "";
-                }
+                if(typers.length > 0) indicator.innerText = typers.join(', ') + (typers.length > 1 ? " are typing..." : " is typing...");
+                else indicator.innerText = "";
             });
         }
 
         function renderUserList() {
             const container = document.getElementById('users-container'); container.innerHTML = '';
-            
             let onlineCount = 0;
-            for(let id in classmates) {
-                if(classmates[id].online === true) onlineCount++;
-            }
+            for(let id in classmates) if(classmates[id].online === true) onlineCount++;
             document.getElementById('online-counter').innerText = `👥 ${onlineCount} Online`;
 
             const sortedIds = Object.keys(classmates).sort((a, b) => {
@@ -670,18 +697,22 @@
                 const displayName = isMe ? `${u.name} (You)` : u.name;
                 const initial = u.name.charAt(0).toUpperCase();
 
-                const statusDot = u.online ? `<span class="dot online"></span><span style="color:#2ecc71">Online</span>` : `<span class="dot offline"></span><span style="color:#e74c3c">Offline</span>`;
-                let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '🎓 Student');
+                const statusDot = u.online ? `<span class="dot online"></span>` : `<span class="dot offline"></span>`;
+                // Professional ring avatar if online
+                const avatarClass = u.online ? 'avatar online-ring' : 'avatar';
                 
-                let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px;">⏱️ Muted</span>` : '';
+                let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '');
+                if (roleBadge) roleBadge = `<span style="font-size:11px; margin-left:5px;">${roleBadge}</span>`;
+                
+                let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px; margin-left:5px;">⏱️ Muted</span>` : '';
                 const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
                 container.innerHTML += `
                     <div class="user-item ${u.online ? 'online-border' : ''}" ${clickAction}>
-                        <div class="avatar">${initial}</div>
+                        <div class="${avatarClass}">${initial}</div>
                         <div class="user-details">
-                            <div class="user-name-row"><span class="name-text">${displayName}</span></div>
-                            <div class="status-indicator">${statusDot} • ${u.gender} • ${roleBadge} ${timeoutBadge}</div>
+                            <div class="name-text">${displayName} ${roleBadge}</div>
+                            <div class="status-indicator">${statusDot} ${u.online ? 'Online' : 'Offline'} • ${u.gender} ${timeoutBadge}</div>
                         </div>
                     </div>
                 `;
@@ -693,18 +724,16 @@
         let typingTimeout = null;
         function handleTypingInput() {
             const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
-            
             db.ref('typing/' + myProfile.id).set(text.length > 0 && !text.startsWith('/'));
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
-
             if (text) { btn.innerText = '➤'; btn.style.background = '#3498db'; } 
             else { btn.innerText = '🎤'; btn.style.background = '#075e54'; }
         }
 
         function handleActionClick() {
-            if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout. You cannot send messages right now.");
-            if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 The chat is currently locked.");
+            if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
+            if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
 
             const text = document.getElementById('chatInput').value.trim();
             if (text) {
@@ -714,8 +743,8 @@
                     let arg = text.substring(cmd.length).trim();
 
                     if(cmd === '/alert') {
-                        if(!isOwner && !isAdmin) return alert("❌ Only Owners and Admins can send announcements.");
-                        if(!arg) return alert("⚠️ Please type a message after /alert");
+                        if(!isOwner && !isAdmin) return alert("❌ Only Owners/Admins.");
+                        if(!arg) return alert("⚠️ Type a message after /alert");
                         sendMsgToDB('alert', arg);
                     }
                     else if(cmd === '/dm') {
@@ -726,22 +755,19 @@
                         let foundId = findUserByName(targetName);
                         if(foundId) {
                             sendMsgToDB('dm', dmText, foundId);
-                            alert(`✅ DM sent to ${targetName}`);
-                        } else { alert(`❌ Could not find "${targetName}".`); }
+                        } else alert(`❌ Could not find "${targetName}".`);
                     }
                     else if(cmd === '/promote') {
                         if(!isOwner) return alert("❌ Owner only.");
                         let foundId = findUserByName(arg);
-                        if(foundId) {
-                            setAdminStatus(foundId, 'admin');
-                        } else { alert(`❌ Could not find "${arg}".`); }
+                        if(foundId) setAdminStatus(foundId, 'admin');
+                        else alert(`❌ Not found.`);
                     }
                     else if(cmd === '/demote') {
                         if(!isOwner) return alert("❌ Owner only.");
                         let foundId = findUserByName(arg);
-                        if(foundId) {
-                            setAdminStatus(foundId, 'user');
-                        } else { alert(`❌ Could not find "${arg}".`); }
+                        if(foundId) setAdminStatus(foundId, 'user');
+                        else alert(`❌ Not found.`);
                     }
                     else if(cmd === '/lock') {
                         if(!isOwner) return alert("❌ Owner only.");
@@ -761,27 +787,26 @@
                         sendMsgToDB('text', '(╯°□°)╯︵ ┻━┻');
                     }
                     else if(cmd === '/timeout') {
-                        if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
-                        if(!arg) return alert("⚠️ Usage: /timeout [name] [minutes]");
+                        if(!isOwner && !isAdmin) return alert("❌ Denied.");
+                        if(!arg) return alert("⚠️ Usage: /timeout [name] [mins]");
                         let argParts = arg.split(' ');
                         let targetName = argParts[0];
                         let mins = parseInt(argParts[1]) || 5; 
-                        
                         let foundId = findUserByName(targetName);
                         if(foundId) {
                             db.ref('accounts/' + foundId).update({ timeoutUntil: Date.now() + (mins * 60000) });
                             db.ref('users/' + foundId).update({ timeoutUntil: Date.now() + (mins * 60000) });
-                            alert(`⏱️ ${targetName} is muted for ${mins} minutes.`);
-                        } else { alert(`❌ Could not find "${targetName}".`); }
+                            alert(`⏱️ ${targetName} muted for ${mins} mins.`);
+                        } else alert(`❌ Not found.`);
                     }
                     else if(cmd === '/untimeout') {
-                        if(!isOwner && !isAdmin) return alert("❌ Permission Denied.");
+                        if(!isOwner && !isAdmin) return alert("❌ Denied.");
                         let foundId = findUserByName(arg);
                         if(foundId) {
                             db.ref('accounts/' + foundId).update({ timeoutUntil: 0 });
                             db.ref('users/' + foundId).update({ timeoutUntil: 0 });
                             alert(`✅ Untimed-out ${arg}.`);
-                        } else { alert(`❌ Could not find "${arg}".`); }
+                        } else alert(`❌ Not found.`);
                     }
                     else if(cmd === '/nuke') {
                         if(!isOwner) return alert("❌ Owner only.");
@@ -789,15 +814,15 @@
                     }
                     else if(cmd === '/kick') {
                         if(!isOwner) return alert("❌ Owner only.");
-                        if(!arg) return alert("⚠️ Type the exact name of the student.");
+                        if(!arg) return alert("⚠️ Type exact name.");
                         let foundId = findUserByName(arg);
                         if(foundId) {
                             db.ref('accounts/' + foundId).remove();
                             db.ref('users/' + foundId).remove();
-                            alert(`✅ Kicked ${arg} successfully.`);
-                        } else { alert(`❌ Could not find "${arg}".`); }
+                            alert(`✅ Kicked ${arg}.`);
+                        } else alert(`❌ Not found.`);
                     }
-                    else { alert("❌ Unknown command."); }
+                    else alert("❌ Unknown command.");
                     
                     document.getElementById('chatInput').value = ''; 
                     db.ref('typing/' + myProfile.id).set(false); 
@@ -812,29 +837,19 @@
             } else { toggleVoiceRecord(); }
         }
 
-        // --- NEW DB SENDER WITH RECEIVER ID FOR DMs ---
         function sendMsgToDB(msgType, msgContent, receiverId = null) {
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             db.ref('messages/' + msgId).set({
                 msgId: msgId, sender: myProfile, type: msgType, text: msgContent, data: null,
-                receiverId: receiverId, // Used for DMs
-                isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
+                receiverId: receiverId, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
 
-        function deleteMessage(msgId) {
-            if(confirm("Hide this message?")) db.ref('messages/' + msgId).update({ isDeleted: true });
-        }
-        function recoverMessage(msgId) {
-            if(confirm("Recover this message?")) db.ref('messages/' + msgId).update({ isDeleted: false });
-        }
-        function hardDeleteMessage(msgId) {
-            if(confirm("🔥 ERASING MESSAGE: This will permanently wipe it from the database for everyone. Continue?")) {
-                db.ref('messages/' + msgId).remove();
-            }
-        }
+        function deleteMessage(msgId) { if(confirm("Hide this message?")) db.ref('messages/' + msgId).update({ isDeleted: true }); }
+        function recoverMessage(msgId) { if(confirm("Recover this message?")) db.ref('messages/' + msgId).update({ isDeleted: false }); }
+        function hardDeleteMessage(msgId) { if(confirm("🔥 ERASING MESSAGE permanently. Continue?")) db.ref('messages/' + msgId).remove(); }
 
         function getRoleBadge(senderData) {
             if(senderData.name.toLowerCase().includes('vishnuram')) return '<span class="role-tag owner">👑 Owner</span>';
@@ -860,7 +875,8 @@
                 if(payload.type === 'text' || payload.type === 'dm') {
                     bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
                     if(payload.type === 'dm') {
-                        bodyHtml = `<div style="font-size:10px; color:#8e44ad; font-weight:bold; margin-bottom:4px;">🕵️ Private Message</div>` + bodyHtml;
+                        let dmLabel = isMe ? `To: Private` : `From: ${payload.sender.name}`;
+                        bodyHtml = `<div style="font-size:10px; color:#9b59b6; font-weight:800; margin-bottom:6px; letter-spacing:0.5px; text-transform:uppercase;">🕵️ SECRET DM ${dmLabel}</div>` + bodyHtml;
                     }
                 } else if (payload.type === 'image') {
                     bodyHtml = `<div class="msg-image" onclick="openLightbox('${payload.data}')"><img src="${payload.data}"></div>`;
@@ -874,7 +890,6 @@
             
             let bubbleClass = `msg-bubble ${isMe ? 'me' : ''}`;
             if(isMe && isOwner) bubbleClass += " owner-bubble"; 
-            if(!isMe && (isOwner || isAdmin)) bubbleClass += " owner-view"; 
             if(payload.type === 'dm') bubbleClass += " dm-bubble";
             
             const senderHTML = isMe ? '' : `<div class="msg-sender">${payload.sender.name} ${getRoleBadge(payload.sender)}</div>`;
@@ -890,29 +905,21 @@
         }
 
         function renderMessage(payload) {
-            // --- SECURITY: Hide DMs unless you sent it, received it, or are the Owner ---
             if(payload.receiverId) {
-                if(payload.sender.id !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) {
-                    return; // Ignore this message
-                }
+                if(payload.sender.id !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) return; 
             }
-
             const container = document.getElementById('messages');
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
             
             if (!document.getElementById(payload.msgId)) {
                 container.insertAdjacentHTML('beforeend', createMessageHTML(payload));
-                if (isAtBottom || payload.sender.id === myProfile.id) {
-                    container.scrollTop = container.scrollHeight;
-                }
+                if (isAtBottom || payload.sender.id === myProfile.id) container.scrollTop = container.scrollHeight;
             }
         }
 
         function updateMessageOnScreen(data) {
             let oldBubble = document.getElementById(data.msgId);
-            if(oldBubble) {
-                oldBubble.outerHTML = createMessageHTML(data);
-            }
+            if(oldBubble) oldBubble.outerHTML = createMessageHTML(data);
         }
 
         function handleImageUpload(e) {
