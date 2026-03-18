@@ -23,7 +23,7 @@
             --input-bg: rgba(240, 242, 245, 0.7);
             --input-field: rgba(255, 255, 255, 0.9);
             --glass-header: rgba(255, 255, 255, 0.7);
-            --chat-overlay: rgba(255, 255, 255, 0.2);
+            --chat-overlay: rgba(255, 255, 255, 0.1);
         }
 
         .dark-theme {
@@ -39,70 +39,43 @@
             --input-bg: rgba(30, 39, 46, 0.7);
             --input-field: rgba(47, 54, 64, 0.9);
             --glass-header: rgba(30, 39, 46, 0.7);
-            --chat-overlay: rgba(0, 0, 0, 0.5);
+            --chat-overlay: rgba(0, 0, 0, 0.3);
         }
 
-        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #000; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
+        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #05050a; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
         * { box-sizing: border-box; }
         
-        /* 🚀 ULTRA-HD CUSTOM ANIMATION ENGINE 🚀 */
-        .custom-bg { position: fixed; inset: 0; z-index: -10; overflow: hidden; transition: opacity 0.5s ease-in-out; }
+        /* 🌌 THE ULTIMATE 4K CINEMATIC NEBULA BACKGROUND 🌌 */
+        .ultimate-4k-bg {
+            position: fixed; inset: 0; z-index: -10; background: #03040a; overflow: hidden;
+        }
         
-        /* 1. Aurora Mesh */
-        .bg-aurora { background: #000; }
-        .aurora-blob { position: absolute; filter: blur(90px); opacity: 0.7; border-radius: 50%; animation: floatSq 20s infinite alternate ease-in-out; }
-        .ab-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #ff4757; }
-        .ab-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #1e90ff; animation-delay: -5s; }
-        .ab-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: #2ed573; animation-delay: -10s; }
+        /* Deep Space Ambient Flares */
+        .ambient-flare { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.6; animation: flareDrift 25s infinite alternate ease-in-out; }
+        .flare-1 { width: 70vw; height: 70vw; top: -20%; left: -20%; background: #4a0e4e; }
+        .flare-2 { width: 60vw; height: 60vw; bottom: -20%; right: -20%; background: #001233; animation-delay: -5s; animation-duration: 30s;}
+        .flare-3 { width: 50vw; height: 50vw; top: 30%; left: 30%; background: #0b3d91; animation-delay: -10s; animation-duration: 20s;}
+        .flare-4 { width: 40vw; height: 40vw; bottom: 10%; left: 10%; background: #1a0b2e; animation-delay: -15s;}
+        
+        /* Infinite 3D Parallax Stars */
+        .stardust-layer {
+            position: absolute; width: 200vw; height: 200vh; left: -50vw; top: -50vh;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            animation: rotateGalaxy 150s linear infinite;
+            opacity: 0.4;
+        }
+        .stardust-layer.layer-1 { background-size: 200px 200px; animation-duration: 200s; }
+        .stardust-layer.layer-2 { background-size: 350px 350px; animation-duration: 140s; animation-direction: reverse; opacity: 0.3; }
+        .stardust-layer.layer-3 { background-size: 500px 500px; animation-duration: 90s; opacity: 0.2; }
 
-        /* 2. Glass Squares */
-        .bg-squares { background: linear-gradient(135deg, #2c3e50, #3498db); }
-        .shape-square { position: absolute; bottom: -150px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); animation: floatSq linear infinite; border-radius: 12px; backdrop-filter: blur(5px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);}
-        @keyframes floatSq { to { transform: translateY(-120vh) rotate(720deg); } }
-        
-        /* 3. Parallax Stars */
-        .bg-stars { background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); }
-        .star-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .star-layer::after { content: " "; position: absolute; top: 2000px; width: 100%; height: 100%; background: inherit; }
-        .stars1 { width: 1px; height: 1px; background: transparent; animation: animStar 50s linear infinite; }
-        .stars2 { width: 2px; height: 2px; background: transparent; animation: animStar 100s linear infinite; }
-        .stars3 { width: 3px; height: 3px; background: transparent; animation: animStar 150s linear infinite; }
-        @keyframes animStar { from { transform: translateY(0px); } to { transform: translateY(-2000px); } }
-        
-        /* 4. Matrix Rain */
-        .bg-matrix { background: #000; font-family: monospace; color: #0f0; font-size: 20px; font-weight: bold; }
-        .matrix-col { position: absolute; top: -100%; writing-mode: vertical-rl; text-orientation: upright; animation: fall linear infinite; text-shadow: 0 0 8px #0f0; opacity: 0.8;}
-        @keyframes fall { to { transform: translateY(150vh); } }
-        
-        /* 5. Retro Synthwave */
-        .bg-synthwave { background: linear-gradient(to bottom, #000011 40%, #220044 100%); perspective: 1000px; overflow: hidden; }
-        .synth-sun { position: absolute; bottom: 35%; left: 50%; transform: translateX(-50%); width: 250px; height: 250px; background: linear-gradient(to bottom, #ffcc00, #ff007f); border-radius: 50%; box-shadow: 0 0 80px #ff007f; }
-        .synth-grid { width: 200vw; height: 100vh; position: absolute; bottom: -20vh; left: -50vw; background-image: linear-gradient(#00ffff 2px, transparent 2px), linear-gradient(90deg, #00ffff 2px, transparent 2px); background-size: 80px 80px; transform: rotateX(75deg); animation: gridMove 2s linear infinite; box-shadow: inset 0 0 150px 100px #220044; opacity: 0.6;}
-        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 80px; } }
-        
-        /* 6. Gooey Lava Lamp */
-        .bg-lava { background: #111; filter: url('#goo'); }
-        .lava-blob { position: absolute; border-radius: 50%; background: linear-gradient(45deg, #ff4757, #e84393); animation: floatSq linear infinite alternate; mix-blend-mode: screen; }
-        
-        /* 7. Realistic Snow */
-        .bg-snow { background: linear-gradient(to bottom, #2c3e50, #34495e); }
-        .snowflake { position: absolute; background: white; border-radius: 50%; filter: blur(1px); animation: fallWind linear infinite; }
-        @keyframes fallWind { 0% { transform: translate(0, -10px); } 50% { transform: translate(20px, 50vh); } 100% { transform: translate(-20px, 110vh); } }
-        
-        /* 8. Fireflies */
-        .bg-fireflies { background: radial-gradient(circle at center, #0a2a1a 0%, #000 100%); }
-        .firefly { position: absolute; background: #ccff00; border-radius: 50%; box-shadow: 0 0 20px 4px #ccff00; animation: flutter linear infinite alternate; }
-        @keyframes flutter { 0% { transform: translate(0,0); opacity:0.8;} 50% { transform: translate(50px, -50px); opacity:1;} 100% { transform: translate(-30px, -80px); opacity:0.4;} }
-        
-        /* 9. Cinematic Bokeh */
-        .bg-bokeh { background: #1a1a2e; }
-        .bokeh-circle { position: absolute; border-radius: 50%; opacity: 0.4; animation: pulse linear infinite alternate; filter: blur(15px); mix-blend-mode: screen; }
-        @keyframes pulse { to { transform: scale(1.8) translate(20px, -20px); opacity: 0.7; } }
-        
-        /* 10. Cyberpunk Scanners */
-        .bg-cyber { background: radial-gradient(circle, #2f3640, #1e272e); }
-        .cyber-line { position: absolute; height: 3px; background: #00f0ff; box-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff; animation: scan linear infinite; }
-        @keyframes scan { 0% { transform: translateX(-100vw) scaleX(1); opacity:0;} 10% {opacity:1;} 90% {opacity:1;} 100% { transform: translateX(100vw) scaleX(2); opacity:0;} }
+        @keyframes rotateGalaxy { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes flareDrift { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(15vw, 10vh) scale(1.2); } }
 
         /* MODALS & AUTH TABS */
         .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: flex; align-items: center; justify-content: center; z-index: 3000; }
@@ -147,7 +120,7 @@
         .avatar-wrap { position: relative; margin-right: 15px; }
         .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3498db, #2980b9); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; text-transform: uppercase; object-fit: cover; border: 2px solid transparent;}
         .avatar.online-ring { border-color: #2ecc71; padding: 2px; background-clip: content-box; }
-        .status-dot-abs { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg-panel); }
+        .status-dot-abs { position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg-panel); }
         .status-dot-abs.online { background: #2ecc71; }
         .status-dot-abs.offline { background: #e74c3c; }
 
@@ -156,7 +129,7 @@
         .status-indicator { font-size: 11px; font-weight: 600; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* CHAT SECTION */
-        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background: var(--chat-overlay); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: background 0.3s;}
+        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background: var(--chat-overlay); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: background 0.3s;}
         
         .chat-header { padding: 15px 25px; background: var(--glass-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); z-index: 10;}
         .menu-btn { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); background: rgba(0,0,0,0.05); width: 40px; height: 40px; border-radius: 10px; align-items: center; justify-content: center;}
@@ -184,7 +157,7 @@
         .dark-theme .msg-bubble.dm-bubble.me { color: white; }
 
         .msg-sender { font-size: 12px; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-        .sender-avatar-small { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; background: #3498db; color:white; display:flex; align-items:center; justify-content:center; font-size:10px;}
+        .sender-avatar-small { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; background: #3498db; color:white; display:flex; align-items:center; justify-content:center; font-size:11px; text-transform: uppercase;}
 
         .role-tag { font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .role-tag.owner { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f; }
@@ -242,25 +215,23 @@
         .lb-btn { padding: 12px 30px; color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 15px; transition: 0.2s;}
         .lb-btn:hover { transform: scale(1.05); filter: brightness(1.1);}
         
-        /* THEME & BG TOGGLE BTN */
-        .btn-grid-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: transparent; border-top: 1px solid var(--border-color); }
-        .theme-toggle-btn { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .btn-grid-sidebar { display: flex; flex-direction: column; gap: 10px; padding: 15px; background: transparent; border-top: 1px solid var(--border-color); }
+        .theme-toggle-btn { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
         .theme-toggle-btn:hover { background: var(--border-color); transform: translateY(-2px);}
 
     </style>
 </head>
 <body>
 
-    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <defs>
-            <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="25" result="blur" />    
-                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
-                <feBlend in="SourceGraphic" in2="goo" />
-            </filter>
-        </defs>
-    </svg>
-
-    <div id="custom-bg-container" class="custom-bg bg-aurora"></div>
+    <div class="ultimate-4k-bg">
+        <div class="ambient-flare flare-1"></div>
+        <div class="ambient-flare flare-2"></div>
+        <div class="ambient-flare flare-3"></div>
+        <div class="ambient-flare flare-4"></div>
+        <div class="stardust-layer layer-1"></div>
+        <div class="stardust-layer layer-2"></div>
+        <div class="stardust-layer layer-3"></div>
+    </div>
 
     <div id="lightbox">
         <img id="lightbox-img" src="">
@@ -302,14 +273,16 @@
     <div id="edit-screen" class="modal-screen" style="display: none;">
         <div class="modal-box">
             <h2>Edit Profile</h2>
+            
             <div class="input-group">
-                <label>Profile Picture URL (Optional)</label>
-                <input type="text" id="editAvatar" placeholder="Paste an image link (e.g., from Google)">
+                <label>Profile Picture</label>
+                <div style="display:flex; align-items:center; gap:15px; background:var(--input-bg); padding:10px; border-radius:12px; border:1px solid var(--border-color);">
+                    <img id="avatar-preview" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; background:#3498db;">
+                    <button class="primary" style="margin-top:0; padding:10px 15px; font-size:13px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Choose Image</button>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="handleAvatarSelection(event)">
+                </div>
             </div>
-            <div class="input-group">
-                <label>Custom Status Message</label>
-                <input type="text" id="editStatusMsg" placeholder="e.g. Playing Minecraft 🎮" maxlength="40">
-            </div>
+
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
             
@@ -330,7 +303,7 @@
             
             <div class="input-group">
                 <label>Clear Profile Picture</label>
-                <button class="secondary" style="margin-top:0; width:100%; padding:8px;" onclick="adminClearAvatar()">Remove User's Picture</button>
+                <button class="secondary" style="margin-top:0; width:100%; padding:10px;" onclick="adminClearAvatar()">🗑️ Remove User's Picture</button>
             </div>
 
             <div class="input-group"><label>Gender</label><select id="adminEditGender"><option>Male</option><option>Female</option></select></div>
@@ -394,7 +367,6 @@
             
             <div class="btn-grid-sidebar">
                 <button class="theme-toggle-btn" id="theme-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
-                <button class="theme-toggle-btn" onclick="switchBackground()">🌌 Switch BG</button>
             </div>
 
             <div class="credits-sidebar">Made by Vishnuram and Prasanth</div>
@@ -453,143 +425,6 @@
         let myTimeoutTime = 0;
         let timeoutInterval = null;
 
-        // 🚀 ULTRA-HD CSS ANIMATION ENGINE 🚀
-        const bgModes = ['aurora', 'squares', 'stars', 'matrix', 'synthwave', 'lava', 'snow', 'fireflies', 'bokeh', 'cyber'];
-        let currentBgIndex = 0;
-        let matrixInterval = null;
-
-        function switchBackground() {
-            currentBgIndex = (currentBgIndex + 1) % bgModes.length;
-            renderCustomBg(currentBgIndex);
-        }
-
-        // Create Star Shadows for High Performance Parallax
-        function generateStarShadows(count) {
-            let val = `${Math.random()*100}vw ${Math.random()*100}vh #FFF`;
-            for(let i=1; i<count; i++) {
-                val += `, ${Math.random()*100}vw ${Math.random()*100}vh #FFF`;
-            }
-            return val;
-        }
-
-        function renderCustomBg(index) {
-            const container = document.getElementById('custom-bg-container');
-            container.innerHTML = ''; 
-            if(matrixInterval) clearInterval(matrixInterval);
-
-            const mode = bgModes[index];
-            container.className = 'custom-bg bg-' + mode;
-
-            if(mode === 'aurora') {
-                container.innerHTML = '<div class="aurora-blob ab-1"></div><div class="aurora-blob ab-2"></div><div class="aurora-blob ab-3"></div>';
-            }
-            else if(mode === 'squares') {
-                for(let i=0; i<15; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'shape-square';
-                    let size = Math.random() * 80 + 30;
-                    el.style.width = size+'px'; el.style.height = size+'px';
-                    el.style.left = Math.random() * 100 + 'vw';
-                    el.style.animationDuration = (Math.random() * 15 + 10) + 's';
-                    el.style.animationDelay = (Math.random() * 5) + 's';
-                    container.appendChild(el);
-                }
-            }
-            else if(mode === 'stars') {
-                let s1 = document.createElement('div'); s1.className = 'star-layer stars1'; s1.style.boxShadow = generateStarShadows(300);
-                let s2 = document.createElement('div'); s2.className = 'star-layer stars2'; s2.style.boxShadow = generateStarShadows(100);
-                let s3 = document.createElement('div'); s3.className = 'star-layer stars3'; s3.style.boxShadow = generateStarShadows(50);
-                container.appendChild(s1); container.appendChild(s2); container.appendChild(s3);
-            }
-            else if(mode === 'matrix') {
-                const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコ';
-                for(let i=0; i<50; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'matrix-col';
-                    el.style.left = (i * 2) + 'vw';
-                    el.innerText = Array.from({length: 40}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-                    el.style.animationDuration = (Math.random() * 5 + 3) + 's';
-                    container.appendChild(el);
-                }
-                matrixInterval = setInterval(() => {
-                    const cols = container.getElementsByClassName('matrix-col');
-                    if(cols.length > 0) {
-                        let randCol = cols[Math.floor(Math.random() * cols.length)];
-                        randCol.innerText = Array.from({length: 40}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-                    }
-                }, 80);
-            }
-            else if(mode === 'synthwave') {
-                container.innerHTML = '<div class="synth-sun"></div><div class="synth-grid"></div>';
-            }
-            else if(mode === 'lava') {
-                const colors = ['#ff4757', '#e84393', '#ff6b81', '#fdcb6e'];
-                for(let i=0; i<8; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'lava-blob';
-                    let size = Math.random() * 200 + 100;
-                    el.style.width = size+'px'; el.style.height = size+'px';
-                    el.style.left = Math.random() * 100 + 'vw';
-                    el.style.top = Math.random() * 100 + 'vh';
-                    el.style.background = `linear-gradient(45deg, ${colors[Math.floor(Math.random() * colors.length)]}, ${colors[Math.floor(Math.random() * colors.length)]})`;
-                    el.style.animationDuration = (Math.random() * 10 + 8) + 's';
-                    el.style.animationDirection = 'alternate';
-                    container.appendChild(el);
-                }
-            }
-            else if(mode === 'snow') {
-                for(let i=0; i<80; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'snowflake';
-                    let size = Math.random() * 5 + 2;
-                    el.style.width = size+'px'; el.style.height = size+'px';
-                    el.style.left = Math.random() * 100 + 'vw';
-                    el.style.top = (Math.random() * -50) + 'vh';
-                    el.style.animationDuration = (Math.random() * 5 + 3) + 's';
-                    el.style.animationDelay = (Math.random() * 5) + 's';
-                    el.style.opacity = Math.random() * 0.8 + 0.2;
-                    container.appendChild(el);
-                }
-            }
-            else if(mode === 'fireflies') {
-                for(let i=0; i<40; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'firefly';
-                    let size = Math.random() * 5 + 2;
-                    el.style.width = size+'px'; el.style.height = size+'px';
-                    el.style.left = Math.random() * 100 + 'vw';
-                    el.style.top = Math.random() * 100 + 'vh';
-                    el.style.animationDuration = (Math.random() * 8 + 4) + 's';
-                    container.appendChild(el);
-                }
-            }
-            else if(mode === 'bokeh') {
-                const colors = ['rgba(52,152,219,0.6)', 'rgba(155,89,182,0.6)', 'rgba(46,204,113,0.6)', 'rgba(241,196,15,0.6)', 'rgba(231,76,60,0.6)'];
-                for(let i=0; i<20; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'bokeh-circle';
-                    let size = Math.random() * 250 + 50;
-                    el.style.width = size+'px'; el.style.height = size+'px';
-                    el.style.left = Math.random() * 100 + 'vw';
-                    el.style.top = Math.random() * 100 + 'vh';
-                    el.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    el.style.animationDuration = (Math.random() * 6 + 4) + 's';
-                    container.appendChild(el);
-                }
-            }
-            else if(mode === 'cyber') {
-                for(let i=0; i<15; i++) {
-                    let el = document.createElement('div');
-                    el.className = 'cyber-line';
-                    el.style.width = (Math.random() * 400 + 100) + 'px';
-                    el.style.top = Math.random() * 100 + 'vh';
-                    el.style.animationDuration = (Math.random() * 3 + 1) + 's';
-                    el.style.animationDelay = (Math.random() * 5) + 's';
-                    container.appendChild(el);
-                }
-            }
-        }
-
         // INITIALIZE DARK MODE
         let isDark = localStorage.getItem('marutham_theme') === 'dark';
         if(isDark) {
@@ -598,15 +433,10 @@
         }
 
         window.onload = () => {
-            renderCustomBg(currentBgIndex); 
-            
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
-                // Ensure new objects exist to prevent errors
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
-                if(myProfile.statusMsg === undefined) myProfile.statusMsg = "";
-
                 if(!myProfile.password) {
                     localStorage.clear();
                     return;
@@ -656,7 +486,7 @@
                     alert("❌ ERROR: This username is already taken! Please choose a different name.");
                 } else {
                     let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
-                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0, avatar: "", statusMsg: "" };
+                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0, avatar: ""};
                     db.ref('accounts/' + safeKey).set(newProfile);
                     myProfile = newProfile;
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
@@ -680,7 +510,6 @@
                     if(acc.password !== pwd) return alert("❌ Incorrect Password!");
                     myProfile = acc;
                     if(myProfile.avatar === undefined) myProfile.avatar = "";
-                    if(myProfile.statusMsg === undefined) myProfile.statusMsg = "";
 
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner';
@@ -724,24 +553,63 @@
             document.getElementById('my-profile-name').innerText = "Hi, " + myProfile.name;
         }
 
-        // NEW PROFILE EDIT WITH PICTURE AND STATUS
+        // --- AVATAR UPLOAD SYSTEM ---
+        function handleAvatarSelection(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas'); 
+                    const ctx = canvas.getContext('2d');
+                    let w = img.width, h = img.height; 
+                    const max = 150; // VERY IMPORTANT: Keep small so it doesn't break database!
+                    
+                    if(w > h) { h = (max/w)*h; w = max; } else { w = (max/h)*w; h = max; }
+                    canvas.width = max; canvas.height = max; 
+                    
+                    // Center crop to make it a perfect square before border-radius
+                    const dx = (max - w) / 2;
+                    const dy = (max - h) / 2;
+                    
+                    ctx.fillStyle = '#2c3e50'; 
+                    ctx.fillRect(0,0,max,max);
+                    ctx.drawImage(img, dx, dy, w, h);
+                    
+                    window.tempAvatarData = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('avatar-preview').src = window.tempAvatarData;
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
         function openEditProfile() {
             document.getElementById('editGender').value = myProfile.gender;
             document.getElementById('editDob').value = myProfile.dob;
-            document.getElementById('editAvatar').value = myProfile.avatar || "";
-            document.getElementById('editStatusMsg').value = myProfile.statusMsg || "";
+            
+            // Show current avatar or transparent if none
+            window.tempAvatarData = null; 
+            if(myProfile.avatar && myProfile.avatar.startsWith('data:image')) {
+                document.getElementById('avatar-preview').src = myProfile.avatar;
+            } else {
+                document.getElementById('avatar-preview').src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="; 
+            }
+            
             document.getElementById('edit-screen').style.display = 'flex';
         }
 
         function saveProfile() {
             myProfile.gender = document.getElementById('editGender').value; 
             myProfile.dob = document.getElementById('editDob').value.trim();
-            myProfile.avatar = document.getElementById('editAvatar').value.trim();
-            myProfile.statusMsg = document.getElementById('editStatusMsg').value.trim();
+            
+            if(window.tempAvatarData) {
+                myProfile.avatar = window.tempAvatarData;
+            }
 
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             
-            let updates = { gender: myProfile.gender, dob: myProfile.dob, avatar: myProfile.avatar, statusMsg: myProfile.statusMsg };
+            let updates = { gender: myProfile.gender, dob: myProfile.dob, avatar: myProfile.avatar };
             db.ref('accounts/' + myProfile.id).update(updates);
             db.ref('users/' + myProfile.id).update(updates);
             document.getElementById('edit-screen').style.display = 'none';
@@ -943,7 +811,6 @@
             });
         }
 
-        // --- NEW RENDER LIST WITH AVATARS ---
         function renderUserList() {
             const container = document.getElementById('users-container'); container.innerHTML = '';
             let onlineCount = 0;
@@ -966,7 +833,7 @@
                 const avatarRing = u.online ? 'online-ring' : '';
                 
                 // Show Custom Image or Initials
-                let avatarHTML = u.avatar && u.avatar.startsWith('http') 
+                let avatarHTML = u.avatar && u.avatar.startsWith('data:image') 
                     ? `<img src="${u.avatar}" class="avatar ${avatarRing}">` 
                     : `<div class="avatar ${avatarRing}">${initial}</div>`;
 
@@ -975,8 +842,6 @@
                 
                 let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px; margin-left:5px;">⏱️ Muted</span>` : '';
                 
-                let displayStatus = u.statusMsg ? `💬 ${u.statusMsg}` : (u.online ? 'Online' : 'Offline');
-
                 const clickAction = ((isOwner || isAdmin) && !isMe) ? `onclick="openAdminEdit('${id}')" style="cursor:pointer;" title="Click to edit user"` : '';
 
                 container.innerHTML += `
@@ -987,7 +852,7 @@
                         </div>
                         <div class="user-details">
                             <div class="name-text">${displayName} ${roleBadge}</div>
-                            <div class="status-indicator">${displayStatus} • ${u.gender} ${timeoutBadge}</div>
+                            <div class="status-indicator">${u.online ? 'Online' : 'Offline'} • ${u.gender} ${timeoutBadge}</div>
                         </div>
                     </div>
                 `;
@@ -1114,7 +979,6 @@
 
         function sendMsgToDB(msgType, msgContent, receiverId = null) {
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-            // Ensure my sender profile object includes the avatar before sending
             let senderData = { ...myProfile };
             db.ref('messages/' + msgId).set({
                 msgId: msgId, sender: senderData, type: msgType, text: msgContent, data: null,
@@ -1169,10 +1033,9 @@
             if(isMe && isOwner) bubbleClass += " owner-bubble"; 
             if(payload.type === 'dm') bubbleClass += " dm-bubble";
             
-            // SMALL AVATAR IN CHAT
             let senderAvatarHTML = "";
             if(!isMe) {
-                if(payload.sender.avatar && payload.sender.avatar.startsWith('http')) {
+                if(payload.sender.avatar && payload.sender.avatar.startsWith('data:image')) {
                     senderAvatarHTML = `<img src="${payload.sender.avatar}" class="sender-avatar-small">`;
                 } else {
                     senderAvatarHTML = `<div class="sender-avatar-small">${payload.sender.name.charAt(0).toUpperCase()}</div>`;
