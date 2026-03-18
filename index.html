@@ -88,14 +88,17 @@
         .modal-box button.secondary { background: transparent; color: #e74c3c; border: 2px solid rgba(231,76,60,0.3); font-weight: bold; cursor: pointer; padding: 12px; border-radius: 10px; margin-top: 10px; transition: 0.2s;}
         .modal-box button.secondary:hover { background: rgba(231,76,60,0.1); border-color: #e74c3c; }
 
-        /* ACTION MENU MODAL (NEW) */
+        /* ACTION MENU MODAL */
         .action-menu-btn { width: 100%; padding: 14px; margin-bottom: 8px; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; background: var(--input-bg); color: var(--text-main); }
         .action-menu-btn:hover { background: var(--border-color); transform: translateX(5px); }
         .action-menu-btn.danger { color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
         .action-menu-btn.danger:hover { background: rgba(231, 76, 60, 0.2); }
         .action-menu-btn.success { color: #05c46b; background: rgba(5, 196, 107, 0.1); }
+        
+        /* THIS IS THE FIX: Animations are now safely inside the <style> tags */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* WHATSAPP STATUS VIEWER (NEW) */
+        /* WHATSAPP STATUS VIEWER */
         #status-viewer { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; }
         .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 3px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 3px; overflow: hidden; }
@@ -128,7 +131,6 @@
         .avatar-wrap { position: relative; margin-right: 15px; }
         .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3498db, #2980b9); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; text-transform: uppercase; object-fit: cover; border: 3px solid transparent;}
         
-        /* The magical Status Ring */
         .avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; cursor: pointer;}
         @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(5, 196, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0); } }
 
@@ -263,7 +265,8 @@
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
             <button class="primary" onclick="saveProfile()">Save Changes</button>
-            <button class="secondary" style="border-color: #f39c12; color: #f39c12;" onclick="logoutApp()">🚪 Log Out</button>
+            <button class="secondary" style="border-color: #f39c12; color: #f39c12;" onclick="logoutApp()">🚪 Log Out Safely</button>
+            <button class="secondary" style="border-color: #c0392b; color: #c0392b;" onclick="deleteMyAccount()">🚨 Delete My Account</button>
             <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
         </div>
     </div>
@@ -287,7 +290,6 @@
             <button class="secondary" style="border:none; color:var(--text-sub); width:100%;" onclick="document.getElementById('user-action-modal').style.display='none'">Cancel</button>
         </div>
     </div>
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
     <div id="status-viewer">
         <div class="status-progress-container">
@@ -383,7 +385,7 @@
         let isAppReady = false; 
         let myTimeoutTime = 0;
         let timeoutInterval = null;
-        window.allStatuses = {}; // Global status storage
+        window.allStatuses = {}; 
 
         // 🧊 GENERATE 3D BLOCKS 🧊
         function initBlocks() {
@@ -395,7 +397,7 @@
                 b.style.width = size+'px'; b.style.height = size+'px';
                 b.style.left = Math.random() * 100 + 'vw';
                 b.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                b.style.animationDelay = (Math.random() * -20) + 's'; // start immediately scattered
+                b.style.animationDelay = (Math.random() * -20) + 's'; 
                 container.appendChild(b);
             }
         }
@@ -538,11 +540,10 @@
             document.getElementById('status-view-avatar').src = u.avatar || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             
             document.getElementById('status-delete-btn').style.display = isOwner ? 'block' : 'none';
-            document.getElementById('action-target-id').value = userId; // Store ID for delete btn
+            document.getElementById('action-target-id').value = userId; 
 
             document.getElementById('status-viewer').style.display = 'flex';
             
-            // Progress bar animation (5 seconds)
             const fill = document.getElementById('status-fill');
             fill.style.transition = 'none'; fill.style.width = '0%';
             setTimeout(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }, 50);
@@ -565,7 +566,7 @@
 
         // --- INTERACTIVE ACTION MENU ---
         function openUserActions(userId) {
-            if(userId === myProfile.id) return; // Don't click self
+            if(userId === myProfile.id) return; 
             const u = classmates[userId];
             if(!u) return;
 
@@ -575,7 +576,6 @@
             let roleTxt = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎓 STUDENT');
             document.getElementById('action-role').innerText = roleTxt;
 
-            // Avatar Display
             const imgEl = document.getElementById('action-avatar');
             const txtEl = document.getElementById('action-avatar-text');
             if(u.avatar && u.avatar.startsWith('data:')) {
@@ -585,9 +585,8 @@
             }
 
             const container = document.getElementById('action-buttons-container');
-            container.innerHTML = ''; // Reset buttons
+            container.innerHTML = ''; 
             
-            // Build Buttons dynamically
             if(window.allStatuses[userId]) {
                 container.innerHTML += `<button class="action-menu-btn" style="background:#05c46b; color:white;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
             }
@@ -721,10 +720,10 @@
                 window.allStatuses = {};
                 let raw = snap.val() || {};
                 for(let id in raw) {
-                    if(now - raw[id].timestamp < 86400000) window.allStatuses[id] = raw[id]; // Keep 24 hours
-                    else db.ref('statuses/' + id).remove(); // Auto-delete old
+                    if(now - raw[id].timestamp < 86400000) window.allStatuses[id] = raw[id]; 
+                    else db.ref('statuses/' + id).remove(); 
                 }
-                renderUserList(); // Re-render to show rings
+                renderUserList(); 
             });
 
             db.ref('accounts/' + myProfile.id).on('value', (snap) => {
@@ -776,7 +775,6 @@
                 const initial = u.name.charAt(0).toUpperCase();
 
                 const statusColor = u.online ? 'online' : 'offline';
-                
                 let hasStatus = window.allStatuses[id] ? 'has-status' : '';
                 
                 let avatarHTML = u.avatar && u.avatar.startsWith('data:image') 
@@ -785,6 +783,8 @@
 
                 let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑 Owner' : (u.role === 'admin' ? '🛡️ Admin' : '');
                 if (roleBadge) roleBadge = `<span style="font-size:11px; margin-left:5px;">${roleBadge}</span>`;
+                
+                let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px; margin-left:5px;">⏱️ Muted</span>` : '';
                 
                 let clickAction = isMe ? (hasStatus ? `onclick="openStatus('${id}')"` : '') : `onclick="openUserActions('${id}')"`;
 
@@ -796,7 +796,7 @@
                         </div>
                         <div class="user-details">
                             <div class="name-text">${displayName} ${roleBadge}</div>
-                            <div class="status-indicator">${u.online ? 'Online' : 'Offline'}</div>
+                            <div class="status-indicator">${u.online ? 'Online' : 'Offline'} ${timeoutBadge}</div>
                         </div>
                     </div>
                 `;
