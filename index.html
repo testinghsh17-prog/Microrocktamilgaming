@@ -59,12 +59,34 @@
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #05050a; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
         * { box-sizing: border-box; }
         
-        /* 🧊 4K MOVING BLOCKS BACKGROUND */
-        .ultimate-4k-bg { position: fixed; inset: 0; z-index: -10; background: radial-gradient(circle at center, #1a1c29 0%, #05050a 100%); overflow: hidden; transition: background 0.5s ease; }
-        .dark-theme .ultimate-4k-bg { background: radial-gradient(circle at center, #0a0c14 0%, #000000 100%); }
-        .moving-block { position: absolute; bottom: -20vh; background: rgba(52, 152, 219, 0.03); border: 1px solid rgba(52, 152, 219, 0.15); box-shadow: 0 0 30px rgba(52, 152, 219, 0.05), inset 0 0 20px rgba(255,255,255,0.02); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 16px; animation: floatBlock linear infinite; }
+        /* 🚀 BACKGROUND ENGINE 🚀 */
+        .custom-bg { position: fixed; inset: 0; z-index: -10; overflow: hidden; transition: background 0.5s ease; }
+        
+        /* The New Gamer Grid */
+        .bg-gamer { background: #090a0f; perspective: 1000px; }
+        .gamer-grid {
+            position: absolute; width: 300vw; height: 300vh; bottom: -100vh; left: -100vw;
+            background-image: linear-gradient(rgba(0, 255, 255, 0.3) 2px, transparent 2px), linear-gradient(90deg, rgba(138, 43, 226, 0.3) 2px, transparent 2px);
+            background-size: 60px 60px; transform: rotateX(75deg); animation: gamerMove 3s linear infinite; box-shadow: inset 0 0 300px 150px #090a0f;
+        }
+        @keyframes gamerMove { from { background-position: 0 0; } to { background-position: 0 60px; } }
+
+        /* The 4K Floating Blocks */
+        .bg-blocks { background: radial-gradient(circle at center, #1a1c29 0%, #05050a 100%); }
+        .dark-theme .bg-blocks { background: radial-gradient(circle at center, #0a0c14 0%, #000000 100%); }
+        .moving-block {
+            position: absolute; bottom: -20vh; background: rgba(52, 152, 219, 0.03); border: 1px solid rgba(52, 152, 219, 0.15);
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.05), inset 0 0 20px rgba(255,255,255,0.02); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border-radius: 16px; animation: floatBlock linear infinite;
+        }
         .dark-theme .moving-block { border-color: rgba(0, 240, 255, 0.15); box-shadow: 0 0 30px rgba(0, 240, 255, 0.05); }
         @keyframes floatBlock { 0% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-130vh) rotateX(360deg) rotateY(180deg) rotateZ(360deg); opacity: 0; } }
+
+        /* Stars & Aurora */
+        .bg-aurora { background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradBG 15s ease infinite; }
+        @keyframes gradBG { 0% {background-position: 0% 50%} 50% {background-position: 100% 50%} 100% {background-position: 0% 50%} }
+        .bg-stars { background: #0b132b; }
+        .shape-star { position: absolute; background: white; border-radius: 50%; animation: fall linear infinite; opacity: 0.8;}
+        @keyframes fall { to { transform: translateY(110vh); } }
 
         /* 📱 MODALS & MENUS */
         .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 99999; }
@@ -92,7 +114,7 @@
         .action-menu-btn.success { color: #05c46b; background: rgba(5, 196, 107, 0.1); border-color: rgba(5, 196, 107, 0.3);}
 
         /* 📸 WHATSAPP STATUS VIEWER */
-        #status-viewer { position: fixed; inset: 0; background: #000; z-index: 999999; display: none; flex-direction: column; align-items: center; justify-content: center;}
+        #status-viewer { position: fixed; inset: 0; background: #000; z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center;}
         .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 3px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 3px; overflow: hidden; }
         .status-progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
@@ -106,8 +128,8 @@
         /* 🖥️ APP LAYOUT */
         #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
         
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
-        .sidebar { width: 320px; background: var(--bg-sidebar); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);}
+        .sidebar { width: 320px; background: var(--bg-sidebar); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-header { padding: 20px; background: transparent; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .sidebar-title { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: var(--text-main);}
         .header-actions { display: flex; align-items: center; gap: 8px; }
@@ -126,7 +148,7 @@
         
         /* AVATARS */
         .avatar-wrap { position: relative; margin-right: 12px; }
-        .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #3498db, #2980b9); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; text-transform: uppercase; object-fit: cover; border: 3px solid transparent;}
+        .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #3498db, #2980b9); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; text-transform: uppercase; object-fit: cover; border: 2px solid transparent;}
         .avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; cursor: pointer;}
         @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(5, 196, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0); } }
 
@@ -156,12 +178,12 @@
 
         /* 🟢 MULTI-SELECT FLOATING BAR */
         #multi-select-bar {
-            display: none; position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+            display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%);
             background: var(--bg-panel); border: 2px solid #e74c3c; border-radius: 30px;
             padding: 10px 20px; box-shadow: 0 10px 30px rgba(231,76,60,0.3); z-index: 2000;
-            align-items: center; gap: 15px; animation: popUp 0.3s ease-out;
+            align-items: center; gap: 15px; animation: popDown 0.3s ease-out;
         }
-        @keyframes popUp { from { transform: translate(-50%, 50px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        @keyframes popDown { from { transform: translate(-50%, -50px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         #select-count { font-weight: 800; color: var(--text-main); font-size: 14px; }
         .select-action-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.2s;}
         .select-action-btn:hover { background: #c0392b; transform: scale(1.05); }
@@ -174,7 +196,9 @@
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; margin-bottom: 5px; padding: 10px 15px; 
             border-radius: 12px; transition: background 0.2s, border 0.2s; position: relative; align-items: flex-start;
-            background: transparent; border: 2px solid transparent; user-select: none;
+            background: transparent; border: 2px solid transparent; 
+            /* Prevents text selection while holding to multi-select */
+            -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; 
         }
         .discord-msg-row:hover { background: var(--msg-hover); }
         
@@ -199,7 +223,8 @@
         .discord-sender-name:hover { text-decoration: underline; }
         .discord-timestamp { font-size: 11px; color: var(--text-sub); font-weight: 600;}
         
-        .discord-msg-body { font-size: 15px; line-height: 1.5; color: var(--text-main); word-wrap: break-word; font-weight: 500; }
+        /* Re-enabling selection for the actual text */
+        .discord-msg-body { font-size: 15px; line-height: 1.5; color: var(--text-main); word-wrap: break-word; font-weight: 500; user-select: text; -webkit-user-select: text;}
         .discord-msg-body a { color: #3498db; text-decoration: none; font-weight: 700;}
         .discord-msg-body a:hover { text-decoration: underline; }
 
@@ -253,7 +278,7 @@
             .sidebar.open { transform: translateX(0); }
             .menu-btn { display: flex; }
             .close-sidebar-btn { display: flex; }
-            .msg-actions { opacity: 1; background: transparent; } 
+            .msg-actions { opacity: 1; background: transparent; } /* Always show actions on mobile */
             .discord-avatar { width: 40px; height: 40px; }
             .discord-msg-row { padding: 10px; }
             .chat-header { padding: 10px 15px; }
@@ -282,7 +307,9 @@
         </div>
     </div>
 
-    <div id="blocks-bg" class="ultimate-4k-bg"></div>
+    <div id="custom-bg-container" class="custom-bg bg-gamer">
+        <div class="gamer-grid"></div>
+    </div>
 
     <div id="lightbox">
         <img id="lightbox-img" src="">
@@ -340,6 +367,8 @@
             </div>
 
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
+            
             <button class="primary" onclick="saveProfile()">Save Changes</button>
             <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
         </div>
@@ -422,13 +451,14 @@
                 
                 <div class="btn-grid-sidebar">
                     <button class="theme-toggle-btn" id="theme-btn" onclick="toggleDarkMode()" style="margin:0;">🌙 Dark Mode</button>
-                    <button class="theme-toggle-btn" onclick="logoutApp()" style="margin:0; color:#e74c3c;">🚪 Logout</button>
+                    <button class="theme-toggle-btn" onclick="switchBackground()" style="margin:0;">🌌 BG</button>
                 </div>
                 
                 <div id="owner-super-controls" style="display:none; margin-top: 10px; gap: 10px; flex-direction: column;">
                     <button id="lock-chat-btn" onclick="toggleChatLock()" style="width:100%; padding:12px; background: linear-gradient(135deg, #f1c40f, #f39c12); color:white; border:none; border-radius:12px; font-weight:800; cursor:pointer; font-size:13px;">🔒 Lock Chat</button>
                     <button onclick="nukeChat()" style="width:100%; padding:12px; background: linear-gradient(135deg, #e74c3c, #c0392b); color:white; border:none; border-radius:12px; font-weight:800; cursor:pointer; font-size:13px;">☢️ Clear Chat</button>
                 </div>
+                <button onclick="logoutApp()" style="width:100%; padding:10px; background:transparent; border: 2px solid rgba(231,76,60,0.3); color:#e74c3c; border-radius:10px; font-weight:800; cursor:pointer; font-size:13px; margin-top: 10px;">🚪 Logout</button>
             </div>
         </div>
 
@@ -450,7 +480,7 @@
             <div id="multi-select-bar">
                 <span id="select-count">1 Selected</span>
                 <button class="select-action-btn" onclick="deleteSelectedMsgs()">🗑️ Delete All</button>
-                <button class="select-action-btn" style="background:transparent; border: 2px solid white; color:white;" onclick="exitSelectMode()">Cancel</button>
+                <button class="select-action-btn" style="background:transparent; border: 2px solid #e74c3c; color:#e74c3c;" onclick="exitSelectMode()">Cancel</button>
             </div>
 
             <div class="messages-container" id="messages" onscroll="checkScroll()">
@@ -503,11 +533,17 @@
         let isSelectMode = false;
         let selectedMsgs = new Set();
         let pressTimer = null;
+        let isScrolling = false;
+
+        // Listen for scroll to cancel long-press
+        document.getElementById('messages').addEventListener('scroll', () => {
+            isScrolling = true;
+            cancelPress();
+            setTimeout(() => { isScrolling = false; }, 200);
+        });
 
         function startPress(e, msgId, senderId) {
-            if(isSelectMode) return;
-            // Prevent text selection while holding
-            document.body.style.userSelect = "none";
+            if(isSelectMode || isScrolling) return;
             pressTimer = setTimeout(() => {
                 initSelectMode(msgId, senderId);
             }, 600); // Hold for 0.6 seconds
@@ -515,14 +551,12 @@
 
         function cancelPress() {
             if(pressTimer) clearTimeout(pressTimer);
-            document.body.style.userSelect = "auto";
         }
 
         function initSelectMode(msgId, senderId) {
-            // Permission check: You can only select if you are owner, OR if it's your own message
-            if(senderId !== myProfile.id && !isOwner) {
-                return; // Not allowed to delete others' messages unless owner
-            }
+            // Permission check: Can I delete this?
+            if(senderId !== myProfile.id && !isOwner) return; 
+            
             isSelectMode = true;
             document.getElementById('multi-select-bar').style.display = 'flex';
             toggleSelect(msgId, senderId);
@@ -533,7 +567,7 @@
         }
 
         function toggleSelect(msgId, senderId) {
-            if(senderId !== myProfile.id && !isOwner) return; // Safety check
+            if(senderId !== myProfile.id && !isOwner) return; 
             const row = document.getElementById(msgId);
             if(!row) return;
 
@@ -568,19 +602,50 @@
             }
         }
 
-        // 🧊 GENERATE 3D BLOCKS 🧊
-        function initBlocks() {
-            const container = document.getElementById('blocks-bg');
-            for(let i=0; i<25; i++) {
-                let b = document.createElement('div'); b.className = 'moving-block';
-                let size = Math.random() * 80 + 30; b.style.width = size+'px'; b.style.height = size+'px';
-                b.style.left = Math.random() * 100 + 'vw'; b.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                b.style.animationDelay = (Math.random() * -20) + 's'; container.appendChild(b);
+        // 🚀 BACKGROUND ENGINE 🚀
+        const bgModes = ['gamer', 'blocks', 'aurora', 'squares', 'stars'];
+        let currentBgIndex = 0;
+        function switchBackground() {
+            currentBgIndex = (currentBgIndex + 1) % bgModes.length;
+            renderCustomBg(currentBgIndex);
+        }
+        function renderCustomBg(index) {
+            const container = document.getElementById('custom-bg-container');
+            container.innerHTML = ''; 
+            const mode = bgModes[index];
+            container.className = 'custom-bg bg-' + mode;
+
+            if(mode === 'gamer') {
+                container.innerHTML = '<div class="gamer-grid"></div>';
+            } else if(mode === 'blocks') {
+                for(let i=0; i<25; i++) {
+                    let b = document.createElement('div'); b.className = 'moving-block';
+                    let size = Math.random() * 80 + 30; b.style.width = size+'px'; b.style.height = size+'px';
+                    b.style.left = Math.random() * 100 + 'vw'; b.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                    b.style.animationDelay = (Math.random() * -20) + 's'; container.appendChild(b);
+                }
+            } else if(mode === 'squares') {
+                for(let i=0; i<15; i++) {
+                    let el = document.createElement('div'); el.className = 'shape-square';
+                    let size = Math.random() * 80 + 30; el.style.width = size+'px'; el.style.height = size+'px';
+                    el.style.left = Math.random() * 100 + 'vw'; el.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                    el.style.animationDelay = (Math.random() * 5) + 's'; container.appendChild(el);
+                }
+            } else if(mode === 'stars') {
+                for(let i=0; i<80; i++) {
+                    let el = document.createElement('div'); el.className = 'shape-star';
+                    let size = Math.random() * 4 + 1; el.style.width = size+'px'; el.style.height = size+'px';
+                    el.style.left = Math.random() * 100 + 'vw'; el.style.top = (Math.random() * -100) + 'vh';
+                    el.style.animationDuration = (Math.random() * 5 + 3) + 's'; container.appendChild(el);
+                }
             }
         }
 
         let isDark = localStorage.getItem('marutham_theme') === 'dark';
-        if(isDark) { document.body.classList.add('dark-theme'); document.getElementById('theme-btn').innerText = '☀️ Light Mode'; }
+        if(isDark) {
+            document.body.classList.add('dark-theme');
+            document.getElementById('theme-btn').innerText = '☀️ Light Mode';
+        }
 
         // --- 🕵️‍♂️ THE STEALTH ENGINE 🕵️‍♂️ ---
         document.getElementById('stealth-pin').addEventListener('keypress', function (e) {
@@ -590,13 +655,18 @@
         function checkStealth() {
             const pin = document.getElementById('stealth-pin').value;
             if(pin === '0000') {
-                document.getElementById('stealth-screen').style.display = 'none'; initAppCheck(); 
+                document.getElementById('stealth-screen').style.display = 'none';
+                initAppCheck(); 
             } else {
-                document.getElementById('stealth-error').style.display = 'block'; document.getElementById('stealth-pin').value = '';
+                document.getElementById('stealth-error').style.display = 'block';
+                document.getElementById('stealth-pin').value = '';
             }
         }
 
-        window.onload = () => { initBlocks(); };
+        window.onload = () => {
+            renderCustomBg(currentBgIndex);
+            // App waits for Stealth PIN before continuing...
+        };
 
         function initAppCheck() {
             const saved = localStorage.getItem('school_user');
@@ -604,7 +674,11 @@
                 myProfile = JSON.parse(saved); 
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
                 if(myProfile.customStatus === undefined) myProfile.customStatus = "online";
-                if(!myProfile.password) { localStorage.clear(); document.getElementById('login-screen').style.display = 'flex'; return; }
+                if(!myProfile.password) { 
+                    localStorage.clear(); 
+                    document.getElementById('login-screen').style.display = 'flex';
+                    return; 
+                }
                 isOwner = myProfile.name.toLowerCase().includes('vishnuram');
                 startApp(); 
             } else {
@@ -681,7 +755,8 @@
                 img.onload = function() {
                     const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
                     let w = img.width, h = img.height; 
-                    if(w > h) { if(w > maxRes) { h *= maxRes/w; w = maxRes; } } else { if(h > maxRes) { w *= maxRes/h; h = maxRes; } }
+                    if(w > h) { if(w > maxRes) { h *= maxRes/w; w = maxRes; } } 
+                    else { if(h > maxRes) { w *= maxRes/h; h = maxRes; } }
                     canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.8));
                 };
                 img.src = evt.target.result;
@@ -774,10 +849,10 @@
         function cmdDemote(id) { db.ref('accounts/'+id).update({ role: 'user' }); db.ref('users/'+id).update({ role: 'user' }); alert("Demoted."); }
         function cmdKick(id) { if(confirm("Kick?")) { db.ref('accounts/'+id).remove(); db.ref('users/'+id).remove(); } }
 
-        // --- PROFILE EDITING ---
+        // --- PROFILE EDITING (BUGS COMPLETELY FIXED) ---
         function openEditProfile() {
             document.getElementById('editGender').value = myProfile.gender || 'Male';
-            document.getElementById('editDob').value = myProfile.dob || '';
+            document.getElementById('editDob').value = myProfile.dob || ''; // THE MISSING FIELD IS BACK!
             document.getElementById('editOnlineStatus').value = myProfile.customStatus || 'online';
             window.tempAvatarData = null; 
             document.getElementById('avatar-preview').src = (myProfile.avatar && myProfile.avatar.startsWith('data:')) ? myProfile.avatar : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="; 
@@ -785,12 +860,15 @@
         }
 
         function saveProfile() {
-            myProfile.gender = document.getElementById('editGender').value; myProfile.dob = document.getElementById('editDob').value.trim();
+            myProfile.gender = document.getElementById('editGender').value; 
+            myProfile.dob = document.getElementById('editDob').value.trim();
             myProfile.customStatus = document.getElementById('editOnlineStatus').value;
             if(window.tempAvatarData) myProfile.avatar = window.tempAvatarData;
+
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             let updates = { gender: myProfile.gender, dob: myProfile.dob, avatar: myProfile.avatar, customStatus: myProfile.customStatus };
-            db.ref('accounts/' + myProfile.id).update(updates); db.ref('users/' + myProfile.id).update(updates);
+            db.ref('accounts/' + myProfile.id).update(updates);
+            db.ref('users/' + myProfile.id).update(updates);
             document.getElementById('edit-screen').style.display = 'none';
         }
 
@@ -994,24 +1072,30 @@
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
-        
+        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
         function recoverMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: false }); }
         function hardDeleteMessage(msgId) { if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); }
-        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); } // Fallback for single click
 
-        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING 🚀 ---
+        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING (SAFE LOADER ADDED) 🚀 ---
         function createMessageHTML(payload) {
             window.allMessages[payload.msgId] = payload; 
 
+            // SAFETY FIX: If it's an old message without a proper sender object, give it a placeholder to prevent crashing
+            const senderObj = payload.sender || {};
+            const sName = senderObj.name || 'Unknown User';
+            const sId = senderObj.id || 'unknown';
+            const sRole = senderObj.role || 'user';
+            const sAvatar = senderObj.avatar || '';
+
             if(payload.type === 'alert' && !payload.isDeleted) {
                 const canDel = isOwner || isAdmin;
-                return `<div class="sys-alert-msg" id="${payload.msgId}" onmousedown="startPress(event, '${payload.msgId}', '${payload.sender.id}')" onmousemove="cancelPress()" onmouseup="cancelPress()" onmouseleave="cancelPress()" ontouchstart="startPress(event, '${payload.msgId}', '${payload.sender.id}')" ontouchmove="cancelPress()" ontouchend="cancelPress()" onclick="msgClick('${payload.msgId}', '${payload.sender.id}')">
+                return `<div class="sys-alert-msg" id="${payload.msgId}" onmousedown="startPress(event, '${payload.msgId}', '${sId}')" onmousemove="cancelPress()" onmouseup="cancelPress()" onmouseleave="cancelPress()" ontouchstart="startPress(event, '${payload.msgId}', '${sId}')" ontouchmove="cancelPress()" ontouchend="cancelPress()" onclick="msgClick('${payload.msgId}', '${sId}')">
                     ${canDel ? `<button class="delete-btn" style="opacity:1; background:transparent;" onclick="hardDeleteMessage('${payload.msgId}')">🗑️</button>` : ''}
                     🚨 ANNOUNCEMENT:<br>${payload.text}
                 </div>`;
             }
 
-            const isMe = payload.sender.id === myProfile.id;
+            const isMe = sId === myProfile.id;
             let bodyHtml = '';
             
             let replyHtml = '';
@@ -1025,7 +1109,7 @@
                 if(payload.type === 'text' || payload.type === 'dm') {
                     bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
                     if(payload.type === 'dm') {
-                        let dmLabel = isMe ? `To: Private` : `From: ${payload.sender.name}`;
+                        let dmLabel = isMe ? `To: Private` : `From: ${sName}`;
                         bodyHtml = `<div style="font-size:10px; color:#9b59b6; font-weight:800; margin-bottom:6px; text-transform:uppercase;">🕵️ DM ${dmLabel}</div>` + bodyHtml;
                     }
                 } else if (payload.type === 'image') {
@@ -1036,20 +1120,19 @@
             }
 
             let roleBadge = '';
-            if(payload.sender.name.toLowerCase().includes('vishnuram')) roleBadge = '<span class="role-tag owner">👑 Owner</span>';
-            else if(payload.sender.role === 'admin') roleBadge = '<span class="role-tag admin">🛡️ Admin</span>';
+            if(sName.toLowerCase().includes('vishnuram')) roleBadge = '<span class="role-tag owner">👑 Owner</span>';
+            else if(sRole === 'admin') roleBadge = '<span class="role-tag admin">🛡️ Admin</span>';
             else roleBadge = '<span class="role-tag gamer">🎮 Gamer</span>';
 
             let rowClass = `discord-msg-row ${isMe ? 'me' : ''}`;
-            if(payload.sender.name.toLowerCase().includes('vishnuram')) rowClass += " owner-msg";
+            if(sName.toLowerCase().includes('vishnuram')) rowClass += " owner-msg";
             if(payload.type === 'dm') rowClass += " dm-bubble";
             if(selectedMsgs.has(payload.msgId)) rowClass += " selected";
 
-            let avatarSrc = payload.sender.avatar && payload.sender.avatar.startsWith('data:image') ? payload.sender.avatar : "";
-            let hasStatusClass = window.allStatuses[payload.sender.id] ? 'has-status' : '';
+            let hasStatusClass = window.allStatuses[sId] ? 'has-status' : '';
             
-            let avatarHTML = avatarSrc ? `<img src="${avatarSrc}" class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${payload.sender.id}')">` 
-                                       : `<div class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${payload.sender.id}')">${payload.sender.name.charAt(0).toUpperCase()}</div>`;
+            let avatarHTML = (sAvatar && sAvatar.startsWith('data:image')) ? `<img src="${sAvatar}" class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${sId}')">` 
+                                       : `<div class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${sId}')">${sName.charAt(0).toUpperCase()}</div>`;
 
             const canDelete = (isMe || isOwner || isAdmin) && !payload.isDeleted;
 
@@ -1062,19 +1145,19 @@
 
             return `
                 <div class="${rowClass}" id="${payload.msgId}" 
-                     onmousedown="startPress(event, '${payload.msgId}', '${payload.sender.id}')" 
+                     onmousedown="startPress(event, '${payload.msgId}', '${sId}')" 
                      onmousemove="cancelPress()" 
                      onmouseup="cancelPress()" 
                      onmouseleave="cancelPress()" 
-                     ontouchstart="startPress(event, '${payload.msgId}', '${payload.sender.id}')" 
+                     ontouchstart="startPress(event, '${payload.msgId}', '${sId}')" 
                      ontouchmove="cancelPress()" 
                      ontouchend="cancelPress()" 
-                     onclick="msgClick('${payload.msgId}', '${payload.sender.id}')">
+                     onclick="msgClick('${payload.msgId}', '${sId}')">
                     
                     ${avatarHTML}
                     <div class="discord-msg-content">
                         <div class="discord-msg-header">
-                            <span class="discord-sender-name" onclick="openUserActions('${payload.sender.id}')">${payload.sender.name}</span>
+                            <span class="discord-sender-name" onclick="openUserActions('${sId}')">${sName}</span>
                             ${roleBadge}
                             <span class="discord-timestamp">${payload.time}</span>
                         </div>
@@ -1087,12 +1170,13 @@
         }
 
         function renderMessage(payload) {
-            if(payload.receiverId) { if(payload.sender.id !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) return; }
+            const sId = (payload.sender && payload.sender.id) ? payload.sender.id : 'unknown';
+            if(payload.receiverId) { if(sId !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) return; }
             const container = document.getElementById('messages');
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
             if (!document.getElementById(payload.msgId)) {
                 container.insertAdjacentHTML('beforeend', createMessageHTML(payload));
-                if (isAtBottom || payload.sender.id === myProfile.id) container.scrollTop = container.scrollHeight;
+                if (isAtBottom || sId === myProfile.id) container.scrollTop = container.scrollHeight;
             }
         }
 
