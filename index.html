@@ -108,7 +108,7 @@
         .action-menu-btn.danger:hover { background: rgba(231, 76, 60, 0.2); }
         .action-menu-btn.success { color: #05c46b; background: rgba(5, 196, 107, 0.1); }
 
-        /* WHATSAPP STATUS VIEWER (UPDATED FOR VIDEO) */
+        /* WHATSAPP STATUS VIEWER */
         #status-viewer { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center;}
         .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 3px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 3px; overflow: hidden; }
@@ -142,12 +142,16 @@
         /* AVATARS */
         .avatar-wrap { position: relative; margin-right: 15px; }
         .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3498db, #2980b9); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; text-transform: uppercase; object-fit: cover; border: 3px solid transparent;}
-        .avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; }
+        
+        .avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; cursor: pointer;}
         @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(5, 196, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0); } }
 
+        /* CUSTOM STATUS DOT COLORS */
         .status-dot-abs { position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg-panel); }
         .status-dot-abs.online { background: #2ecc71; }
-        .status-dot-abs.offline { background: #e74c3c; }
+        .status-dot-abs.idle { background: #f1c40f; }
+        .status-dot-abs.dnd { background: #e74c3c; }
+        .status-dot-abs.offline { background: #95a5a6; }
 
         .user-details { flex: 1; min-width: 0; }
         .name-text { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 5px; margin-bottom: 2px; color: var(--text-main);}
@@ -171,7 +175,7 @@
         .sys-msg { align-self: center; background: var(--glass-header); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; margin: 15px 0; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05);}
         .sys-alert-msg { align-self: center; background: linear-gradient(135deg, #ff7675, #d63031); color: white; padding: 15px 25px; border-radius: 16px; font-size: 14px; font-weight: bold; margin: 15px 0; text-align: center; box-shadow: 0 8px 25px rgba(214, 48, 49, 0.4); border: 2px solid rgba(255,255,255,0.2); width: 90%; max-width: 450px;}
 
-        /* 🚀 DISCORD STYLE MESSAGES (BUG FIXED) 🚀 */
+        /* 🚀 DISCORD STYLE MESSAGES 🚀 */
         .discord-msg-row { display: flex; flex-direction: row; gap: 15px; margin-bottom: 20px; padding: 10px 15px; border-radius: 12px; transition: background 0.2s; position: relative; align-items: flex-start;}
         .discord-msg-row:hover { background: var(--msg-hover); }
         
@@ -183,7 +187,6 @@
         .discord-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; text-transform: uppercase; flex-shrink: 0; cursor: pointer; border: 2px solid transparent;}
         .discord-avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; }
 
-        /* This fixes the text overlap bug! */
         .discord-msg-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         
         .discord-msg-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;}
@@ -195,18 +198,26 @@
         .discord-msg-body a { color: #3498db; text-decoration: none; font-weight: 700;}
         .discord-msg-body a:hover { text-decoration: underline; }
 
+        /* REPLIED MESSAGE BLOCK */
+        .reply-quote { background: rgba(0,0,0,0.05); border-left: 3px solid #3498db; padding: 6px 10px; border-radius: 4px; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; cursor: pointer;}
+        .dark-theme .reply-quote { background: rgba(255,255,255,0.05); }
+        .reply-quote-name { font-weight: bold; color: #3498db; margin-bottom: 2px;}
+
         /* Role Badges */
         .role-tag { font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .role-tag.owner { background: #ffeaa7; color: #d35400; }
         .role-tag.admin { background: #81ecec; color: #00b894; }
         .role-tag.gamer { background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border-color);}
 
-        /* Deleting & Recovering */
-        .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; display: flex; align-items: center; gap: 5px; }
-        .delete-btn { opacity: 0; position: absolute; top: 10px; right: 15px; background: rgba(231, 76, 60, 0.1); border: none; color: #e74c3c; font-size: 16px; cursor: pointer; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: bold;}
-        .discord-msg-row:hover .delete-btn { opacity: 1; }
-        .delete-btn:hover { background: #e74c3c; color: white; transform: scale(1.05);}
+        /* Message Action Buttons (Hover) */
+        .msg-actions { opacity: 0; position: absolute; top: 10px; right: 15px; display: flex; gap: 5px; transition: 0.2s;}
+        .discord-msg-row:hover .msg-actions { opacity: 1; }
         
+        .action-icon-btn { background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); font-size: 14px; cursor: pointer; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s;}
+        .action-icon-btn:hover { background: var(--border-color); transform: scale(1.05);}
+        .action-icon-btn.red:hover { background: #e74c3c; color: white; border-color: #e74c3c;}
+
+        .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; display: flex; align-items: center; gap: 5px; }
         .recover-btn { background: #2ecc71; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; padding: 6px 12px; margin-top: 8px; transition: 0.2s;}
         .recover-btn:hover { transform: scale(1.05); }
 
@@ -218,6 +229,10 @@
         .typing-box { font-size: 12px; color: var(--text-main); font-weight: 700; font-style: italic; padding: 5px 25px; min-height: 25px; background: transparent;}
         #scroll-bottom-btn { position: absolute; bottom: 100px; right: 25px; background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 20px; box-shadow: 0 8px 25px rgba(52,152,219,0.4); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2000; transition: 0.3s;}
         
+        .reply-preview-bar { display: none; padding: 8px 25px; background: rgba(52, 152, 219, 0.1); border-left: 4px solid #3498db; border-top: 1px solid var(--border-color); align-items: center; justify-content: space-between; font-size: 13px; color: var(--text-main);}
+        .reply-preview-bar span { font-weight: bold; color: #3498db;}
+        .reply-preview-bar button { background: transparent; border: none; color: var(--text-sub); cursor: pointer; font-weight: bold;}
+
         .input-bar { padding: 15px 25px; background: var(--glass-header); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; padding-bottom: max(15px, env(safe-area-inset-bottom)); z-index: 100; transition: background 0.3s; }
         .action-btn { background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border-color); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; border-radius: 50%; transition: 0.2s; }
         .action-btn:hover { background: #3498db; color: white; border-color: #3498db;}
@@ -230,7 +245,8 @@
             .sidebar.open { transform: translateX(0); }
             .menu-btn { display: flex; }
             .close-sidebar-btn { display: flex; }
-            .delete-btn { opacity: 1; background: transparent; } 
+            .msg-actions { opacity: 1; background: transparent; } 
+            .discord-avatar { width: 40px; height: 40px; }
         }
 
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
@@ -302,8 +318,17 @@
                     <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="handleAvatarSelection(event)">
                 </div>
             </div>
+            
+            <div class="input-group">
+                <label>Online Status Indicator</label>
+                <select id="editOnlineStatus">
+                    <option value="online">🟢 Online</option>
+                    <option value="idle">🌙 Idle</option>
+                    <option value="dnd">🔴 Do Not Disturb</option>
+                </select>
+            </div>
+
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
-            <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
             <button class="primary" onclick="saveProfile()">Save Changes</button>
             <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
         </div>
@@ -355,6 +380,7 @@
                 <p><b>/lock & /unlock</b><br><span style="color:var(--text-sub);">(Owner Only) Lock/Unlock chat.</span></p>
                 <p><b>/kick [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Instantly ban a gamer.</span></p>
                 <p><b>/clear</b><br><span style="color:var(--text-sub);">(Everyone) Wipes your local screen clean.</span></p>
+                <p><b>/dice & /coin</b><br><span style="color:var(--text-sub);">(Everyone) Roll a die or flip a coin!</span></p>
                 <p><b>/nuke</b><br><span style="color:var(--text-sub);">(Owner Only) Clear database (Requires PIN).</span></p>
             </div>
             <button class="primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
@@ -366,17 +392,12 @@
             <div class="sidebar-header">
                 <div class="sidebar-title" id="my-profile-name">Gamers</div>
                 <div class="header-actions">
-                    <button class="status-add-btn" onclick="document.getElementById('status-uploader').click()">📸 Add Status</button>
+                    <button class="status-add-btn" onclick="document.getElementById('status-uploader').click()">📸 Status</button>
                     <button class="edit-btn" onclick="openEditProfile()">Profile</button>
                     <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
                 </div>
             </div>
             
-            <div class="yt-promo">
-                <p>🔥 CREATOR / OWNER</p>
-                <a href="https://www.youtube.com/@microrocktamilgaming" target="_blank" class="yt-btn">▶ Sub to MicroRockTamilGaming!</a>
-            </div>
-
             <div class="user-list" id="users-container"></div>
             
             <div style="padding:15px; border-top: 1px solid var(--border-color);">
@@ -416,9 +437,14 @@
             <button id="scroll-bottom-btn" onclick="scrollToBottom()">⬇</button>
             <div class="typing-box" id="typing-indicator"></div>
 
+            <div id="reply-preview-bar" class="reply-preview-bar">
+                <div>Replying to <span id="reply-preview-name">Name</span></div>
+                <button onclick="cancelReply()">✕</button>
+            </div>
+
             <div class="input-bar" id="input-bar-container">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image" id="btn-attach">📎</button>
-                <input type="text" id="chatInput" placeholder="Type a message or /command..." oninput="handleTypingInput()">
+                <input type="text" id="chatInput" placeholder="Type or paste an image..." oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">➤</button>
             </div>
         </div>
@@ -445,7 +471,10 @@
         let isAppReady = false; 
         let myTimeoutTime = 0;
         let timeoutInterval = null;
+        
         window.allStatuses = {}; 
+        window.allMessages = {}; // Store messages locally for Reply system
+        let currentReplyData = null;
 
         // 🧊 GENERATE 3D BLOCKS 🧊
         function initBlocks() {
@@ -477,7 +506,7 @@
             const pin = document.getElementById('stealth-pin').value;
             if(pin === '0000') {
                 document.getElementById('stealth-screen').style.display = 'none';
-                initAppCheck(); // Proceed to login or chat
+                initAppCheck(); 
             } else {
                 document.getElementById('stealth-error').style.display = 'block';
                 document.getElementById('stealth-pin').value = '';
@@ -494,6 +523,7 @@
             if (saved) { 
                 myProfile = JSON.parse(saved); 
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
+                if(myProfile.customStatus === undefined) myProfile.customStatus = "online";
                 if(!myProfile.password) { 
                     localStorage.clear(); 
                     document.getElementById('login-screen').style.display = 'flex';
@@ -539,7 +569,7 @@
                 if(snap.exists()) alert("❌ ERROR: Username taken!");
                 else {
                     let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
-                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0, avatar: ""};
+                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0, avatar: "", customStatus: "online"};
                     db.ref('accounts/' + safeKey).set(newProfile);
                     myProfile = newProfile;
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
@@ -561,6 +591,7 @@
                     if(acc.password !== pwd) return alert("❌ Incorrect Password!");
                     myProfile = acc;
                     if(myProfile.avatar === undefined) myProfile.avatar = "";
+                    if(myProfile.customStatus === undefined) myProfile.customStatus = "online";
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner';
                     startApp();
@@ -607,9 +638,10 @@
             const file = e.target.files[0];
             if(!file) return;
 
-            // Video Status Support
+            // 🎬 2-MINUTE VIDEO STATUS SUPPORT 🎬
             if(file.type.startsWith('video/')) {
-                if(file.size > 5 * 1024 * 1024) return alert("❌ Video too large! Please select a smaller video (Max 5MB) so it doesn't freeze the app.");
+                // Warning if > 9MB (Firebase limits base64 string push size)
+                if(file.size > 9 * 1024 * 1024) return alert("❌ Video is too large for database! Try selecting a compressed video (Max ~9MB).");
                 const reader = new FileReader();
                 reader.onload = (evt) => {
                     db.ref('statuses/' + myProfile.id).set({
@@ -619,7 +651,6 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                // Image Status Support
                 compressImage(file, 800, (base64) => {
                     db.ref('statuses/' + myProfile.id).set({
                         type: 'image', data: base64, timestamp: Date.now()
@@ -630,7 +661,7 @@
             e.target.value = '';
         }
 
-        // --- STATUS VIEWER (IMAGE & VIDEO SMART DETECT) ---
+        // --- STATUS VIEWER (IMAGE & 2-MIN VIDEO SMART DETECT) ---
         let statusTimer = null;
         function openStatus(userId) {
             const s = window.allStatuses[userId];
@@ -640,7 +671,6 @@
             const imgEl = document.getElementById('status-image');
             const vidEl = document.getElementById('status-video');
             
-            // Set User Info
             document.getElementById('status-view-name').innerText = u.name;
             document.getElementById('status-view-avatar').src = u.avatar || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             
@@ -659,9 +689,9 @@
                 vidEl.play();
                 
                 vidEl.onloadedmetadata = () => {
-                    // Capped at 60s
+                    // Capped at 120s (2 Minutes)
                     let duration = vidEl.duration * 1000;
-                    if(duration > 60000) duration = 60000; 
+                    if(duration > 120000) duration = 120000; 
                     setTimeout(() => { fill.style.transition = `width ${duration}ms linear`; fill.style.width = '100%'; }, 50);
                     if(statusTimer) clearTimeout(statusTimer);
                     statusTimer = setTimeout(closeStatus, duration);
@@ -738,18 +768,13 @@
         }
 
         function closeUserActions() { document.getElementById('user-action-modal').style.display = 'none'; }
-        
-        // --- ⚙️ COMMAND ENGINE RESTORED ⚙️ ---
-        function startDM(name) { document.getElementById('chatInput').value = `/dm ${name} `; document.getElementById('chatInput').focus(); }
-        function cmdTimeout(id) { db.ref('accounts/'+id).update({ timeoutUntil: Date.now() + 300000 }); db.ref('users/'+id).update({ timeoutUntil: Date.now() + 300000 }); alert("Timed out."); }
-        function cmdPromote(id) { db.ref('accounts/'+id).update({ role: 'admin' }); db.ref('users/'+id).update({ role: 'admin' }); alert("Promoted."); }
-        function cmdDemote(id) { db.ref('accounts/'+id).update({ role: 'user' }); db.ref('users/'+id).update({ role: 'user' }); alert("Demoted."); }
-        function cmdKick(id) { if(confirm("Kick?")) { db.ref('accounts/'+id).remove(); db.ref('users/'+id).remove(); } }
 
-        // --- PROFILE EDITING ---
+        // --- PROFILE EDITING (WITH STATUS DOT UPDATE) ---
         function openEditProfile() {
             document.getElementById('editGender').value = myProfile.gender;
             document.getElementById('editDob').value = myProfile.dob;
+            document.getElementById('editOnlineStatus').value = myProfile.customStatus || 'online';
+            
             window.tempAvatarData = null; 
             document.getElementById('avatar-preview').src = (myProfile.avatar && myProfile.avatar.startsWith('data:')) ? myProfile.avatar : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="; 
             document.getElementById('edit-screen').style.display = 'flex';
@@ -758,10 +783,12 @@
         function saveProfile() {
             myProfile.gender = document.getElementById('editGender').value; 
             myProfile.dob = document.getElementById('editDob').value.trim();
+            myProfile.customStatus = document.getElementById('editOnlineStatus').value;
+            
             if(window.tempAvatarData) myProfile.avatar = window.tempAvatarData;
 
             localStorage.setItem('school_user', JSON.stringify(myProfile));
-            let updates = { gender: myProfile.gender, dob: myProfile.dob, avatar: myProfile.avatar };
+            let updates = { gender: myProfile.gender, dob: myProfile.dob, avatar: myProfile.avatar, customStatus: myProfile.customStatus };
             db.ref('accounts/' + myProfile.id).update(updates);
             db.ref('users/' + myProfile.id).update(updates);
             document.getElementById('edit-screen').style.display = 'none';
@@ -810,7 +837,7 @@
                 inputBar.placeholder = "🔒 Chat locked by Owner."; inputBar.disabled = true; attachBtn.style.display = 'none'; return;
             }
 
-            inputBar.placeholder = "Type a message or /command..."; inputBar.disabled = false; attachBtn.style.display = 'flex';
+            inputBar.placeholder = "Type a message or paste an image..."; inputBar.disabled = false; attachBtn.style.display = 'flex';
         }
 
         function startApp() {
@@ -869,7 +896,10 @@
 
             db.ref('messages').on('child_added', (snapshot) => { renderMessage(snapshot.val()); });
             db.ref('messages').on('child_changed', (snapshot) => { updateMessageOnScreen(snapshot.val()); });
-            db.ref('messages').on('child_removed', (snapshot) => { const el = document.getElementById(snapshot.key); if (el) el.remove(); });
+            db.ref('messages').on('child_removed', (snapshot) => { 
+                const el = document.getElementById(snapshot.key); if (el) el.remove(); 
+                if(window.allMessages[snapshot.key]) delete window.allMessages[snapshot.key];
+            });
 
             db.ref('typing').on('value', (snapshot) => {
                 const typingData = snapshot.val() || {}; let typers = [];
@@ -898,7 +928,16 @@
                 const displayName = isMe ? `${u.name} (You)` : u.name;
                 const initial = u.name.charAt(0).toUpperCase();
 
-                const statusColor = u.online ? 'online' : 'offline';
+                // Custom Status Logic
+                let statusColorClass = 'offline';
+                let statusLabel = 'Offline';
+                if (u.online) {
+                    statusColorClass = u.customStatus || 'online';
+                    if(statusColorClass === 'online') statusLabel = 'Online';
+                    else if(statusColorClass === 'idle') statusLabel = 'Idle';
+                    else if(statusColorClass === 'dnd') statusLabel = 'Do Not Disturb';
+                }
+                
                 let hasStatus = window.allStatuses[id] ? 'has-status' : '';
                 
                 let avatarHTML = u.avatar && u.avatar.startsWith('data:image') 
@@ -914,11 +953,11 @@
                     <div class="user-item" onclick="openUserActions('${id}')">
                         <div class="avatar-wrap">
                             ${avatarHTML}
-                            <div class="status-dot-abs ${statusColor}"></div>
+                            <div class="status-dot-abs ${statusColorClass}"></div>
                         </div>
                         <div class="user-details">
                             <div class="name-text">${displayName} ${roleBadge}</div>
-                            <div class="status-indicator">${u.online ? 'Online' : 'Offline'} ${timeoutBadge}</div>
+                            <div class="status-indicator">${statusLabel} ${timeoutBadge}</div>
                         </div>
                     </div>
                 `;
@@ -934,11 +973,39 @@
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
             
-            // Replaced the mic icon with a send arrow if text is typed
             if (text) { btn.innerText = '➤'; btn.style.background = '#3498db'; } 
             else { btn.innerText = '🎤'; btn.style.background = 'linear-gradient(135deg, #3498db, #2980b9)'; }
         }
 
+        // --- ↩️ REPLY SYSTEM ---
+        function setReply(msgId) {
+            const msg = window.allMessages[msgId];
+            if(!msg) return;
+            currentReplyData = { name: msg.sender.name, text: msg.type === 'text' ? msg.text : `[${msg.type.toUpperCase()}]` };
+            document.getElementById('reply-preview-name').innerText = currentReplyData.name;
+            document.getElementById('reply-preview-bar').style.display = 'flex';
+            document.getElementById('chatInput').focus();
+        }
+        function cancelReply() {
+            currentReplyData = null;
+            document.getElementById('reply-preview-bar').style.display = 'none';
+        }
+
+        // --- 📋 CLIPBOARD PASTE IMAGE ---
+        document.getElementById('chatInput').addEventListener('paste', function(e) {
+            let items = e.clipboardData.items;
+            for(let i=0; i<items.length; i++) {
+                if(items[i].type.indexOf('image') !== -1) {
+                    let blob = items[i].getAsFile();
+                    compressImage(blob, 800, (base64) => {
+                        sendMsgToDB('image', '', null, base64);
+                    });
+                    e.preventDefault(); // Stop pasting text if it's an image
+                }
+            }
+        });
+
+        // --- ⚙️ COMMAND ENGINE ---
         function handleActionClick() {
             if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
             if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
@@ -958,6 +1025,10 @@
                     else if(cmd === '/lock') { if(!isOwner) return; db.ref('settings/chatLocked').set(true); }
                     else if(cmd === '/unlock') { if(!isOwner) return; db.ref('settings/chatLocked').set(false); }
                     else if(cmd === '/clear') { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>'; }
+                    else if(cmd === '/shrug') { sendMsgToDB('text', '¯\\_(ツ)_/¯'); }
+                    else if(cmd === '/tableflip') { sendMsgToDB('text', '(╯°□°)╯︵ ┻━┻'); }
+                    else if(cmd === '/dice') { sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`); }
+                    else if(cmd === '/coin') { sendMsgToDB('text', `🪙 Flipped: ${Math.random() > 0.5 ? 'Heads' : 'Tails'}!`); }
                     else if(cmd === '/timeout') {
                         if(!isOwner && !isAdmin) return; let argP = arg.split(' '); let tN = argP[0]; let m = parseInt(argP[1]) || 5; 
                         let f = findUserByName(tN); if(f) { db.ref('accounts/'+f).update({timeoutUntil: Date.now()+(m*60000)}); db.ref('users/'+f).update({timeoutUntil: Date.now()+(m*60000)}); }
@@ -969,17 +1040,32 @@
                     else if(cmd === '/kick') { if(!isOwner) return; let f = findUserByName(arg); if(f) { db.ref('accounts/'+f).remove(); db.ref('users/'+f).remove(); } }
                     
                     document.getElementById('chatInput').value = ''; db.ref('typing/' + myProfile.id).set(false); handleTypingInput();
+                    cancelReply();
                     return; 
                 }
                 
-                sendMsgToDB('text', text); document.getElementById('chatInput').value = ''; db.ref('typing/' + myProfile.id).set(false); handleTypingInput(); 
+                sendMsgToDB('text', text); 
+                document.getElementById('chatInput').value = ''; 
+                db.ref('typing/' + myProfile.id).set(false); 
+                handleTypingInput(); 
             } else { toggleVoiceRecord(); }
         }
 
-        function sendMsgToDB(msgType, msgContent, receiverId = null) {
+        function sendMsgToDB(msgType, msgContent, receiverId = null, base64Data = null) {
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             let senderData = { ...myProfile };
-            db.ref('messages/' + msgId).set({ msgId: msgId, sender: senderData, type: msgType, text: msgContent, data: null, receiverId: receiverId, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP });
+            
+            let payload = { 
+                msgId: msgId, sender: senderData, type: msgType, text: msgContent, data: base64Data, 
+                receiverId: receiverId, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP 
+            };
+
+            if(currentReplyData) {
+                payload.replyTo = currentReplyData;
+            }
+
+            db.ref('messages/' + msgId).set(payload);
+            cancelReply(); // Clear reply state
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
@@ -988,8 +1074,10 @@
         function recoverMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: false }); }
         function hardDeleteMessage(msgId) { if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); }
 
-        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING (BUG FIXED) 🚀 ---
+        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING 🚀 ---
         function createMessageHTML(payload) {
+            window.allMessages[payload.msgId] = payload; // Store for reply system
+
             if(payload.type === 'alert' && !payload.isDeleted) {
                 const canDel = isOwner || isAdmin;
                 return `<div class="sys-alert-msg" id="${payload.msgId}">
@@ -1001,10 +1089,14 @@
             const isMe = payload.sender.id === myProfile.id;
             let bodyHtml = '';
             
+            // Render Reply Block if exists
+            let replyHtml = '';
+            if(payload.replyTo && !payload.isDeleted) {
+                replyHtml = `<div class="reply-quote"><div class="reply-quote-name">${payload.replyTo.name}</div>${payload.replyTo.text}</div>`;
+            }
+
             if(payload.isDeleted) {
                 bodyHtml = '<span class="deleted-text">🚫 Deleted</span>';
-                if(isMe || isOwner || isAdmin) bodyHtml += `<button class="recover-btn" onclick="recoverMessage('${payload.msgId}')">Recover</button>`;
-                if(isOwner) bodyHtml += `<button class="recover-btn" style="background:#e74c3c;" onclick="hardDeleteMessage('${payload.msgId}')">Erase</button>`;
             } else {
                 if(payload.type === 'text' || payload.type === 'dm') {
                     bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
@@ -1036,6 +1128,14 @@
 
             const canDelete = (isMe || isOwner || isAdmin) && !payload.isDeleted;
 
+            // Hover actions
+            let hoverActions = `<div class="msg-actions">`;
+            if(!payload.isDeleted) hoverActions += `<button class="action-icon-btn" onclick="setReply('${payload.msgId}')" title="Reply">↩️</button>`;
+            if(canDelete) hoverActions += `<button class="action-icon-btn red" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️</button>`;
+            if(payload.isDeleted && (isMe || isOwner || isAdmin)) hoverActions += `<button class="action-icon-btn" style="color:#2ecc71;" onclick="recoverMessage('${payload.msgId}')" title="Recover">♻️</button>`;
+            if(payload.isDeleted && isOwner) hoverActions += `<button class="action-icon-btn red" onclick="hardDeleteMessage('${payload.msgId}')" title="Erase Permanently">🔥</button>`;
+            hoverActions += `</div>`;
+
             return `
                 <div class="${rowClass}" id="${payload.msgId}">
                     ${avatarHTML}
@@ -1045,9 +1145,10 @@
                             ${roleBadge}
                             <span class="discord-timestamp">${payload.time}</span>
                         </div>
+                        ${replyHtml}
                         <div class="discord-msg-body">${bodyHtml}</div>
                     </div>
-                    ${canDelete ? `<button class="delete-btn" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️</button>` : ''}
+                    ${hoverActions}
                 </div>
             `;
         }
@@ -1063,40 +1164,6 @@
         }
 
         function updateMessageOnScreen(data) { let oldRow = document.getElementById(data.msgId); if(oldRow) oldRow.outerHTML = createMessageHTML(data); }
-
-        function handleImageUpload(e) {
-            if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
-            if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
-            if(!e.target.files[0]) return;
-            compressImage(e.target.files[0], 800, (base64) => {
-                const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                db.ref('messages/' + msgId).set({ msgId: msgId, sender: myProfile, type: 'image', text: '', data: base64, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP });
-            });
-            e.target.value = '';
-        }
-
-        let mediaRecorder; let audioChunks = []; let isRecording = false;
-        function toggleVoiceRecord() {
-            if (myTimeoutTime > Date.now()) return;
-            if(window.chatLocked && !isOwner && !isAdmin) return;
-            const btn = document.getElementById('action-btn');
-            if(!isRecording) {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true; 
-                    btn.classList.add('recording'); btn.innerText = '⏹'; audioChunks = [];
-                    mediaRecorder.addEventListener("dataavailable", e => audioChunks.push(e.data));
-                    mediaRecorder.addEventListener("stop", () => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                            db.ref('messages/' + msgId).set({ msgId: msgId, sender: myProfile, type: 'voice', text: '', data: e.target.result, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP });
-                        };
-                        reader.readAsDataURL(new Blob(audioChunks, { type: "audio/ogg" }));
-                        stream.getTracks().forEach(t => t.stop());
-                    });
-                }).catch(e => alert("Mic error: " + e.message));
-            } else { mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording'); btn.innerText = '🎤'; }
-        }
 
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
