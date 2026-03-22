@@ -3,12 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>7-Marutham Hub</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <title>Study Portal</title> <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
+        /* FAKE STEALTH SCREEN STYLES */
+        #stealth-screen {
+            position: fixed; inset: 0; background: #f8f9fa; z-index: 999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+        .stealth-box {
+            background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center; width: 90%; max-width: 400px;
+        }
+        .stealth-input {
+            width: 100%; padding: 15px; border: 2px solid #dadce0; border-radius: 8px;
+            font-size: 18px; margin-bottom: 20px; outline: none; text-align: center; letter-spacing: 5px;
+        }
+        .stealth-input:focus { border-color: #1a73e8; }
+        .stealth-btn {
+            background: #1a73e8; color: white; border: none; padding: 15px 30px;
+            border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%;
+        }
+
         /* CORE SETUP & CSS VARIABLES */
         :root {
             --bg-panel: rgba(255, 255, 255, 0.85);
@@ -24,16 +42,16 @@
         }
 
         .dark-theme {
-            --bg-panel: rgba(47, 54, 64, 0.9);
+            --bg-panel: rgba(47, 54, 64, 0.95);
             --bg-sidebar: rgba(30, 39, 46, 0.95);
             --text-main: #f5f6fa;
             --text-sub: #a4b0be;
             --border-color: rgba(116, 125, 140, 0.3);
-            --msg-hover: rgba(255, 255, 255, 0.03);
-            --input-bg: rgba(47, 54, 64, 0.8);
-            --input-field: rgba(30, 39, 46, 0.9);
-            --glass-header: rgba(47, 54, 64, 0.85);
-            --chat-overlay: rgba(0, 0, 0, 0.5);
+            --msg-hover: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(47, 54, 64, 0.9);
+            --input-field: rgba(30, 39, 46, 1);
+            --glass-header: rgba(47, 54, 64, 0.95);
+            --chat-overlay: rgba(0, 0, 0, 0.6);
         }
 
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #05050a; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
@@ -90,15 +108,16 @@
         .action-menu-btn.danger:hover { background: rgba(231, 76, 60, 0.2); }
         .action-menu-btn.success { color: #05c46b; background: rgba(5, 196, 107, 0.1); }
 
-        /* WHATSAPP STATUS VIEWER */
-        #status-viewer { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; }
+        /* WHATSAPP STATUS VIEWER (UPDATED FOR VIDEO) */
+        #status-viewer { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center;}
         .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 3px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 3px; overflow: hidden; }
         .status-progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
         .status-header { position: absolute; top: 30px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 5001; color: white;}
         .status-user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         .status-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
-        #status-image { width: 100%; height: 100%; object-fit: contain; }
+        #status-image { width: 100%; height: 100%; object-fit: contain; display: none; }
+        #status-video { width: 100%; height: 100%; object-fit: contain; display: none; }
         #status-delete-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(231, 76, 60, 0.9); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; z-index: 5001; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 
         /* APP LAYOUT */
@@ -131,7 +150,7 @@
         .status-dot-abs.offline { background: #e74c3c; }
 
         .user-details { flex: 1; min-width: 0; }
-        .name-text { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 5px; margin-bottom: 2px;}
+        .name-text { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 5px; margin-bottom: 2px; color: var(--text-main);}
         .status-indicator { font-size: 11px; font-weight: 600; color: var(--text-sub); }
 
         /* CHAT SECTION */
@@ -152,22 +171,25 @@
         .sys-msg { align-self: center; background: var(--glass-header); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; margin: 15px 0; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05);}
         .sys-alert-msg { align-self: center; background: linear-gradient(135deg, #ff7675, #d63031); color: white; padding: 15px 25px; border-radius: 16px; font-size: 14px; font-weight: bold; margin: 15px 0; text-align: center; box-shadow: 0 8px 25px rgba(214, 48, 49, 0.4); border: 2px solid rgba(255,255,255,0.2); width: 90%; max-width: 450px;}
 
-        /* 🚀 DISCORD STYLE MESSAGES 🚀 */
-        .discord-msg-row { display: flex; gap: 15px; margin-bottom: 20px; padding: 10px; border-radius: 8px; transition: 0.2s; position: relative;}
+        /* 🚀 DISCORD STYLE MESSAGES (BUG FIXED) 🚀 */
+        .discord-msg-row { display: flex; flex-direction: row; gap: 15px; margin-bottom: 20px; padding: 10px 15px; border-radius: 12px; transition: background 0.2s; position: relative; align-items: flex-start;}
         .discord-msg-row:hover { background: var(--msg-hover); }
         
-        /* Highlight Owner Messages completely differently so they are easy to read! */
         .discord-msg-row.owner-msg { background: rgba(241, 196, 15, 0.08); border-left: 4px solid #f1c40f; }
         .dark-theme .discord-msg-row.owner-msg { background: rgba(241, 196, 15, 0.05); }
+        
+        .discord-msg-row.dm-bubble { background: rgba(155, 89, 182, 0.08); border-left: 4px solid #9b59b6; }
 
-        .discord-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; text-transform: uppercase; flex-shrink: 0; cursor: pointer;}
-        .discord-avatar.has-status { border: 2px solid #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; }
+        .discord-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; text-transform: uppercase; flex-shrink: 0; cursor: pointer; border: 2px solid transparent;}
+        .discord-avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; }
 
-        .discord-msg-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-        .discord-msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+        /* This fixes the text overlap bug! */
+        .discord-msg-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        
+        .discord-msg-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;}
         .discord-sender-name { font-weight: 800; font-size: 16px; color: var(--text-main); cursor: pointer;}
         .discord-sender-name:hover { text-decoration: underline; }
-        .discord-timestamp { font-size: 11px; color: var(--text-sub); font-weight: 600; }
+        .discord-timestamp { font-size: 11px; color: var(--text-sub); font-weight: 600; margin-left: 5px;}
         
         .discord-msg-body { font-size: 15px; line-height: 1.5; color: var(--text-main); word-wrap: break-word; font-weight: 500; }
         .discord-msg-body a { color: #3498db; text-decoration: none; font-weight: 700;}
@@ -177,16 +199,19 @@
         .role-tag { font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .role-tag.owner { background: #ffeaa7; color: #d35400; }
         .role-tag.admin { background: #81ecec; color: #00b894; }
+        .role-tag.gamer { background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border-color);}
 
         /* Deleting & Recovering */
         .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; display: flex; align-items: center; gap: 5px; }
         .delete-btn { opacity: 0; position: absolute; top: 10px; right: 15px; background: rgba(231, 76, 60, 0.1); border: none; color: #e74c3c; font-size: 16px; cursor: pointer; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: bold;}
         .discord-msg-row:hover .delete-btn { opacity: 1; }
         .delete-btn:hover { background: #e74c3c; color: white; transform: scale(1.05);}
-        .recover-btn { background: #2ecc71; color: white; border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; padding: 4px 8px; margin-left: 10px;}
         
-        .msg-image { margin-top: 8px; cursor: pointer; border-radius: 12px; overflow: hidden;}
-        .msg-image img { max-width: 300px; max-height: 350px; display: block; object-fit: cover; border: 1px solid var(--border-color);}
+        .recover-btn { background: #2ecc71; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; padding: 6px 12px; margin-top: 8px; transition: 0.2s;}
+        .recover-btn:hover { transform: scale(1.05); }
+
+        .msg-image { margin-top: 8px; cursor: pointer; border-radius: 12px; overflow: hidden; display: inline-block;}
+        .msg-image img { max-width: 300px; max-height: 350px; display: block; object-fit: cover; border: 1px solid var(--border-color); border-radius: 12px;}
         audio { height: 40px; max-width: 250px; margin-top: 8px; outline: none; border-radius: 20px;}
 
         /* INPUT AREA */
@@ -205,8 +230,7 @@
             .sidebar.open { transform: translateX(0); }
             .menu-btn { display: flex; }
             .close-sidebar-btn { display: flex; }
-            .delete-btn { opacity: 1; background: transparent; } /* Always show trash can on mobile */
-            .discord-avatar { width: 40px; height: 40px; }
+            .delete-btn { opacity: 1; background: transparent; } 
         }
 
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
@@ -221,6 +245,16 @@
 </head>
 <body>
 
+    <div id="stealth-screen">
+        <div class="stealth-box">
+            <h1 style="color:#202124; font-size:28px; margin-bottom: 10px; font-weight:800;">Study Portal</h1>
+            <p style="color:#5f6368; margin-bottom: 25px; font-size:14px; font-weight:500;">Enter your school access code to view materials.</p>
+            <input type="password" id="stealth-pin" class="stealth-input" placeholder="****" maxlength="4">
+            <button class="stealth-btn" onclick="checkStealth()">Access Portal</button>
+            <p id="stealth-error" style="color:#e74c3c; font-weight:bold; font-size:13px; margin-top:15px; display:none;">Incorrect Access Code.</p>
+        </div>
+    </div>
+
     <div id="blocks-bg" class="ultimate-4k-bg"></div>
 
     <div id="lightbox">
@@ -232,22 +266,22 @@
     </div>
 
     <input type="file" id="image-picker" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-    <input type="file" id="status-uploader" accept="image/*" style="display: none;" onchange="handleStatusUpload(event)">
+    <input type="file" id="status-uploader" accept="image/*,video/mp4,video/quicktime" style="display: none;" onchange="handleStatusUpload(event)">
 
-    <div id="login-screen" class="modal-screen">
+    <div id="login-screen" class="modal-screen" style="display:none;">
         <div class="modal-box">
-            <h2>7-Marutham Hub</h2>
+            <h2>Gaming Club</h2>
             <div class="tab-container">
                 <button id="tab-login" class="tab active" onclick="switchAuthTab('login')">Login</button>
                 <button id="tab-signup" class="tab" onclick="switchAuthTab('signup')">Sign Up</button>
             </div>
             <div id="form-login">
-                <div class="input-group"><label>Username</label><input type="text" id="logName" placeholder="Enter your username"></div>
+                <div class="input-group"><label>Gamer Tag</label><input type="text" id="logName" placeholder="Enter your Gamer Tag"></div>
                 <div class="input-group"><label>Password</label><input type="password" id="logPwd" placeholder="Enter your password"></div>
                 <button class="primary" style="width:100%" onclick="doLogin()">Secure Login</button>
             </div>
             <div id="form-signup" style="display:none;">
-                <div class="input-group"><label>New Username</label><input type="text" id="regName" placeholder="Create a username"></div>
+                <div class="input-group"><label>New Gamer Tag</label><input type="text" id="regName" placeholder="Create a Gamer Tag"></div>
                 <div class="input-group"><label>Create Password</label><input type="password" id="regPwd" placeholder="Create a password"></div>
                 <div class="input-group"><label>Gender</label><select id="regGender"><option>Male</option><option>Female</option></select></div>
                 <div class="input-group"><label>Date of Birth</label><input type="text" id="regDob" placeholder="e.g. 15/08/2005"></div>
@@ -278,11 +312,11 @@
     <div id="user-action-modal" class="modal-screen" style="display: none; align-items: flex-end; padding-bottom: 20px;">
         <div class="modal-box" style="width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; animation: slideUp 0.3s ease-out;">
             <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
-                <img id="action-avatar" src="" style="width:50px; height:50px; border-radius:50%; object-fit:cover; background:#3498db; display:none;">
-                <div id="action-avatar-text" style="width:50px; height:50px; border-radius:50%; background:#3498db; color:white; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;"></div>
+                <img id="action-avatar" src="" style="width:55px; height:55px; border-radius:50%; object-fit:cover; background:#3498db; display:none;">
+                <div id="action-avatar-text" style="width:55px; height:55px; border-radius:50%; background:#3498db; color:white; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:bold;"></div>
                 <div>
-                    <h3 id="action-name" style="margin:0; color:var(--text-main);">Name</h3>
-                    <p id="action-role" style="margin:0; font-size:12px; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">Role</p>
+                    <h3 id="action-name" style="margin:0; color:var(--text-main); font-size:20px;">Name</h3>
+                    <p id="action-role" style="margin:0; font-size:13px; color:var(--text-sub); font-weight:800; text-transform:uppercase;">Role</p>
                 </div>
             </div>
             <input type="hidden" id="action-target-id">
@@ -297,12 +331,14 @@
         </div>
         <div class="status-header">
             <div class="status-user-info">
-                <img id="status-view-avatar" src="" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:2px solid white;">
+                <img id="status-view-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid white;">
                 <span id="status-view-name">User Name</span>
             </div>
             <button class="status-close" onclick="closeStatus()">✕</button>
         </div>
-        <img id="status-image" src="">
+        <img id="status-image" src="" style="display:none; width: 100%; height: 100%; object-fit: contain;">
+        <video id="status-video" playsinline style="display:none; width: 100%; height: 100%; object-fit: contain;"></video>
+        
         <button id="status-delete-btn" onclick="ownerDeleteStatus()">🗑️ Delete Status</button>
     </div>
 
@@ -312,12 +348,12 @@
             <div style="font-size:13px; line-height:1.6; color:var(--text-main); margin-bottom: 15px;">
                 <p><b>/dm [name] [msg]</b><br><span style="color:var(--text-sub);">Send a private secret message.</span></p>
                 <p><b>/alert [msg]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Red global announcement.</span></p>
-                <p><b>/timeout [name] [mins]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Mutes a student.</span></p>
-                <p><b>/untimeout [name]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Unmutes a student.</span></p>
+                <p><b>/timeout [name] [mins]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Mutes a gamer.</span></p>
+                <p><b>/untimeout [name]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Unmutes a gamer.</span></p>
                 <p><b>/promote [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Instantly make someone Admin.</span></p>
                 <p><b>/demote [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Remove Admin powers.</span></p>
                 <p><b>/lock & /unlock</b><br><span style="color:var(--text-sub);">(Owner Only) Lock/Unlock chat.</span></p>
-                <p><b>/kick [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Instantly ban a student.</span></p>
+                <p><b>/kick [name]</b><br><span style="color:var(--text-sub);">(Owner Only) Instantly ban a gamer.</span></p>
                 <p><b>/clear</b><br><span style="color:var(--text-sub);">(Everyone) Wipes your local screen clean.</span></p>
                 <p><b>/nuke</b><br><span style="color:var(--text-sub);">(Owner Only) Clear database (Requires PIN).</span></p>
             </div>
@@ -328,18 +364,19 @@
     <div id="app-screen">
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-title" id="my-profile-name">Students</div>
+                <div class="sidebar-title" id="my-profile-name">Gamers</div>
                 <div class="header-actions">
                     <button class="status-add-btn" onclick="document.getElementById('status-uploader').click()">📸 Add Status</button>
                     <button class="edit-btn" onclick="openEditProfile()">Profile</button>
                     <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
                 </div>
             </div>
+            
             <div class="yt-promo">
                 <p>🔥 CREATOR / OWNER</p>
                 <a href="https://www.youtube.com/@microrocktamilgaming" target="_blank" class="yt-btn">▶ Sub to MicroRockTamilGaming!</a>
             </div>
-            
+
             <div class="user-list" id="users-container"></div>
             
             <div style="padding:15px; border-top: 1px solid var(--border-color);">
@@ -362,7 +399,7 @@
                 <span class="menu-btn" onclick="toggleSidebar()">☰</span>
                 <div class="header-info">
                     <div>
-                        <div class="header-title">7-Marutham Hub <span id="chat-lock-icon" style="display:none;">🔒</span></div>
+                        <div class="header-title">Gaming Club Chat <span id="chat-lock-icon" style="display:none;">🔒</span></div>
                         <div class="header-subtitle" id="owner-badge">Made by Vishnuram and Prasanth</div>
                     </div>
                     <div class="status-pill">
@@ -382,13 +419,13 @@
             <div class="input-bar" id="input-bar-container">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image" id="btn-attach">📎</button>
                 <input type="text" id="chatInput" placeholder="Type a message or /command..." oninput="handleTypingInput()">
-                <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
+                <button class="send-btn" id="action-btn" onclick="handleActionClick()">➤</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 🔑 YOUR REAL FIREBASE KEYS (RESTORED!) 🔑
+        // 🔑 YOUR REAL FIREBASE KEYS 🔑
         const firebaseConfig = {
             apiKey: "AIzaSyARYTP4FmIXEcCS3asAKo8xgE0h2jbzZsc",
             authDomain: "marutham-17a59.firebaseapp.com",
@@ -431,17 +468,43 @@
             document.getElementById('theme-btn').innerText = '☀️ Light Mode';
         }
 
+        // --- 🕵️‍♂️ THE STEALTH ENGINE 🕵️‍♂️ ---
+        document.getElementById('stealth-pin').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkStealth();
+        });
+
+        function checkStealth() {
+            const pin = document.getElementById('stealth-pin').value;
+            if(pin === '0000') {
+                document.getElementById('stealth-screen').style.display = 'none';
+                initAppCheck(); // Proceed to login or chat
+            } else {
+                document.getElementById('stealth-error').style.display = 'block';
+                document.getElementById('stealth-pin').value = '';
+            }
+        }
+
         window.onload = () => {
             initBlocks();
+            // App waits for Stealth PIN before continuing...
+        };
+
+        function initAppCheck() {
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
-                if(!myProfile.password) { localStorage.clear(); return; }
+                if(!myProfile.password) { 
+                    localStorage.clear(); 
+                    document.getElementById('login-screen').style.display = 'flex';
+                    return; 
+                }
                 isOwner = myProfile.name.toLowerCase().includes('vishnuram');
                 startApp(); 
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
             }
-        };
+        }
 
         function toggleDarkMode() {
             document.body.classList.toggle('dark-theme');
@@ -513,7 +576,7 @@
             }
         }
 
-        // --- IMAGE COMPRESSION & UPLOAD ---
+        // --- IMAGE & VIDEO UPLOAD ENGINE ---
         function compressImage(file, maxRes, callback) {
             const reader = new FileReader();
             reader.onload = function(evt) {
@@ -541,24 +604,43 @@
         }
 
         function handleStatusUpload(e) {
-            if(!e.target.files[0]) return;
-            compressImage(e.target.files[0], 800, (base64) => {
-                db.ref('statuses/' + myProfile.id).set({
-                    data: base64, timestamp: Date.now()
+            const file = e.target.files[0];
+            if(!file) return;
+
+            // Video Status Support
+            if(file.type.startsWith('video/')) {
+                if(file.size > 5 * 1024 * 1024) return alert("❌ Video too large! Please select a smaller video (Max 5MB) so it doesn't freeze the app.");
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    db.ref('statuses/' + myProfile.id).set({
+                        type: 'video', data: evt.target.result, timestamp: Date.now()
+                    });
+                    alert("✅ Video Status uploaded!");
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Image Status Support
+                compressImage(file, 800, (base64) => {
+                    db.ref('statuses/' + myProfile.id).set({
+                        type: 'image', data: base64, timestamp: Date.now()
+                    });
+                    alert("✅ Image Status uploaded! (Click your profile picture to view)");
                 });
-                alert("✅ Status uploaded! (Click your profile picture to view)");
-            });
+            }
             e.target.value = '';
         }
 
-        // --- STATUS VIEWER ---
+        // --- STATUS VIEWER (IMAGE & VIDEO SMART DETECT) ---
         let statusTimer = null;
         function openStatus(userId) {
             const s = window.allStatuses[userId];
             if(!s) return;
             const u = classmates[userId] || myProfile;
             
-            document.getElementById('status-image').src = s.data;
+            const imgEl = document.getElementById('status-image');
+            const vidEl = document.getElementById('status-video');
+            
+            // Set User Info
             document.getElementById('status-view-name').innerText = u.name;
             document.getElementById('status-view-avatar').src = u.avatar || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             
@@ -569,14 +651,37 @@
             
             const fill = document.getElementById('status-fill');
             fill.style.transition = 'none'; fill.style.width = '0%';
-            setTimeout(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }, 50);
             
-            if(statusTimer) clearTimeout(statusTimer);
-            statusTimer = setTimeout(closeStatus, 5000);
+            if(s.type === 'video') {
+                imgEl.style.display = 'none';
+                vidEl.src = s.data;
+                vidEl.style.display = 'block';
+                vidEl.play();
+                
+                vidEl.onloadedmetadata = () => {
+                    // Capped at 60s
+                    let duration = vidEl.duration * 1000;
+                    if(duration > 60000) duration = 60000; 
+                    setTimeout(() => { fill.style.transition = `width ${duration}ms linear`; fill.style.width = '100%'; }, 50);
+                    if(statusTimer) clearTimeout(statusTimer);
+                    statusTimer = setTimeout(closeStatus, duration);
+                };
+            } else {
+                vidEl.style.display = 'none';
+                vidEl.pause();
+                imgEl.src = s.data;
+                imgEl.style.display = 'block';
+                
+                setTimeout(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }, 50);
+                if(statusTimer) clearTimeout(statusTimer);
+                statusTimer = setTimeout(closeStatus, 5000);
+            }
         }
 
         function closeStatus() {
             document.getElementById('status-viewer').style.display = 'none';
+            const vidEl = document.getElementById('status-video');
+            vidEl.pause(); vidEl.src = "";
             if(statusTimer) clearTimeout(statusTimer);
         }
 
@@ -595,7 +700,7 @@
             document.getElementById('action-target-id').value = userId;
             document.getElementById('action-name').innerText = u.name + (userId === myProfile.id ? " (You)" : "");
             
-            let roleTxt = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎓 STUDENT');
+            let roleTxt = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎮 GAMER');
             document.getElementById('action-role').innerText = roleTxt;
 
             const imgEl = document.getElementById('action-avatar');
@@ -621,7 +726,7 @@
                 }
                 if(isOwner) {
                     if(u.role !== 'admin') container.innerHTML += `<button class="action-menu-btn success" onclick="cmdPromote('${userId}'); closeUserActions();">🛡️ Promote to Admin</button>`;
-                    else container.innerHTML += `<button class="action-menu-btn" onclick="cmdDemote('${userId}'); closeUserActions();">👤 Demote to Student</button>`;
+                    else container.innerHTML += `<button class="action-menu-btn" onclick="cmdDemote('${userId}'); closeUserActions();">👤 Demote to Gamer</button>`;
                     
                     container.innerHTML += `<button class="action-menu-btn danger" onclick="cmdKick('${userId}'); closeUserActions();">🚨 Kick from Server</button>`;
                 }
@@ -634,6 +739,7 @@
 
         function closeUserActions() { document.getElementById('user-action-modal').style.display = 'none'; }
         
+        // --- ⚙️ COMMAND ENGINE RESTORED ⚙️ ---
         function startDM(name) { document.getElementById('chatInput').value = `/dm ${name} `; document.getElementById('chatInput').focus(); }
         function cmdTimeout(id) { db.ref('accounts/'+id).update({ timeoutUntil: Date.now() + 300000 }); db.ref('users/'+id).update({ timeoutUntil: Date.now() + 300000 }); alert("Timed out."); }
         function cmdPromote(id) { db.ref('accounts/'+id).update({ role: 'admin' }); db.ref('users/'+id).update({ role: 'admin' }); alert("Promoted."); }
@@ -728,7 +834,7 @@
                 window.chatLocked = snap.val() === true;
                 const lockBtn = document.getElementById('lock-chat-btn'); const lockIcon = document.getElementById('chat-lock-icon');
                 if(window.chatLocked) { lockIcon.style.display = 'inline'; if(lockBtn) { lockBtn.innerText = "🔓 Unlock Chat"; lockBtn.style.background = "#2ecc71"; } } 
-                else { lockIcon.style.display = 'none'; if(lockBtn) { lockBtn.innerText = "🔒 Lock Chat for Students"; lockBtn.style.background = "linear-gradient(135deg, #f1c40f, #f39c12)"; } }
+                else { lockIcon.style.display = 'none'; if(lockBtn) { lockBtn.innerText = "🔒 Lock Chat"; lockBtn.style.background = "linear-gradient(135deg, #f1c40f, #f39c12)"; } }
                 checkInputStatus();
             });
 
@@ -803,7 +909,7 @@
                 if (roleBadge) roleBadge = `<span style="font-size:11px; margin-left:5px;">${roleBadge}</span>`;
                 
                 let timeoutBadge = (u.timeoutUntil && u.timeoutUntil > Date.now()) ? `<span style="color:#e74c3c; font-size:10px; margin-left:5px;">⏱️ Muted</span>` : '';
-                
+
                 container.innerHTML += `
                     <div class="user-item" onclick="openUserActions('${id}')">
                         <div class="avatar-wrap">
@@ -827,11 +933,12 @@
             db.ref('typing/' + myProfile.id).set(text.length > 0 && !text.startsWith('/'));
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
+            
+            // Replaced the mic icon with a send arrow if text is typed
             if (text) { btn.innerText = '➤'; btn.style.background = '#3498db'; } 
             else { btn.innerText = '🎤'; btn.style.background = 'linear-gradient(135deg, #3498db, #2980b9)'; }
         }
 
-        // --- ⚙️ COMMAND ENGINE RESTORED ⚙️ ---
         function handleActionClick() {
             if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
             if(window.chatLocked && !isOwner && !isAdmin) return alert("🔒 Chat is locked.");
@@ -851,8 +958,6 @@
                     else if(cmd === '/lock') { if(!isOwner) return; db.ref('settings/chatLocked').set(true); }
                     else if(cmd === '/unlock') { if(!isOwner) return; db.ref('settings/chatLocked').set(false); }
                     else if(cmd === '/clear') { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>'; }
-                    else if(cmd === '/shrug') { sendMsgToDB('text', '¯\\_(ツ)_/¯'); }
-                    else if(cmd === '/tableflip') { sendMsgToDB('text', '(╯°□°)╯︵ ┻━┻'); }
                     else if(cmd === '/timeout') {
                         if(!isOwner && !isAdmin) return; let argP = arg.split(' '); let tN = argP[0]; let m = parseInt(argP[1]) || 5; 
                         let f = findUserByName(tN); if(f) { db.ref('accounts/'+f).update({timeoutUntil: Date.now()+(m*60000)}); db.ref('users/'+f).update({timeoutUntil: Date.now()+(m*60000)}); }
@@ -879,18 +984,11 @@
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
         
-        // --- 🗑️ DELETE & RECOVER LOGIC ---
-        function deleteMessage(msgId) { 
-            db.ref('messages/' + msgId).update({ isDeleted: true }); 
-        }
-        function recoverMessage(msgId) { 
-            db.ref('messages/' + msgId).update({ isDeleted: false }); 
-        }
-        function hardDeleteMessage(msgId) { 
-            if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); 
-        }
+        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
+        function recoverMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: false }); }
+        function hardDeleteMessage(msgId) { if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); }
 
-        // --- 🚀 THE NEW DISCORD-STYLE MESSAGES 🚀 ---
+        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING (BUG FIXED) 🚀 ---
         function createMessageHTML(payload) {
             if(payload.type === 'alert' && !payload.isDeleted) {
                 const canDel = isOwner || isAdmin;
@@ -924,6 +1022,7 @@
             let roleBadge = '';
             if(payload.sender.name.toLowerCase().includes('vishnuram')) roleBadge = '<span class="role-tag owner">👑 Owner</span>';
             else if(payload.sender.role === 'admin') roleBadge = '<span class="role-tag admin">🛡️ Admin</span>';
+            else roleBadge = '<span class="role-tag gamer">🎮 Gamer</span>';
 
             let rowClass = `discord-msg-row ${isMe ? 'me' : ''}`;
             if(payload.sender.name.toLowerCase().includes('vishnuram')) rowClass += " owner-msg";
@@ -935,7 +1034,6 @@
             let avatarHTML = avatarSrc ? `<img src="${avatarSrc}" class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${payload.sender.id}')">` 
                                        : `<div class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${payload.sender.id}')">${payload.sender.name.charAt(0).toUpperCase()}</div>`;
 
-            // Display Delete icon on hover for your own messages, or if you are owner/admin
             const canDelete = (isMe || isOwner || isAdmin) && !payload.isDeleted;
 
             return `
@@ -1003,7 +1101,7 @@
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lb-download').href = src;
-            document.getElementById('lb-download').download = "7marutham_HD_photo_" + Date.now() + ".jpg";
+            document.getElementById('lb-download').download = "gamingclub_photo_" + Date.now() + ".jpg";
             document.getElementById('lightbox').classList.add('active');
         }
     </script>
