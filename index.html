@@ -1118,4 +1118,55 @@
             let hoverActions = `<div class="msg-actions">`;
             if(!payload.isDeleted) hoverActions += `<button class="action-icon-btn" onclick="setReply('${payload.msgId}')" title="Reply">↩️</button>`;
             if(canDelete) hoverActions += `<button class="action-icon-btn red" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️</button>`;
-            if(payload.isDeleted && (isMe || isOwner || isAdmin)) hoverActions += `<button class="action-icon-btn" style="color:#2ecc71;" onclick="recover
+            if(payload.isDeleted && (isMe || isOwner || isAdmin)) hoverActions += `<button class="action-icon-btn" style="color:#2ecc71;" onclick="recoverMessage('${payload.msgId}')" title="Recover">♻️</button>`;
+            if(payload.isDeleted && isOwner) hoverActions += `<button class="action-icon-btn red" onclick="hardDeleteMessage('${payload.msgId}')" title="Erase Permanently">🔥</button>`;
+            hoverActions += `</div>`;
+
+            return `
+                <div class="${rowClass}" id="${payload.msgId}" 
+                     onmousedown="startPress(event, '${payload.msgId}', '${sId}')" 
+                     onmousemove="cancelPress()" 
+                     onmouseup="cancelPress()" 
+                     onmouseleave="cancelPress()" 
+                     ontouchstart="startPress(event, '${payload.msgId}', '${sId}')" 
+                     ontouchmove="cancelPress()" 
+                     ontouchend="cancelPress()" 
+                     onclick="msgClick('${payload.msgId}', '${sId}')">
+                    
+                    ${avatarHTML}
+                    <div class="discord-msg-content">
+                        <div class="discord-msg-header">
+                            <span class="discord-sender-name" style="color:${sColor};" onclick="openUserActions('${sId}')">${sName}</span>
+                            ${roleBadge}
+                            <span class="discord-timestamp">${payload.time}</span>
+                        </div>
+                        ${replyHtml}
+                        <div class="discord-msg-body">${bodyHtml}</div>
+                    </div>
+                    ${hoverActions}
+                </div>
+            `;
+        }
+
+        function renderMessage(payload) {
+            const sId = (payload.sender && payload.sender.id) ? payload.sender.id : 'unknown';
+            if(payload.receiverId) { if(sId !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) return; }
+            const container = document.getElementById('messages');
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            if (!document.getElementById(payload.msgId)) {
+                container.insertAdjacentHTML('beforeend', createMessageHTML(payload));
+                if (isAtBottom || sId === myProfile.id) container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        function updateMessageOnScreen(data) { let oldRow = document.getElementById(data.msgId); if(oldRow) oldRow.outerHTML = createMessageHTML(data); }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lb-download').href = src;
+            document.getElementById('lb-download').download = "gamingclub_photo_" + Date.now() + ".jpg";
+            document.getElementById('lightbox').classList.add('active');
+        }
+    </script>
+</body>
+</html>
