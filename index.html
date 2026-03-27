@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Study Portal</title> 
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <title>Study Portal</title> <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
@@ -16,107 +14,124 @@
         .stealth-input:focus { border-color: #1a73e8; }
         .stealth-btn { background: #1a73e8; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; }
 
-        /* 🎨 ZERO-LAG CORE VARIABLES */
+        /* 🎨 CORE SETUP & VARIABLES */
         :root {
-            --bg-panel: #ffffff;
-            --bg-sidebar: #f5f6fa;
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --bg-sidebar: rgba(245, 246, 250, 0.98);
             --text-main: #2f3640;
             --text-sub: #718093;
-            --border-color: #dcdde1;
-            --msg-hover: #f1f2f6;
-            --input-bg: #ecf0f1;
+            --border-color: rgba(220, 221, 225, 0.8);
+            --msg-hover: rgba(0, 0, 0, 0.04);
+            --input-bg: rgba(236, 240, 241, 0.9);
             --input-field: #ffffff;
-            --glass-header: #ffffff;
-            --chat-overlay: rgba(245, 246, 250, 0.8);
+            --glass-header: rgba(255, 255, 255, 0.95);
+            --chat-overlay: rgba(245, 246, 250, 0.7);
         }
 
         .dark-theme {
-            --bg-panel: #1e272e;
-            --bg-sidebar: #191e24;
+            --bg-panel: rgba(47, 54, 64, 0.95);
+            --bg-sidebar: rgba(30, 39, 46, 0.98);
             --text-main: #f5f6fa;
             --text-sub: #a4b0be;
-            --border-color: #485460;
+            --border-color: rgba(116, 125, 140, 0.4);
             --msg-hover: rgba(255, 255, 255, 0.05);
-            --input-bg: #2f3640;
-            --input-field: #1e272e;
-            --glass-header: #1e272e;
+            --input-bg: rgba(30, 39, 46, 0.9);
+            --input-field: #2f3640;
+            --glass-header: rgba(47, 54, 64, 0.95);
             --chat-overlay: rgba(10, 12, 16, 0.85);
         }
 
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #05050a; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
         * { box-sizing: border-box; }
         
-        /* 🚀 ZERO-LAG BACKGROUND ENGINE */
-        .custom-bg { position: fixed; inset: 0; z-index: -10; background: #0a0c14; transition: background 0.3s; }
+        /* 🚀 BACKGROUND ENGINE 🚀 */
+        .custom-bg { position: fixed; inset: 0; z-index: -10; overflow: hidden; transition: background 0.5s ease; }
         
-        .bg-mesh {
-            background-color: #0a0c14;
-            background-image: radial-gradient(rgba(52, 152, 219, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
+        .bg-gamer { background: #090a0f; perspective: 1000px; }
+        .gamer-grid {
+            position: absolute; width: 300vw; height: 300vh; bottom: -100vh; left: -100vw;
+            background-image: linear-gradient(rgba(0, 255, 255, 0.3) 2px, transparent 2px), linear-gradient(90deg, rgba(138, 43, 226, 0.3) 2px, transparent 2px);
+            background-size: 60px 60px; transform: rotateX(75deg); animation: gamerMove 3s linear infinite; box-shadow: inset 0 0 300px 150px #090a0f;
         }
+        @keyframes gamerMove { from { background-position: 0 0; } to { background-position: 0 60px; } }
 
-        .bg-stars { background: #05050a; }
-        .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; opacity: 0.5; will-change: transform; animation: drift linear infinite; }
-        @keyframes drift { from { transform: translateY(0); } to { transform: translateY(100vh); } }
+        .bg-blocks { background: radial-gradient(circle at center, #1a1c29 0%, #05050a 100%); }
+        .moving-block {
+            position: absolute; bottom: -20vh; background: rgba(52, 152, 219, 0.03); border: 1px solid rgba(52, 152, 219, 0.15);
+            border-radius: 16px; animation: floatBlock linear infinite;
+        }
+        @keyframes floatBlock { 0% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-130vh) rotateX(360deg) rotateY(180deg) rotateZ(360deg); opacity: 0; } }
+
+        .bg-aurora { background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradBG 15s ease infinite; }
+        @keyframes gradBG { 0% {background-position: 0% 50%} 50% {background-position: 100% 50%} 100% {background-position: 0% 50%} }
+        .bg-stars { background: #0b132b; }
+        .shape-star { position: absolute; background: white; border-radius: 50%; animation: fall linear infinite; opacity: 0.8;}
+        @keyframes fall { to { transform: translateY(110vh); } }
 
         /* 📱 MODALS & MENUS */
-        .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 99999; }
-        .modal-box { background: var(--bg-panel); color: var(--text-main); padding: 30px; border-radius: 20px; width: 90%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color);}
+        .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 99999; }
+        .modal-box { background: var(--bg-panel); color: var(--text-main); padding: 30px; border-radius: 20px; width: 90%; max-width: 380px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color);}
         .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; font-weight: 800; letter-spacing: -0.5px;}
         
-        .tab-container { display: flex; gap: 10px; margin-bottom: 15px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 12px;}
-        .tab { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-sub); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
-        .tab.active { background: #3498db; color: white; }
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 12px;}
+        .tab { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-sub); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px;}
+        .tab.active { background: #3498db; color: white; box-shadow: 0 4px 10px rgba(52,152,219,0.3);}
 
         .input-group { margin-bottom: 12px; }
         .input-group label { display: block; font-size: 11px; color: var(--text-sub); margin-bottom: 4px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 14px; outline: none; background: var(--input-field); color: var(--text-main); transition: 0.2s; }
-        .modal-box input:focus { border-color: #3498db; }
-        .modal-box button.primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 10px; font-size: 16px; margin-top: 10px; transition: 0.2s;}
-        .modal-box button.primary:hover { transform: translateY(-2px); }
+        .modal-box input:focus { border-color: #3498db; box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15); }
+        .modal-box button.primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 10px; font-size: 16px; margin-top: 10px; transition: 0.3s; box-shadow: 0 4px 15px rgba(52,152,219,0.4);}
+        .modal-box button.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52,152,219,0.6); }
         .modal-box button.secondary { background: transparent; color: #e74c3c; border: 2px solid rgba(231,76,60,0.3); font-weight: bold; cursor: pointer; padding: 12px; border-radius: 10px; margin-top: 10px; transition: 0.2s;}
+        .modal-box button.secondary:hover { background: rgba(231,76,60,0.1); border-color: #e74c3c; }
 
-        /* ACTION MENU MODAL (GAMER CARD) */
+        /* ACTION MENU MODAL */
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .action-menu-btn { width: 100%; padding: 12px; margin-bottom: 8px; border: none; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color);}
+        .action-menu-btn:hover { background: var(--border-color); transform: scale(1.02); }
+        .action-menu-btn.danger { color: #e74c3c; background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.3);}
+        .action-menu-btn.success { color: #05c46b; background: rgba(5, 196, 107, 0.1); border-color: rgba(5, 196, 107, 0.3);}
+        .action-menu-btn.clip { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border: none; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);}
+
         .gamer-card-stats { background: var(--input-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); }
         .stat-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
         .stat-row span { color: var(--text-sub); }
         .stat-row div { color: var(--text-main); }
-        
-        .action-menu-btn { width: 100%; padding: 12px; margin-bottom: 8px; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color);}
-        .action-menu-btn.clip { background: #9b59b6; color: white; border-color: #8e44ad; }
-        .action-menu-btn.danger { color: #e74c3c; background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.3);}
 
-        /* 📸 WHATSAPP STATUS VIEWER */
-        #status-viewer { position: fixed; inset: 0; background: #000; z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center;}
+        /* 📸 MEDIA VIEWER (STATUS & CLIPS) */
+        #media-viewer { position: fixed; inset: 0; background: #000; z-index: 999999; display: none; flex-direction: column; align-items: center; justify-content: center;}
         .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 3px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 3px; overflow: hidden; }
         .status-progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
         .status-header { position: absolute; top: 30px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 5001; color: white;}
-        .status-user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; }
-        .status-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-        #status-image, #status-video { width: 100%; height: 100%; object-fit: contain; display: none; }
-        #status-delete-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; z-index: 5001; display: none; }
+        .status-user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+        .status-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
+        #media-image { width: 100%; height: 100%; object-fit: contain; display: none; }
+        #media-video { width: 100%; height: 100%; object-fit: contain; display: none; }
+        #media-delete-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(231, 76, 60, 0.9); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; z-index: 5001; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 
         /* 🖥️ APP LAYOUT */
         #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
-        .sidebar { width: 320px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-title { font-weight: 800; font-size: 20px; color: var(--text-main);}
+        
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);}
+        .sidebar { width: 340px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s; }
+        .sidebar-header { padding: 20px; background: transparent; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-title { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: var(--text-main);}
         .header-actions { display: flex; align-items: center; gap: 8px; }
-        .edit-btn { background: #3498db; color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .status-add-btn { background: #05c46b; color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .edit-btn { background: #3498db; color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; box-shadow: 0 2px 8px rgba(52,152,219,0.3);}
+        .status-add-btn { background: #05c46b; color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; box-shadow: 0 2px 8px rgba(5, 196, 107, 0.3);}
         .close-sidebar-btn { display: none; background: rgba(231,76,60,0.1); color: #e74c3c; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; }
 
         .user-list { flex: 1; overflow-y: auto; padding: 10px 15px; display: flex; flex-direction: column; gap: 6px;}
-        .user-item { display: flex; align-items: center; padding: 10px; border-radius: 12px; transition: 0.2s; cursor:pointer;}
-        .user-item:hover { background: var(--msg-hover); }
+        .user-item { display: flex; align-items: center; padding: 10px; border-radius: 12px; background: transparent; border: 1px solid transparent; transition: 0.2s; cursor:pointer;}
+        .user-item:hover { transform: translateX(5px); background: var(--msg-hover); border-color: var(--border-color); }
         
+        /* AVATARS */
         .avatar-wrap { position: relative; margin-right: 12px; }
         .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #3498db, #2980b9); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; text-transform: uppercase; object-fit: cover; border: 2px solid transparent;}
         .avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; }
-        @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(5, 196, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0); } }
+        @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(5, 196, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(5, 196, 107, 0); } }
 
         .status-dot-abs { position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg-sidebar); }
         .status-dot-abs.online { background: #2ecc71; }
@@ -129,106 +144,128 @@
         .status-indicator { font-size: 11px; font-weight: 600; color: var(--text-sub); }
 
         /* 💬 CHAT SECTION */
-        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background: var(--chat-overlay); transition: background 0.3s;}
-        .chat-header { padding: 15px 25px; background: var(--glass-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; z-index: 10;}
+        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background: var(--chat-overlay); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background 0.3s;}
+        
+        .chat-header { padding: 15px 25px; background: var(--glass-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10;}
         .menu-btn { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); background: rgba(0,0,0,0.05); width: 40px; height: 40px; border-radius: 10px; align-items: center; justify-content: center;}
         
         .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
-        .header-title { font-weight: 800; font-size: 18px; letter-spacing: -0.5px;}
+        .header-title { font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px;}
         .header-subtitle { font-size: 12px; color: #3498db; font-weight: 700; margin-top: 2px; }
         
         .status-pill { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-        #conn-status { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: 800; background: #f39c12; color: white;}
+        #conn-status { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: 800; background: #f39c12; color: white; letter-spacing: 0.5px; text-transform: uppercase;}
         #online-counter { font-size: 11px; font-weight: 700; color: var(--text-main); background: var(--input-bg); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color);}
 
         /* 🟢 MULTI-SELECT FLOATING BAR */
         #multi-select-bar {
             display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%);
             background: var(--bg-panel); border: 2px solid #e74c3c; border-radius: 30px;
-            padding: 10px 20px; box-shadow: 0 10px 30px rgba(231,76,60,0.3); z-index: 2000; align-items: center; gap: 15px; 
+            padding: 10px 20px; box-shadow: 0 10px 30px rgba(231,76,60,0.3); z-index: 2000;
+            align-items: center; gap: 15px; animation: popDown 0.3s ease-out;
         }
+        @keyframes popDown { from { transform: translate(-50%, -50px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         #select-count { font-weight: 800; color: var(--text-main); font-size: 14px; }
-        .select-action-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-weight: bold; cursor: pointer;}
+        .select-action-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+        .select-action-btn:hover { background: #c0392b; transform: scale(1.05); }
 
         .messages-container { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth; }
-        .sys-msg { align-self: center; background: var(--glass-header); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; margin: 15px 0; border: 1px solid var(--border-color); }
-        .sys-alert-msg { align-self: center; background: linear-gradient(135deg, #ff7675, #d63031); color: white; padding: 15px 25px; border-radius: 16px; font-size: 14px; font-weight: bold; margin: 15px 0; text-align: center; width: 90%; max-width: 450px;}
+        .sys-msg { align-self: center; background: var(--glass-header); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 11px; font-weight: 700; margin: 15px 0; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05);}
+        .sys-alert-msg { align-self: center; background: linear-gradient(135deg, #ff7675, #d63031); color: white; padding: 15px 25px; border-radius: 16px; font-size: 14px; font-weight: bold; margin: 15px 0; text-align: center; box-shadow: 0 8px 25px rgba(214, 48, 49, 0.4); border: 2px solid rgba(255,255,255,0.2); width: 90%; max-width: 450px;}
 
         /* 🚀 DISCORD STYLE MESSAGES */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; margin-bottom: 5px; padding: 10px 15px; 
-            border-radius: 12px; position: relative; align-items: flex-start;
+            border-radius: 12px; transition: background 0.2s, border 0.2s; position: relative; align-items: flex-start;
             background: transparent; border: 2px solid transparent; 
             -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; 
         }
         .discord-msg-row:hover { background: var(--msg-hover); }
+        
         .discord-msg-row.selected { background: rgba(231, 76, 60, 0.1) !important; border-color: rgba(231, 76, 60, 0.5); }
         .discord-msg-row.owner-msg { background: rgba(241, 196, 15, 0.05); border-left: 4px solid #f1c40f; }
+        .dark-theme .discord-msg-row.owner-msg { background: rgba(241, 196, 15, 0.08); }
         .discord-msg-row.dm-bubble { background: rgba(155, 89, 182, 0.05); border-left: 4px solid #9b59b6; }
 
-        .discord-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; z-index: 5;}
-        .discord-avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; }
+        .discord-avatar { 
+            width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #3498db; color: white; 
+            display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; 
+            text-transform: uppercase; flex-shrink: 0; cursor: pointer; border: 2px solid transparent; z-index: 5;
+        }
+        .discord-avatar.has-status { border-color: #05c46b; padding: 2px; background-clip: content-box; animation: pulseRing 2s infinite; }
 
         .discord-msg-content { flex: 1; min-width: 0; display: flex; flex-direction: column; z-index: 5;}
         .discord-msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;}
-        .discord-sender-name { font-weight: 800; font-size: 16px; color: var(--text-main); cursor: pointer;}
-        .discord-timestamp { font-size: 11px; color: var(--text-sub); font-weight: 600;}
+        .discord-sender-name { font-weight: 800; font-size: 16px; color: var(--text-main); cursor: pointer; letter-spacing: -0.3px;}
+        .discord-sender-name:hover { text-decoration: underline; }
+        .discord-timestamp { font-size: 11px; color: var(--text-sub); font-weight: 600; margin-left: 5px;}
         
         .discord-msg-body { font-size: 15px; line-height: 1.5; color: var(--text-main); word-wrap: break-word; font-weight: 500; user-select: text; -webkit-user-select: text;}
         .discord-msg-body a { color: #3498db; text-decoration: none; font-weight: 700;}
 
-        .role-tag { font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 800; text-transform: uppercase; }
+        /* Role Badges */
+        .role-tag { font-size: 9px; padding: 3px 8px; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .role-tag.owner { background: #ffeaa7; color: #d35400; border: 1px solid #f1c40f;}
         .role-tag.admin { background: #81ecec; color: #00b894; border: 1px solid #55efc4;}
         .role-tag.gamer { background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border-color);}
 
-        .reply-quote { background: rgba(0,0,0,0.05); border-left: 3px solid #3498db; padding: 6px 10px; border-radius: 4px; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
+        /* ↩️ REPLIED MESSAGE BLOCK */
+        .reply-quote { background: rgba(0,0,0,0.05); border-left: 3px solid #3498db; padding: 6px 10px; border-radius: 4px; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; cursor: pointer; display: inline-block; max-width: 100%;}
         .dark-theme .reply-quote { background: rgba(255,255,255,0.05); }
+        .reply-quote-name { font-weight: bold; color: #3498db; margin-bottom: 2px;}
 
+        /* Message Action Buttons (Hover) */
         .msg-actions { opacity: 0; position: absolute; top: 10px; right: 15px; display: flex; gap: 5px; transition: 0.2s; z-index: 10;}
         .discord-msg-row:hover .msg-actions { opacity: 1; }
         
-        .action-icon-btn { background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); font-size: 14px; cursor: pointer; border-radius: 8px; padding: 6px 10px; font-weight: bold; }
+        .action-icon-btn { background: var(--bg-panel); border: 1px solid var(--border-color); color: var(--text-main); font-size: 14px; cursor: pointer; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s;}
+        .action-icon-btn:hover { background: var(--border-color); transform: scale(1.05);}
         .action-icon-btn.red { color: #e74c3c; }
+        .action-icon-btn.red:hover { background: #e74c3c; color: white; border-color: #e74c3c;}
 
-        .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; }
+        .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; display: flex; align-items: center; gap: 5px; }
         .msg-image { margin-top: 8px; cursor: pointer; border-radius: 12px; overflow: hidden; display: inline-block;}
         .msg-image img { max-width: 300px; max-height: 350px; display: block; object-fit: cover; border: 1px solid var(--border-color); border-radius: 12px;}
         audio { height: 40px; max-width: 250px; margin-top: 8px; outline: none; border-radius: 20px;}
 
         /* INPUT AREA */
-        .typing-box { font-size: 12px; color: var(--text-main); font-weight: 700; font-style: italic; padding: 5px 25px; min-height: 25px; }
-        #scroll-bottom-btn { position: absolute; bottom: 100px; right: 25px; background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 20px; display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .typing-box { font-size: 12px; color: var(--text-main); font-weight: 700; font-style: italic; padding: 5px 25px; min-height: 25px; background: transparent; text-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+        #scroll-bottom-btn { position: absolute; bottom: 100px; right: 25px; background: #3498db; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 20px; box-shadow: 0 8px 25px rgba(52,152,219,0.4); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 2000; transition: 0.3s;}
         
         .reply-preview-bar { display: none; padding: 8px 25px; background: rgba(52, 152, 219, 0.1); border-left: 4px solid #3498db; border-top: 1px solid var(--border-color); align-items: center; justify-content: space-between; font-size: 13px; color: var(--text-main);}
         .reply-preview-bar span { font-weight: bold; color: #3498db;}
         .reply-preview-bar button { background: transparent; border: none; color: var(--text-sub); cursor: pointer; font-weight: bold;}
 
-        .input-bar { padding: 15px 25px; background: var(--glass-header); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; padding-bottom: max(15px, env(safe-area-inset-bottom)); z-index: 100;}
-        .action-btn { background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border-color); font-size: 20px; cursor: pointer; width: 45px; height: 45px; border-radius: 50%; }
-        .input-bar input { flex: 1; padding: 15px 20px; border-radius: 25px; border: 1px solid var(--border-color); outline: none; font-size: 15px; font-weight: 500; background: var(--input-field); color: var(--text-main); }
-        .send-btn { background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 20px; }
+        .input-bar { padding: 15px 25px; background: var(--glass-header); border-top: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; padding-bottom: max(15px, env(safe-area-inset-bottom)); z-index: 100; transition: background 0.3s; box-shadow: 0 -4px 20px rgba(0,0,0,0.03);}
+        .action-btn { background: var(--input-bg); color: var(--text-sub); border: 1px solid var(--border-color); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; border-radius: 50%; transition: 0.2s; }
+        .action-btn:hover { background: #3498db; color: white; border-color: #3498db;}
+        .input-bar input { flex: 1; padding: 15px 20px; border-radius: 25px; border: 1px solid var(--border-color); outline: none; font-size: 15px; font-weight: 500; background: var(--input-field); color: var(--text-main); transition: 0.3s; }
+        .input-bar input:focus { border-color: #3498db; box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15); }
+        .input-bar input:disabled { background: var(--bg-sidebar); cursor: not-allowed; opacity: 0.8;}
+        .send-btn { background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: 0.3s; box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4); }
 
         @media (max-width: 768px) {
-            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
-            .sidebar { position: absolute; top: 0; left: 0; height: 100dvh; transform: translateX(-100%); width: 85vw; max-width: 320px; z-index: 2000; }
+            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);}
+            .sidebar { position: absolute; top: 0; left: 0; height: 100dvh; transform: translateX(-100%); width: 85vw; max-width: 340px; box-shadow: 10px 0 30px rgba(0,0,0,0.5); z-index: 2000; }
             .sidebar.open { transform: translateX(0); }
             .menu-btn { display: flex; }
             .close-sidebar-btn { display: flex; }
-            .msg-actions { opacity: 1; background: transparent; } 
+            .msg-actions { opacity: 1; background: transparent; } /* Always show actions on mobile */
             .discord-avatar { width: 40px; height: 40px; }
+            .discord-msg-row { padding: 10px; }
             .chat-header { padding: 10px 15px; }
             .input-bar { padding: 10px 15px; }
         }
-
-        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
-        #lightbox.active { display: flex; }
-        #lightbox img { max-width: 95%; max-height: 80%; border-radius: 12px; }
-        .lb-actions { display: flex; gap: 20px; margin-top: 25px; }
-        .lb-btn { padding: 12px 30px; color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 15px; }
         
         .btn-grid-sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: transparent; border-top: 1px solid var(--border-color); }
-        .theme-toggle-btn { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; }
+        .theme-toggle-btn { width: 100%; padding: 12px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s;}
+        .theme-toggle-btn:hover { background: var(--border-color); }
+
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 999999; flex-direction: column; }
+        #lightbox.active { display: flex; }
+        #lightbox img { max-width: 95%; max-height: 80%; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .lb-actions { display: flex; gap: 20px; margin-top: 25px; }
+        .lb-btn { padding: 12px 30px; color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 15px; transition: 0.2s;}
     </style>
 </head>
 <body>
@@ -243,7 +280,9 @@
         </div>
     </div>
 
-    <div id="custom-bg-container" class="custom-bg bg-mesh"></div>
+    <div id="custom-bg-container" class="custom-bg bg-gamer">
+        <div class="gamer-grid"></div>
+    </div>
 
     <div id="lightbox">
         <img id="lightbox-img" src="">
@@ -255,6 +294,7 @@
 
     <input type="file" id="image-picker" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
     <input type="file" id="status-uploader" accept="image/*,video/mp4,video/quicktime" style="display: none;" onchange="handleStatusUpload(event)">
+    <input type="file" id="clip-uploader" accept="image/*,video/mp4,video/quicktime" style="display: none;" onchange="handleClipUpload(event)">
 
     <div id="login-screen" class="modal-screen" style="display:none;">
         <div class="modal-box">
@@ -271,13 +311,8 @@
             <div id="form-signup" style="display:none;">
                 <div class="input-group"><label>New Gamer Tag</label><input type="text" id="regName" placeholder="Create a Gamer Tag"></div>
                 <div class="input-group"><label>Create Password</label><input type="password" id="regPwd" placeholder="Create a password"></div>
-                
-                <div style="display:flex; gap:10px;">
-                    <div class="input-group" style="flex:1;"><label>Roblox Name</label><input type="text" id="regRoblox" placeholder="Optional"></div>
-                    <div class="input-group" style="flex:1;"><label>Minecraft Name</label><input type="text" id="regMinecraft" placeholder="Optional"></div>
-                </div>
-
                 <div class="input-group"><label>Gender</label><select id="regGender"><option>Male</option><option>Female</option></select></div>
+                <div class="input-group"><label>Date of Birth</label><input type="text" id="regDob" placeholder="e.g. 15/08/2005"></div>
                 <button class="primary" style="width:100%; background: linear-gradient(135deg, #2ecc71, #27ae60);" onclick="doSignUp()">Create Account</button>
             </div>
         </div>
@@ -304,17 +339,26 @@
                 </select>
             </div>
 
+            <div class="input-group">
+                <label>Change Password (Optional)</label>
+                <input type="password" id="editPassword" placeholder="Enter new password">
+            </div>
+
             <div style="display:flex; gap:10px;">
-                <div class="input-group" style="flex:1;"><label>Roblox</label><input type="text" id="editRoblox" placeholder="Name"></div>
-                <div class="input-group" style="flex:1;"><label>Minecraft</label><input type="text" id="editMinecraft" placeholder="Name"></div>
+                <div class="input-group" style="flex:1;"><label>Roblox</label><input type="text" id="editRoblox" placeholder="Username"></div>
+                <div class="input-group" style="flex:1;"><label>Minecraft</label><input type="text" id="editMinecraft" placeholder="Username"></div>
             </div>
 
             <div class="input-group">
-                <label>Best Gaming Clip (URL)</label>
-                <input type="text" id="editClip" placeholder="Paste YouTube, TikTok, or Medal link">
+                <label>Best Gaming Clip</label>
+                <div style="display:flex; align-items:center; justify-content:space-between; background:var(--input-bg); padding:10px 15px; border-radius:12px; border:1px solid var(--border-color);">
+                    <span id="clip-status-text" style="font-size:12px; font-weight:bold; color:var(--text-sub);">No clip uploaded</span>
+                    <button class="primary" style="margin-top:0; padding:8px 12px; font-size:12px;" onclick="document.getElementById('clip-uploader').click()">🎬 Upload Clip</button>
+                </div>
             </div>
 
             <div class="input-group"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
+            <div class="input-group"><label>Date of Birth</label><input type="text" id="editDob" placeholder="e.g. 15/08/2005"></div>
             
             <button class="primary" onclick="saveProfile()">Save Changes</button>
             <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
@@ -343,8 +387,8 @@
         </div>
     </div>
 
-    <div id="status-viewer">
-        <div class="status-progress-container">
+    <div id="media-viewer">
+        <div class="status-progress-container" id="media-progress-container">
             <div class="status-progress-bar"><div class="status-progress-fill" id="status-fill"></div></div>
         </div>
         <div class="status-header">
@@ -352,10 +396,10 @@
                 <img id="status-view-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid white;">
                 <span id="status-view-name">User Name</span>
             </div>
-            <button class="status-close" onclick="closeStatus()">✕</button>
+            <button class="status-close" onclick="closeMedia()">✕</button>
         </div>
-        <img id="status-image" src="" style="display:none; width: 100%; height: 100%; object-fit: contain;">
-        <video id="status-video" playsinline style="display:none; width: 100%; height: 100%; object-fit: contain;"></video>
+        <img id="media-image" src="" style="display:none; width: 100%; height: 100%; object-fit: contain;">
+        <video id="media-video" playsinline controls style="display:none; width: 100%; height: 100%; object-fit: contain;"></video>
         
         <button id="status-delete-btn" onclick="ownerDeleteStatus()">🗑️ Delete Status</button>
     </div>
@@ -391,15 +435,15 @@
                     <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
                 </div>
             </div>
-
+            
             <div class="user-list" id="users-container"></div>
             
             <div style="padding:15px; border-top: 1px solid var(--border-color);">
                 <button onclick="document.getElementById('cmd-screen').style.display='flex'" style="width:100%; padding:10px; background:var(--input-bg); color:var(--text-main); border:1px solid var(--border-color); border-radius:10px; font-weight:800; cursor:pointer; font-size:13px; margin-bottom: 10px;">⌨️ Command Guide</button>
                 
                 <div class="btn-grid-sidebar">
-                    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleDarkMode()" style="margin:0;">🌙 Dark</button>
-                    <button class="theme-toggle-btn" onclick="switchBackground()" style="margin:0;">🌌 BG</button>
+                    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleDarkMode()">🌙 Dark</button>
+                    <button class="theme-toggle-btn" onclick="switchBackground()">🌌 BG</button>
                 </div>
                 
                 <div id="owner-super-controls" style="display:none; margin-top: 10px; gap: 10px; flex-direction: column;">
@@ -425,10 +469,10 @@
                 </div>
             </div>
             
-            <div id="multi-select-bar" style="display:none; position:absolute; top:85px; left:50%; transform:translateX(-50%); background:var(--bg-panel); border:2px solid #e74c3c; border-radius:30px; padding:10px 20px; box-shadow:0 10px 30px rgba(231,76,60,0.3); z-index:2000; align-items:center; gap:15px;">
-                <span id="select-count" style="font-weight:800; color:var(--text-main); font-size:14px;">1 Selected</span>
-                <button style="background:#e74c3c; color:white; border:none; padding:8px 16px; border-radius:15px; font-weight:bold; cursor:pointer;" onclick="deleteSelectedMsgs()">🗑️ Delete All</button>
-                <button style="background:transparent; border:2px solid #e74c3c; color:#e74c3c; padding:6px 12px; border-radius:15px; font-weight:bold; cursor:pointer;" onclick="exitSelectMode()">Cancel</button>
+            <div id="multi-select-bar">
+                <span id="select-count">1 Selected</span>
+                <button class="select-action-btn" onclick="deleteSelectedMsgs()">🗑️ Delete All</button>
+                <button class="select-action-btn" style="background:transparent; border: 2px solid #e74c3c; color:#e74c3c;" onclick="exitSelectMode()">Cancel</button>
             </div>
 
             <div class="messages-container" id="messages" onscroll="checkScroll()">
@@ -445,8 +489,8 @@
 
             <div class="input-bar" id="input-bar-container">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image" id="btn-attach">📎</button>
-                <input type="text" id="chatInput" placeholder="Type or paste an image..." oninput="handleTypingInput()">
-                <button class="send-btn" id="action-btn" onclick="handleActionClick()">➤</button>
+                <input type="text" id="chatInput" placeholder="Type a message or /command..." oninput="handleTypingInput()">
+                <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
             </div>
         </div>
     </div>
@@ -489,9 +533,8 @@
 
         function startPress(e, msgId, senderId) {
             if(isSelectMode || isScrolling) return;
-            pressTimer = setTimeout(() => { initSelectMode(msgId, senderId); }, 600); 
+            pressTimer = setTimeout(() => { initSelectMode(msgId, senderId); }, 500); 
         }
-
         function cancelPress() { if(pressTimer) clearTimeout(pressTimer); }
 
         function initSelectMode(msgId, senderId) {
@@ -533,8 +576,8 @@
             }
         }
 
-        // 🚀 ZERO-LAG BACKGROUND ENGINE 🚀
-        const bgModes = ['mesh', 'stars', 'dark'];
+        // 🚀 BACKGROUND ENGINE 🚀
+        const bgModes = ['gamer', 'blocks', 'aurora', 'stars'];
         let currentBgIndex = 0;
         function switchBackground() {
             currentBgIndex = (currentBgIndex + 1) % bgModes.length;
@@ -544,9 +587,19 @@
             const container = document.getElementById('custom-bg-container'); container.innerHTML = ''; 
             const mode = bgModes[index]; container.className = 'custom-bg bg-' + mode;
 
-            if(mode === 'stars') {
-                for(let i=0; i<60; i++) {
-                    let el = document.createElement('div'); el.className = 'star';
+            if(mode === 'gamer') {
+                container.innerHTML = '<div class="gamer-grid"></div>';
+            } else if(mode === 'blocks') {
+                for(let i=0; i<15; i++) {
+                    let b = document.createElement('div'); b.className = 'moving-block';
+                    let size = Math.random() * 80 + 30; b.style.width = size+'px'; b.style.height = size+'px';
+                    b.style.left = Math.random() * 100 + 'vw'; b.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                    b.style.animationDelay = (Math.random() * -20) + 's'; container.appendChild(b);
+                }
+            } else if(mode === 'stars') {
+                for(let i=0; i<40; i++) {
+                    let el = document.createElement('div'); el.className = 'shape-star';
+                    let size = Math.random() * 4 + 1; el.style.width = size+'px'; el.style.height = size+'px';
                     el.style.left = Math.random() * 100 + 'vw'; el.style.top = (Math.random() * -100) + 'vh';
                     el.style.animationDuration = (Math.random() * 5 + 3) + 's'; container.appendChild(el);
                 }
@@ -600,7 +653,6 @@
 
         function doSignUp() {
             const name = document.getElementById('regName').value.trim(); const pwd = document.getElementById('regPwd').value;
-            const roblox = document.getElementById('regRoblox').value.trim(); const minecraft = document.getElementById('regMinecraft').value.trim();
             const gender = document.getElementById('regGender').value; const dob = document.getElementById('regDob').value.trim();
 
             if(!name || !pwd || !dob) return alert("Please fill all required fields!");
@@ -611,7 +663,7 @@
                 if(snap.exists()) alert("❌ ERROR: Username taken!");
                 else {
                     let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
-                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0, avatar: "", customStatus: "online", roblox: roblox, minecraft: minecraft, clip: ""};
+                    let newProfile = { id: safeKey, name: name, gender: gender, dob: dob, role: role, password: pwd, timeoutUntil: 0, avatar: "", customStatus: "online", roblox: "", minecraft: "", clip: ""};
                     db.ref('accounts/' + safeKey).set(newProfile);
                     myProfile = newProfile; localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = role === 'owner'; startApp();
@@ -668,6 +720,19 @@
             compressImage(e.target.files[0], 200, (base64) => { window.tempAvatarData = base64; document.getElementById('avatar-preview').src = base64; });
         }
 
+        function handleClipUpload(e) {
+            const file = e.target.files[0]; if(!file) return;
+            if(file.type.startsWith('video/')) {
+                if(file.size > 6 * 1024 * 1024) return alert("❌ Video too large! Max 6MB.");
+                const reader = new FileReader();
+                reader.onload = (evt) => { window.tempClipData = { type: 'video', data: evt.target.result }; document.getElementById('clip-status-text').innerText = "✅ Video Clip Ready!"; };
+                reader.readAsDataURL(file);
+            } else {
+                compressImage(file, 800, (base64) => { window.tempClipData = { type: 'image', data: base64 }; document.getElementById('clip-status-text').innerText = "✅ Image Clip Ready!"; });
+            }
+            e.target.value = '';
+        }
+
         function handleStatusUpload(e) {
             const file = e.target.files[0]; if(!file) return;
             if(file.type.startsWith('video/')) {
@@ -681,36 +746,60 @@
             e.target.value = '';
         }
 
-        // --- STATUS VIEWER ---
-        let statusTimer = null;
-        function openStatus(userId) {
-            const s = window.allStatuses[userId]; if(!s) return; const u = classmates[userId] || myProfile;
-            const imgEl = document.getElementById('status-image'); const vidEl = document.getElementById('status-video');
-            document.getElementById('status-view-name').innerText = u.name;
-            document.getElementById('status-view-avatar').src = u.avatar || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-            document.getElementById('status-delete-btn').style.display = (isOwner || userId === myProfile.id) ? 'block' : 'none';
-            document.getElementById('action-target-id').value = userId; document.getElementById('status-viewer').style.display = 'flex';
+        // --- MEDIA VIEWER (STATUS & CLIPS) ---
+        let mediaTimer = null;
+        function openMedia(type, data, uName, uAvatar, showProgress, isStatus, targetId) {
+            const imgEl = document.getElementById('media-image'); const vidEl = document.getElementById('media-video');
+            document.getElementById('status-view-name').innerText = uName;
+            document.getElementById('status-view-avatar').src = uAvatar || "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+            
+            document.getElementById('status-delete-btn').style.display = (isStatus && (isOwner || targetId === myProfile.id)) ? 'block' : 'none';
+            if(isStatus) document.getElementById('action-target-id').value = targetId; 
+
+            document.getElementById('media-progress-container').style.display = showProgress ? 'flex' : 'none';
+            document.getElementById('media-viewer').style.display = 'flex';
             
             const fill = document.getElementById('status-fill'); fill.style.transition = 'none'; fill.style.width = '0%';
             
-            if(s.type === 'video') {
-                imgEl.style.display = 'none'; vidEl.src = s.data; vidEl.style.display = 'block'; vidEl.play();
-                vidEl.onloadedmetadata = () => {
-                    let duration = vidEl.duration * 1000; if(duration > 120000) duration = 120000; 
-                    setTimeout(() => { fill.style.transition = `width ${duration}ms linear`; fill.style.width = '100%'; }, 50);
-                    if(statusTimer) clearTimeout(statusTimer); statusTimer = setTimeout(closeStatus, duration);
-                };
+            if(type === 'video') {
+                imgEl.style.display = 'none'; vidEl.src = data; vidEl.style.display = 'block'; vidEl.play();
+                if(showProgress) {
+                    vidEl.onloadedmetadata = () => {
+                        let duration = vidEl.duration * 1000; if(duration > 120000) duration = 120000; 
+                        setTimeout(() => { fill.style.transition = `width ${duration}ms linear`; fill.style.width = '100%'; }, 50);
+                        if(mediaTimer) clearTimeout(mediaTimer); mediaTimer = setTimeout(closeMedia, duration);
+                    };
+                } else {
+                    vidEl.controls = true;
+                }
             } else {
-                vidEl.style.display = 'none'; vidEl.pause(); imgEl.src = s.data; imgEl.style.display = 'block';
-                setTimeout(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }, 50);
-                if(statusTimer) clearTimeout(statusTimer); statusTimer = setTimeout(closeStatus, 5000);
+                vidEl.style.display = 'none'; vidEl.pause(); imgEl.src = data; imgEl.style.display = 'block';
+                if(showProgress) {
+                    setTimeout(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%'; }, 50);
+                    if(mediaTimer) clearTimeout(mediaTimer); mediaTimer = setTimeout(closeMedia, 5000);
+                }
             }
         }
 
-        function closeStatus() { document.getElementById('status-viewer').style.display = 'none'; const vidEl = document.getElementById('status-video'); vidEl.pause(); vidEl.src = ""; if(statusTimer) clearTimeout(statusTimer); }
-        function ownerDeleteStatus() { let tId = document.getElementById('action-target-id').value; db.ref('statuses/' + tId).remove(); closeStatus(); alert("🗑️ Status deleted."); }
+        function openStatus(userId) {
+            const s = window.allStatuses[userId]; if(!s) return; const u = classmates[userId] || myProfile;
+            openMedia(s.type, s.data, u.name, u.avatar, true, true, userId);
+        }
 
-        // --- 👤 GAMER CARD (ACTION MENU) ---
+        function viewBestClip(userId) {
+            const u = classmates[userId] || myProfile; if(!u || !u.clip) return;
+            openMedia(u.clip.type, u.clip.data, u.name + "'s Best Clip", u.avatar, false, false, userId);
+        }
+
+        function closeMedia() { 
+            document.getElementById('media-viewer').style.display = 'none'; 
+            const vidEl = document.getElementById('media-video'); vidEl.pause(); vidEl.src = ""; vidEl.controls = false;
+            if(mediaTimer) clearTimeout(mediaTimer); 
+        }
+
+        function ownerDeleteStatus() { let tId = document.getElementById('action-target-id').value; db.ref('statuses/' + tId).remove(); closeMedia(); alert("🗑️ Status deleted."); }
+
+        // --- 👤 INTERACTIVE GAMER CARD ---
         function openUserActions(userId) {
             const u = classmates[userId] || myProfile; if(!u) return;
             document.getElementById('action-target-id').value = userId;
@@ -723,14 +812,13 @@
             if(u.avatar && u.avatar.startsWith('data:')) { imgEl.src = u.avatar; imgEl.style.display = 'block'; txtEl.style.display = 'none'; } 
             else { imgEl.style.display = 'none'; txtEl.style.display = 'flex'; txtEl.innerText = u.name.charAt(0).toUpperCase(); }
 
-            // Set Stats
             document.getElementById('card-mc').innerText = u.minecraft || "Not Linked";
             document.getElementById('card-rb').innerText = u.roblox || "Not Linked";
 
             const container = document.getElementById('action-buttons-container'); container.innerHTML = ''; 
             
-            if(u.clip && u.clip.startsWith('http')) {
-                container.innerHTML += `<button class="action-menu-btn clip" onclick="window.open('${u.clip}', '_blank'); closeUserActions();">🎬 View Best Clip</button>`;
+            if(u.clip && u.clip.data) {
+                container.innerHTML += `<button class="action-menu-btn clip" onclick="viewBestClip('${userId}'); closeUserActions();">🎬 View Best Clip</button>`;
             }
 
             if(window.allStatuses[userId]) container.innerHTML += `<button class="action-menu-btn" style="background:#05c46b; color:white;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
@@ -749,24 +837,19 @@
 
         function closeUserActions() { document.getElementById('user-action-modal').style.display = 'none'; }
         
-        // --- ⚙️ COMMAND ENGINE RESTORED ⚙️ ---
-        function startDM(name) { document.getElementById('chatInput').value = `/dm ${name} `; document.getElementById('chatInput').focus(); }
-        function cmdTimeout(id) { db.ref('accounts/'+id).update({ timeoutUntil: Date.now() + 300000 }); db.ref('users/'+id).update({ timeoutUntil: Date.now() + 300000 }); alert("Timed out."); }
-        function cmdPromote(id) { db.ref('accounts/'+id).update({ role: 'admin' }); db.ref('users/'+id).update({ role: 'admin' }); alert("Promoted."); }
-        function cmdDemote(id) { db.ref('accounts/'+id).update({ role: 'user' }); db.ref('users/'+id).update({ role: 'user' }); alert("Demoted."); }
-        function cmdKick(id) { if(confirm("Kick?")) { db.ref('accounts/'+id).remove(); db.ref('users/'+id).remove(); } }
-
-        // --- PROFILE EDITING (BUGS COMPLETELY FIXED) ---
+        // --- PROFILE EDITING (100% FIXED) ---
         function openEditProfile() {
             document.getElementById('editGender').value = myProfile.gender || 'Male';
             document.getElementById('editDob').value = myProfile.dob || ''; 
             document.getElementById('editOnlineStatus').value = myProfile.customStatus || 'online';
             document.getElementById('editRoblox').value = myProfile.roblox || '';
             document.getElementById('editMinecraft').value = myProfile.minecraft || '';
-            document.getElementById('editClip').value = myProfile.clip || '';
+            document.getElementById('editPassword').value = '';
             
-            window.tempAvatarData = null; 
+            window.tempAvatarData = null; window.tempClipData = null;
+            document.getElementById('clip-status-text').innerText = (myProfile.clip && myProfile.clip.data) ? "✅ Clip uploaded!" : "No clip uploaded";
             document.getElementById('avatar-preview').src = (myProfile.avatar && myProfile.avatar.startsWith('data:')) ? myProfile.avatar : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="; 
+            
             document.getElementById('edit-screen').style.display = 'flex';
         }
 
@@ -776,15 +859,21 @@
             myProfile.customStatus = document.getElementById('editOnlineStatus').value;
             myProfile.roblox = document.getElementById('editRoblox').value.trim();
             myProfile.minecraft = document.getElementById('editMinecraft').value.trim();
-            myProfile.clip = document.getElementById('editClip').value.trim();
+            
+            let newPwd = document.getElementById('editPassword').value.trim();
+            if(newPwd !== "") myProfile.password = newPwd;
 
             if(window.tempAvatarData) myProfile.avatar = window.tempAvatarData;
+            if(window.tempClipData) myProfile.clip = window.tempClipData;
 
             localStorage.setItem('school_user', JSON.stringify(myProfile));
             let updates = { gender: myProfile.gender, dob: myProfile.dob, avatar: myProfile.avatar, customStatus: myProfile.customStatus, roblox: myProfile.roblox, minecraft: myProfile.minecraft, clip: myProfile.clip };
+            if(newPwd !== "") updates.password = newPwd;
+
             db.ref('accounts/' + myProfile.id).update(updates);
             db.ref('users/' + myProfile.id).update(updates);
             document.getElementById('edit-screen').style.display = 'none';
+            alert("✅ Profile saved successfully!");
         }
 
         function toggleSidebar() { 
@@ -925,22 +1014,6 @@
         }
         function cancelReply() { currentReplyData = null; document.getElementById('reply-preview-bar').style.display = 'none'; }
 
-        // --- 📋 CLIPBOARD PASTE IMAGE ---
-        document.getElementById('chatInput').addEventListener('paste', function(e) {
-            let items = e.clipboardData.items;
-            for(let i=0; i<items.length; i++) {
-                if(items[i].type.indexOf('image') !== -1) {
-                    let blob = items[i].getAsFile();
-                    document.getElementById('chatInput').placeholder = "Uploading image...";
-                    compressImage(blob, 600, (base64) => { 
-                        sendMsgToDB('image', '', null, base64); 
-                        document.getElementById('chatInput').placeholder = "Type a message or paste an image...";
-                    });
-                    e.preventDefault(); 
-                }
-            }
-        });
-
         // --- ⚙️ COMMAND ENGINE ---
         function handleActionClick() {
             if (myTimeoutTime > Date.now()) return alert("⏱️ You are in timeout.");
@@ -984,26 +1057,21 @@
 
         function sendMsgToDB(msgType, msgContent, receiverId = null, base64Data = null) {
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-            let senderData = { ...myProfile };
-            let payload = { msgId: msgId, sender: senderData, type: msgType, text: msgContent, data: base64Data, receiverId: receiverId, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP };
+            let safeSenderData = { id: myProfile.id, name: myProfile.name, role: myProfile.role, avatar: myProfile.avatar };
+            let payload = { msgId: msgId, sender: safeSenderData, type: msgType, text: msgContent, data: base64Data, receiverId: receiverId, isDeleted: false, time: getIST(), timestamp: firebase.database.ServerValue.TIMESTAMP };
             if(currentReplyData) payload.replyTo = currentReplyData;
             db.ref('messages/' + msgId).set(payload); cancelReply(); 
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
-        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
         function recoverMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: false }); }
         function hardDeleteMessage(msgId) { if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); }
+        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
 
         // --- 🚀 DISCORD-STYLE MESSAGE RENDERING 🚀 ---
         function createMessageHTML(payload) {
             window.allMessages[payload.msgId] = payload; 
-
-            const senderObj = payload.sender || {};
-            const sName = senderObj.name || 'Unknown';
-            const sId = senderObj.id || 'unknown';
-            const sRole = senderObj.role || 'user';
-            const sAvatar = senderObj.avatar || '';
+            const senderObj = payload.sender || {}; const sName = senderObj.name || 'Unknown'; const sId = senderObj.id || 'unknown'; const sRole = senderObj.role || 'user'; const sAvatar = senderObj.avatar || '';
 
             if(payload.type === 'alert' && !payload.isDeleted) {
                 const canDel = isOwner || isAdmin;
@@ -1014,11 +1082,8 @@
             }
 
             const isMe = sId === myProfile.id;
-            let bodyHtml = '';
-            let replyHtml = '';
-            if(payload.replyTo && !payload.isDeleted) {
-                replyHtml = `<div class="reply-quote"><div class="reply-quote-name">${payload.replyTo.name}</div>${payload.replyTo.text}</div>`;
-            }
+            let bodyHtml = ''; let replyHtml = '';
+            if(payload.replyTo && !payload.isDeleted) replyHtml = `<div class="reply-quote"><div class="reply-quote-name">${payload.replyTo.name}</div>${payload.replyTo.text}</div>`;
 
             if(payload.isDeleted) {
                 bodyHtml = '<span class="deleted-text">🚫 Deleted</span>';
