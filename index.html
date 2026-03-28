@@ -3,66 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamer Club - Stealth</title> 
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <title>Study Portal</title> <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         /* 🕵️ STEALTH SCREEN */
-        #stealth-screen { position: fixed; inset: 0; background: #202225; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: -apple-system, sans-serif; }
-        .stealth-box { background: #2f3136; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; width: 90%; max-width: 400px; color: white;}
-        .stealth-input { width: 100%; padding: 15px; border: 2px solid #202225; border-radius: 8px; background: #40444b; color: white; font-size: 18px; margin-bottom: 20px; outline: none; text-align: center; letter-spacing: 5px; }
-        .stealth-input:focus { border-color: #5865F2; }
-        .stealth-btn { background: #5865F2; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: 0.2s;}
-        .stealth-btn:hover { background: #4752c4; }
+        #stealth-screen { position: fixed; inset: 0; background: #f8f9fa; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: Arial, sans-serif; }
+        .stealth-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 400px; }
+        .stealth-input { width: 100%; padding: 15px; border: 2px solid #dadce0; border-radius: 8px; font-size: 18px; margin-bottom: 20px; outline: none; text-align: center; letter-spacing: 5px; background: #f1f3f4; }
+        .stealth-input:focus { border-color: #1a73e8; background: white;}
+        .stealth-btn { background: #1a73e8; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; }
 
-        /* 🎨 ULTRA-FAST DISCORD COLORS (ZERO LAG) */
+        /* 🎨 ZERO-LAG CORE VARIABLES (NO BLUR) */
         :root {
-            --bg-main: #36393f;
-            --bg-sidebar: #2f3136;
+            --bg-panel: #ffffff;
+            --bg-sidebar: #f5f6fa;
+            --text-main: #2f3640;
+            --text-sub: #718093;
+            --border-color: #dcdde1;
+            --msg-hover: #f1f2f6;
+            --input-bg: #ecf0f1;
+            --input-field: #ffffff;
+            --glass-header: #ffffff;
+            --chat-overlay: rgba(245, 246, 250, 0.95);
+            --accent: #3498db;
+        }
+
+        .dark-theme {
             --bg-panel: #202225;
-            --text-main: #dcddde;
-            --text-sub: #8e9297;
+            --bg-sidebar: #2f3136;
+            --text-main: #f5f6fa;
+            --text-sub: #b9bbbe;
             --border-color: #202225;
-            --msg-hover: #32353b;
+            --msg-hover: rgba(255, 255, 255, 0.05);
             --input-bg: #40444b;
-            --input-field: #40444b;
+            --input-field: #202225;
             --glass-header: #36393f;
+            --chat-overlay: rgba(54, 57, 63, 0.95);
             --accent: #5865F2;
         }
 
-        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: var(--bg-main); color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
+        html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #05050a; color: var(--text-main); position: fixed; inset: 0; display: flex; overflow: hidden; box-sizing: border-box; }
         * { box-sizing: border-box; }
         
-        /* 📱 MODALS & MENUS */
-        .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 99999; }
-        .modal-box { background: var(--bg-panel); color: var(--text-main); padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color);}
-        .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; font-weight: 800; color: white;}
+        /* 🚀 ZERO-LAG BACKGROUND ENGINE */
+        .custom-bg { position: fixed; inset: 0; z-index: -10; background: #0a0c14; transition: background 0.3s; }
         
-        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; background: var(--bg-sidebar); padding: 5px; border-radius: 8px;}
-        .tab { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-sub); border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
-        .tab.active { background: var(--input-bg); color: white; }
+        .bg-gamer { background: #090a0f; perspective: 1000px; }
+        .gamer-grid {
+            position: absolute; width: 300vw; height: 300vh; bottom: -100vh; left: -100vw;
+            background-image: linear-gradient(rgba(0, 255, 255, 0.2) 2px, transparent 2px), linear-gradient(90deg, rgba(138, 43, 226, 0.2) 2px, transparent 2px);
+            background-size: 50px 50px; transform: rotateX(75deg); animation: gamerMove 4s linear infinite;
+        }
+        @keyframes gamerMove { from { background-position: 0 0; } to { background-position: 0 50px; } }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; font-weight: bold; text-transform: uppercase; }
-        .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 14px; outline: none; background: var(--input-field); color: white; transition: 0.2s; }
-        .modal-box input[type="color"] { padding: 2px; height: 40px; cursor: pointer; }
+        .bg-blocks { background: radial-gradient(circle at center, #1a1c29 0%, #05050a 100%); }
+        .moving-block { position: absolute; bottom: -20vh; background: rgba(52, 152, 219, 0.05); border: 1px solid rgba(52, 152, 219, 0.2); border-radius: 12px; animation: floatBlock linear infinite; }
+        @keyframes floatBlock { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } }
+
+        /* 📱 MODALS & MENUS */
+        .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 99999; }
+        .modal-box { background: var(--bg-panel); color: var(--text-main); padding: 25px; border-radius: 16px; width: 90%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color);}
+        .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; font-weight: 800; letter-spacing: -0.5px;}
+        
+        .tab-container { display: flex; gap: 10px; margin-bottom: 15px; background: var(--bg-sidebar); padding: 5px; border-radius: 10px;}
+        .tab { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-sub); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
+        .tab.active { background: var(--accent); color: white; }
+
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 11px; color: var(--text-sub); margin-bottom: 4px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
+        .modal-box input, .modal-box select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 14px; outline: none; background: var(--input-field); color: var(--text-main); transition: 0.2s; }
+        .modal-box input[type="color"] { padding: 2px; height: 35px; cursor: pointer; border: none; }
         .modal-box input:focus { border-color: var(--accent); }
-        .modal-box button.primary { background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 6px; font-size: 16px; margin-top: 10px; transition: 0.2s;}
-        .modal-box button.primary:hover { background: #4752c4; }
-        .modal-box button.secondary { background: transparent; color: #ed4245; border: 1px solid #ed4245; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 6px; margin-top: 10px; transition: 0.2s;}
-        .modal-box button.secondary:hover { background: rgba(237, 66, 69, 0.1); }
+        .modal-box button.primary { background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; padding: 14px; border-radius: 8px; font-size: 16px; margin-top: 10px; transition: 0.2s;}
+        .modal-box button.primary:hover { filter: brightness(1.1); }
+        .modal-box button.secondary { background: transparent; color: #ed4245; border: 1px solid #ed4245; font-weight: bold; cursor: pointer; padding: 12px; border-radius: 8px; margin-top: 10px; transition: 0.2s;}
 
-        /* ACTION MENU MODAL */
+        /* ACTION MENU MODAL (GAMER CARD) */
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .action-menu-btn { width: 100%; padding: 12px; margin-bottom: 8px; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--bg-sidebar); color: white;}
-        .action-menu-btn:hover { background: var(--input-bg); }
-        .action-menu-btn.danger { color: #ed4245; }
-        .action-menu-btn.success { color: #57F287; }
+        .gamer-card-stats { background: var(--input-bg); border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .stat-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
+        .stat-row span { color: var(--text-sub); }
+        .stat-row div { color: var(--text-main); }
+        
+        .action-menu-btn { width: 100%; padding: 12px; margin-bottom: 8px; border: none; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--input-bg); color: var(--text-main);}
+        .action-menu-btn:hover { filter: brightness(1.1); }
         .action-menu-btn.clip { background: #9b59b6; color: white; }
+        .action-menu-btn.danger { color: #ed4245; background: rgba(237, 66, 69, 0.1);}
 
-        /* 📸 STATUS VIEWER */
+        /* 📸 WHATSAPP/INSTA STATUS VIEWER */
         #status-viewer { position: fixed; inset: 0; background: #000; z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center;}
         .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 3px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 3px; overflow: hidden; }
@@ -70,61 +99,72 @@
         .status-header { position: absolute; top: 30px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 5001; color: white;}
         .status-user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; }
         .status-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-        #status-image, #status-video { width: 100%; height: 100%; object-fit: contain; display: none; }
+        #media-image, #media-video { width: 100%; height: 100%; object-fit: contain; display: none; }
         #status-delete-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ed4245; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; z-index: 5001; display: none; }
+
+        /* 📸 STATUS BAR (TOP OF SIDEBAR) */
+        .status-feed-container { display: flex; overflow-x: auto; padding: 15px; gap: 15px; border-bottom: 1px solid var(--border-color); background: var(--bg-panel); }
+        .status-feed-container::-webkit-scrollbar { display: none; } 
+        .status-feed-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; transition: 0.2s; }
+        .status-feed-item:hover { transform: scale(1.05); }
+        .status-feed-ring { width: 56px; height: 56px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display: flex; align-items: center; justify-content: center;}
+        .status-feed-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg-sidebar); object-fit: cover; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px;}
+        .status-feed-name { font-size: 10px; font-weight: 800; color: var(--text-main); max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+        
+        .add-status-item .status-feed-ring { background: var(--border-color); }
+        .add-status-item .status-feed-img { border: 2px solid var(--bg-sidebar); background: var(--input-bg); color: var(--text-sub);}
 
         /* 🖥️ APP LAYOUT */
         #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
         .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
-        .sidebar { width: 280px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s; }
-        .sidebar-header { padding: 20px 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.2);}
-        .sidebar-title { font-weight: 800; font-size: 18px; color: white;}
+        .sidebar { width: 300px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s; }
+        .sidebar-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel);}
+        .sidebar-title { font-weight: 800; font-size: 18px; color: var(--text-main);}
         .header-actions { display: flex; align-items: center; gap: 8px; }
-        .icon-btn-small { background: var(--input-bg); color: var(--text-main); border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .icon-btn-small:hover { background: var(--bg-panel); color: white; }
+        .icon-btn-small { background: var(--input-bg); color: var(--text-main); border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s;}
+        .icon-btn-small:hover { background: var(--accent); color: white; }
         .close-sidebar-btn { display: none; background: transparent; color: var(--text-sub); border: none; font-size: 20px; cursor: pointer; }
 
         .user-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 2px;}
         .user-list::-webkit-scrollbar { width: 6px; }
-        .user-list::-webkit-scrollbar-thumb { background: #202225; border-radius: 10px; }
+        .user-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 
         .user-item { display: flex; align-items: center; padding: 8px 10px; border-radius: 6px; background: transparent; transition: 0.1s; cursor:pointer;}
         .user-item:hover { background: var(--msg-hover); }
         
         .avatar-wrap { position: relative; margin-right: 12px; }
         .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; text-transform: uppercase; object-fit: cover;}
-        .avatar.has-status { border: 2px solid #57F287; padding: 2px; background-clip: content-box; }
+        .avatar.has-status { border: 2px solid #57F287; padding: 1px; background-clip: content-box; }
 
-        .status-dot-abs { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--bg-sidebar); }
+        .status-dot-abs { position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--bg-sidebar); }
         .status-dot-abs.online { background: #3ba55c; }
         .status-dot-abs.idle { background: #faa61a; }
         .status-dot-abs.dnd { background: #ed4245; }
         .status-dot-abs.offline { background: #747f8d; }
 
-        .user-details { flex: 1; min-width: 0; }
-        .name-text { font-weight: 600; font-size: 15px; color: var(--text-sub); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .user-item:hover .name-text { color: #dcddde; }
+        .user-details { flex: 1; min-width: 0; display: flex; flex-direction: column;}
+        .name-text { font-weight: 700; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px;}
         .status-indicator { font-size: 11px; font-weight: 600; color: var(--text-sub); }
 
         /* 💬 CHAT SECTION */
-        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background: var(--bg-main);}
+        .chat-section { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; background: var(--chat-overlay);}
         
-        .chat-header { padding: 12px 20px; background: var(--bg-main); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 10;}
+        .chat-header { padding: 12px 20px; background: var(--glass-header); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; z-index: 10;}
         .menu-btn { display: none; font-size: 24px; cursor: pointer; color: var(--text-sub); }
         
         .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
-        .header-title { font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px; color: white;}
+        .header-title { font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px; color: var(--text-main);}
         .header-subtitle { font-size: 12px; color: var(--text-sub); font-weight: 600; margin-top: 2px; }
         
         #conn-status { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; background: #faa61a; color: white; text-transform: uppercase;}
 
-        /* 🟢 MULTI-SELECT FLOATING BAR (FIXED: Uses checkboxes) */
+        /* 🟢 MULTI-SELECT FLOATING BAR (FIXED LOGIC) */
         #multi-select-bar {
             display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
             background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px;
             padding: 10px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2000; align-items: center; gap: 15px;
         }
-        #select-count { font-weight: bold; color: white; font-size: 14px; }
+        #select-count { font-weight: bold; color: var(--text-main); font-size: 14px; }
         .select-action-btn { background: #ed4245; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer;}
         .select-action-btn.cancel { background: transparent; border: 1px solid var(--text-sub); color: var(--text-sub); }
 
@@ -137,23 +177,24 @@
 
         /* 🚀 DISCORD STYLE MESSAGES */
         .discord-msg-row { 
-            display: flex; flex-direction: row; gap: 15px; margin-bottom: 2px; padding: 4px 10px; 
+            display: flex; flex-direction: row; gap: 15px; margin-bottom: 2px; padding: 6px 10px; 
             border-radius: 4px; transition: background 0.1s; position: relative; align-items: flex-start;
         }
         .discord-msg-row:hover { background: var(--msg-hover); }
         .discord-msg-row.owner-msg { background: rgba(250, 166, 26, 0.05); border-left: 2px solid #faa61a; }
         .discord-msg-row.dm-bubble { background: rgba(88, 101, 242, 0.1); border-left: 2px solid #5865F2; }
         
-        /* CHECKBOX FOR MULTI-SELECT */
-        .msg-checkbox { display: none; margin-top: 15px; cursor: pointer; width: 18px; height: 18px; accent-color: #ed4245;}
+        /* MULTI-SELECT CHECKBOX */
+        .msg-checkbox { display: none; margin-top: 12px; cursor: pointer; width: 18px; height: 18px; accent-color: #ed4245;}
         .select-mode-active .msg-checkbox { display: block; }
+        .discord-msg-row.selected { background: rgba(237, 66, 69, 0.1) !important; border-left: 2px solid #ed4245; }
 
         .discord-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-shrink: 0; cursor: pointer; margin-top: 4px;}
         .discord-avatar.has-status { border: 2px solid #57F287; padding: 2px; background-clip: content-box; }
 
         .discord-msg-content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .discord-msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; flex-wrap: wrap;}
-        .discord-sender-name { font-weight: 600; font-size: 15px; color: white; cursor: pointer;}
+        .discord-sender-name { font-weight: 700; font-size: 15px; cursor: pointer;}
         .discord-sender-name:hover { text-decoration: underline; }
         .discord-timestamp { font-size: 11px; color: var(--text-sub); font-weight: 500;}
         
@@ -169,16 +210,16 @@
         /* ↩️ REPLIED MESSAGE BLOCK */
         .reply-quote { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-sub); margin-bottom: 4px; cursor: pointer; position: relative;}
         .reply-quote::before { content: ''; position: absolute; left: -25px; top: 50%; width: 20px; height: 15px; border-left: 2px solid #4f545c; border-top: 2px solid #4f545c; border-top-left-radius: 6px; }
-        .reply-quote-name { font-weight: bold; color: var(--text-main);}
+        .reply-quote-name { font-weight: bold;}
 
         /* Message Action Buttons */
-        .msg-actions { opacity: 0; position: absolute; top: -10px; right: 15px; display: flex; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.1s; overflow: hidden; z-index: 10;}
+        .msg-actions { opacity: 0; position: absolute; top: -10px; right: 15px; display: flex; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.1s; z-index: 10;}
         .discord-msg-row:hover .msg-actions { opacity: 1; }
-        .select-mode-active .msg-actions { display: none !important; } /* Hide hover buttons while selecting */
+        .select-mode-active .msg-actions { display: none !important; } 
 
         .action-icon-btn { background: transparent; border: none; border-right: 1px solid var(--border-color); color: var(--text-sub); font-size: 14px; cursor: pointer; padding: 6px 10px; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
         .action-icon-btn:last-child { border-right: none; }
-        .action-icon-btn:hover { background: var(--msg-hover); color: white;}
+        .action-icon-btn:hover { background: var(--msg-hover); color: var(--text-main);}
         .action-icon-btn.red:hover { color: #ed4245; }
 
         .deleted-text { font-style: italic; color: var(--text-sub); font-size: 14px; }
@@ -186,19 +227,19 @@
         .msg-image img { max-width: 350px; max-height: 350px; display: block; object-fit: cover; border-radius: 8px;}
         audio { height: 35px; max-width: 250px; margin-top: 8px; outline: none; border-radius: 4px;}
 
-        #scroll-bottom-btn { position: absolute; bottom: 80px; right: 25px; background: var(--bg-panel); color: white; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; font-size: 16px; display: none; align-items: center; justify-content: center; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        #scroll-bottom-btn { position: absolute; bottom: 80px; right: 25px; background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; font-size: 16px; display: none; align-items: center; justify-content: center; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
         
         .reply-preview-bar { display: none; padding: 8px 20px; background: var(--bg-sidebar); border-top: 1px solid var(--border-color); align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-sub);}
-        .reply-preview-bar span { font-weight: bold; color: white;}
+        .reply-preview-bar span { font-weight: bold; color: var(--text-main);}
         .reply-preview-bar button { background: transparent; border: none; color: var(--text-sub); cursor: pointer; font-size: 16px;}
 
         .input-bar { padding: 15px 20px; background: var(--bg-main); display: flex; gap: 12px; align-items: center; padding-bottom: max(15px, env(safe-area-inset-bottom)); z-index: 100;}
         .action-btn { background: var(--input-bg); color: var(--text-sub); border: none; font-size: 18px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
-        .action-btn:hover { background: var(--bg-panel); color: white; }
-        .input-bar input { flex: 1; padding: 12px 15px; border-radius: 8px; border: none; outline: none; font-size: 15px; background: var(--input-bg); color: white; transition: 0.2s; }
+        .action-btn:hover { background: var(--bg-panel); color: var(--text-main); }
+        .input-bar input { flex: 1; padding: 12px 15px; border-radius: 8px; border: none; outline: none; font-size: 15px; background: var(--input-bg); color: var(--text-main); transition: 0.2s; }
         .input-bar input:disabled { opacity: 0.5; cursor: not-allowed;}
         .send-btn { background: var(--accent); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
-        .send-btn:hover { background: #4752c4; }
+        .send-btn:hover { filter: brightness(1.1); }
 
         @media (max-width: 768px) {
             .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; }
@@ -214,7 +255,7 @@
             .input-bar { padding: 10px 15px; }
         }
 
-        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 4000; flex-direction: column; }
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 999999; flex-direction: column; }
         #lightbox.active { display: flex; }
         #lightbox img { max-width: 95%; max-height: 80%; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .lb-actions { display: flex; gap: 20px; margin-top: 20px; }
@@ -233,6 +274,8 @@
         </div>
     </div>
 
+    <div id="custom-bg-container" class="custom-bg bg-gamer"><div class="gamer-grid"></div></div>
+
     <div id="lightbox">
         <img id="lightbox-img" src="">
         <div class="lb-actions">
@@ -245,7 +288,7 @@
     <input type="file" id="status-uploader" accept="image/*,video/mp4,video/quicktime" style="display: none;" onchange="handleStatusUpload(event)">
     <input type="file" id="clip-uploader" accept="image/*,video/mp4,video/quicktime" style="display: none;" onchange="handleClipUpload(event)">
 
-    <div id="login-screen" class="modal-screen" style="display:none; z-index: 99999;">
+    <div id="login-screen" class="modal-screen" style="display:none;">
         <div class="modal-box">
             <h2>Gamer Login</h2>
             <div class="tab-container">
@@ -267,25 +310,25 @@
         </div>
     </div>
 
-    <div id="edit-screen" class="modal-screen" style="display: none; z-index: 99999;">
+    <div id="edit-screen" class="modal-screen" style="display: none;">
         <div class="modal-box">
             <h2>Edit Profile</h2>
+            
             <div class="input-group">
                 <label>Profile Picture</label>
                 <div style="display:flex; align-items:center; gap:15px; background:var(--input-bg); padding:10px; border-radius:8px;">
                     <img id="avatar-preview" src="" style="width:50px; height:50px; border-radius:50%; object-fit:cover; background:var(--accent);">
-                    <button class="primary" style="margin-top:0; padding:8px 15px; font-size:12px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Change</button>
-                    <input type="file" id="avatar-upload" accept="image/*" style="display:none;" onchange="handleAvatarSelection(event)">
+                    <button class="primary" style="margin-top:0; padding:8px 15px; font-size:12px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Change Image</button>
                 </div>
             </div>
             
             <div class="input-group">
-                <label>Name Color</label>
-                <input type="color" id="editNameColor" value="#ffffff" style="padding:0; height:35px; border-radius:6px; cursor:pointer;">
+                <label>Name Color (Click to pick)</label>
+                <input type="color" id="editNameColor" value="#ffffff">
             </div>
 
             <div class="input-group">
-                <label>Status</label>
+                <label>Online Status Indicator</label>
                 <select id="editOnlineStatus">
                     <option value="online">🟢 Online</option>
                     <option value="idle">🌙 Idle</option>
@@ -295,7 +338,7 @@
 
             <div class="input-group">
                 <label>Change Password (Optional)</label>
-                <input type="password" id="editPassword" placeholder="New password">
+                <input type="password" id="editPassword" placeholder="Type new password here">
             </div>
 
             <div style="display:flex; gap:10px;">
@@ -304,7 +347,7 @@
             </div>
 
             <div class="input-group">
-                <label>Best Gaming Clip</label>
+                <label>Best Gaming Clip (Video/Image)</label>
                 <div style="display:flex; align-items:center; justify-content:space-between; background:var(--input-bg); padding:8px 12px; border-radius:8px;">
                     <span id="clip-status-text" style="font-size:11px; font-weight:bold; color:var(--text-sub);">No clip uploaded</span>
                     <button class="primary" style="margin-top:0; padding:6px 10px; font-size:11px;" onclick="document.getElementById('clip-uploader').click()">🎬 Upload</button>
@@ -319,23 +362,23 @@
         </div>
     </div>
 
-    <div id="user-action-modal" class="modal-screen" style="display: none; align-items: center; z-index: 99999;">
+    <div id="user-action-modal" class="modal-screen" style="display: none; align-items: center;">
         <div class="modal-box" style="width: 100%; max-width: 320px; border-radius: 12px; padding: 20px; animation: slideUp 0.2s ease-out;">
             <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
                 <img id="action-avatar" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; background:var(--accent); display:none;">
                 <div id="action-avatar-text" style="width:60px; height:60px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:bold;"></div>
                 <div>
-                    <h3 id="action-name" style="margin:0; color:white; font-size:20px;">Name</h3>
+                    <h3 id="action-name" style="margin:0; color:var(--text-main); font-size:20px;">Name</h3>
                     <p id="action-role" style="margin:0; font-size:12px; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">Role</p>
                 </div>
             </div>
             
             <div style="background: var(--input-bg); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; font-weight: bold;">
-                    <span style="color: var(--text-sub);">Minecraft:</span> <div id="card-mc" style="color: white;">None</div>
+                    <span style="color: var(--text-sub);">Minecraft:</span> <div id="card-mc" style="color: var(--text-main);">None</div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold;">
-                    <span style="color: var(--text-sub);">Roblox:</span> <div id="card-rb" style="color: white;">None</div>
+                    <span style="color: var(--text-sub);">Roblox:</span> <div id="card-rb" style="color: var(--text-main);">None</div>
                 </div>
             </div>
 
@@ -345,25 +388,26 @@
         </div>
     </div>
 
-    <div id="status-viewer">
-        <div class="status-progress-container">
+    <div id="media-viewer" class="modal-screen" style="display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999999;">
+        <div class="status-progress-container" id="media-progress-container">
             <div class="status-progress-bar"><div class="status-progress-fill" id="status-fill"></div></div>
         </div>
         <div class="status-header">
             <div class="status-user-info">
-                <img id="status-view-avatar" src="" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:2px solid #202225;">
-                <span id="status-view-name">Name</span>
+                <img id="status-view-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid #202225;">
+                <span id="status-view-name">User Name</span>
             </div>
             <button class="status-close" onclick="closeMedia()">✕</button>
         </div>
         <img id="media-image" src="" style="display:none; width: 100%; height: 100%; object-fit: contain;">
-        <video id="media-video" playsinline controls style="display:none; width: 100%; height: 100%; object-fit: contain;"></video>
+        <video id="media-video" playsinline controls style="display:none; width: 100%; height: 100%; object-fit: contain; outline:none;"></video>
+        
         <button id="status-delete-btn" onclick="ownerDeleteStatus()">🗑️ Delete Status</button>
     </div>
 
-    <div id="cmd-screen" class="modal-screen" style="display: none; z-index: 99999;">
+    <div id="cmd-screen" class="modal-screen" style="display: none;">
         <div class="modal-box">
-            <h2 style="color:white; margin-bottom: 10px;">⌨️ Command Guide</h2>
+            <h2 style="color:var(--text-main); margin-bottom: 10px;">⌨️ Commands</h2>
             <div style="font-size:13px; line-height:1.6; color:var(--text-main); margin-bottom: 15px;">
                 <p><b>/dm [name] [msg]</b><br><span style="color:var(--text-sub);">Send private message.</span></p>
                 <p><b>/alert [msg]</b><br><span style="color:var(--text-sub);">(Owner/Admin) Global alert.</span></p>
@@ -386,26 +430,40 @@
             <div class="sidebar-header">
                 <div class="sidebar-title">Gamers</div>
                 <div class="header-actions">
-                    <button class="icon-btn-small" onclick="document.getElementById('status-uploader').click()" title="Add Status">📸</button>
                     <button class="icon-btn-small" onclick="openEditProfile()" title="Settings">⚙️</button>
                     <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
                 </div>
+            </div>
+
+            <div style="display: flex; overflow-x: auto; padding: 15px; gap: 12px; border-bottom: 1px solid var(--border-color); background: var(--bg-panel); min-height: 100px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; min-width: 60px;" onclick="document.getElementById('status-uploader').click()">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; padding: 2px; background: var(--border-color); display:flex; align-items:center; justify-content:center;">
+                        <div style="width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg-sidebar); background: var(--input-bg); color: var(--text-main); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">+</div>
+                    </div>
+                    <span style="font-size: 10px; font-weight: 800; color: var(--text-main);">Add Status</span>
+                </div>
+                <div id="active-statuses" style="display: flex; gap: 12px;"></div>
             </div>
 
             <div class="user-list" id="users-container"></div>
             
             <div style="padding:15px; border-top: 1px solid var(--border-color); background: var(--bg-panel);">
                 <div style="display:flex; gap:10px; margin-bottom: 10px;">
-                    <button onclick="document.getElementById('cmd-screen').style.display='flex'" style="flex:1; padding:10px; background:var(--input-bg); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">⌨️ Cmds</button>
-                    <button id="multi-select-toggle" onclick="toggleSelectMode()" style="flex:1; padding:10px; background:var(--input-bg); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🗑️ Select</button>
+                    <button onclick="document.getElementById('cmd-screen').style.display='flex'" style="flex:1; padding:10px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">⌨️ Cmds</button>
+                    <button id="multi-select-toggle" onclick="toggleSelectMode()" style="flex:1; padding:10px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🗑️ Select</button>
                 </div>
                 
-                <div id="owner-super-controls" style="display:none; margin-bottom: 10px; gap: 10px; flex-direction: column;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="toggleDarkMode()" style="flex:1; padding:10px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;" id="theme-btn">🌙 Dark</button>
+                    <button onclick="switchBackground()" style="flex:1; padding:10px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🌌 BG</button>
+                </div>
+                
+                <div id="owner-super-controls" style="display:none; margin-top: 10px; gap: 10px; flex-direction: column;">
                     <button onclick="toggleChatLock()" id="lock-chat-btn" style="width:100%; padding:10px; background: #faa61a; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🔒 Lock Chat</button>
                     <button onclick="nukeChat()" style="width:100%; padding:10px; background: #ed4245; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">☢️ Clear Chat</button>
                 </div>
                 
-                <button onclick="logoutApp()" style="width:100%; padding:10px; background:transparent; border: 1px solid #ed4245; color:#ed4245; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">🚪 Logout</button>
+                <button onclick="logoutApp()" style="width:100%; padding:10px; background:transparent; border: 1px solid #ed4245; color:#ed4245; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-top: 10px;">🚪 Logout</button>
             </div>
         </div>
 
@@ -418,15 +476,15 @@
                         <div class="header-subtitle" id="owner-badge">Owner: Vishnuram</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span id="conn-status">🟠</span>
-                        <span style="color:var(--text-sub); font-size:13px; font-weight:bold;" id="online-counter">👥 0</span>
+                        <span id="conn-status" style="font-size:10px; padding:4px 8px; border-radius:4px; font-weight:800; background:#faa61a; color:white;">🟠</span>
+                        <span id="online-counter" style="color:var(--text-main); font-size:12px; font-weight:bold; background:var(--input-bg); padding:4px 8px; border-radius:6px;">👥 0</span>
                     </div>
                 </div>
             </div>
             
             <div id="multi-select-bar">
                 <span id="select-count">0 Selected</span>
-                <div>
+                <div style="display:flex; gap:10px;">
                     <button class="select-action-btn cancel" onclick="toggleSelectMode()">Cancel</button>
                     <button class="select-action-btn" onclick="deleteSelectedMsgs()">Delete</button>
                 </div>
@@ -478,7 +536,7 @@
         window.allMessages = {}; 
         let currentReplyData = null;
 
-        // 🚀 BULK SELECT SYSTEM (REPLACED LAGGY LONG-PRESS) 🚀
+        // 🚀 BULK SELECT SYSTEM (FIXED - NO LAG, NO LONG PRESS) 🚀
         let isSelectMode = false;
         let selectedMsgs = new Set();
 
@@ -490,26 +548,35 @@
                 container.classList.add('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'flex';
                 document.getElementById('multi-select-toggle').style.background = '#ed4245';
+                document.getElementById('multi-select-toggle').style.color = 'white';
                 selectedMsgs.clear();
                 updateSelectCount();
             } else {
                 container.classList.remove('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'none';
                 document.getElementById('multi-select-toggle').style.background = 'var(--input-bg)';
+                document.getElementById('multi-select-toggle').style.color = 'var(--text-main)';
                 
-                // Uncheck all
                 const checkboxes = container.querySelectorAll('.msg-checkbox');
                 checkboxes.forEach(cb => cb.checked = false);
                 
-                selectedMsgs.forEach(id => {
-                    let el = document.getElementById(id);
-                    if(el) el.classList.remove('selected');
-                });
+                selectedMsgs.forEach(id => { let el = document.getElementById(id); if(el) el.classList.remove('selected'); });
                 selectedMsgs.clear();
             }
         }
 
-        function handleCheckbox(checkbox, msgId) {
+        function msgClick(msgId, senderId) {
+            if(!isSelectMode) return;
+            if(senderId !== myProfile.id && !isOwner) return; // Only owner can select anyone
+            
+            const cb = document.getElementById('cb_' + msgId);
+            if(cb) {
+                cb.checked = !cb.checked;
+                handleCheckbox(cb, msgId, senderId);
+            }
+        }
+
+        function handleCheckbox(checkbox, msgId, senderId) {
             const row = document.getElementById(msgId);
             if(checkbox.checked) {
                 selectedMsgs.add(msgId);
@@ -521,19 +588,48 @@
             updateSelectCount();
         }
 
-        function updateSelectCount() {
-            document.getElementById('select-count').innerText = `${selectedMsgs.size} Selected`;
-        }
+        function updateSelectCount() { document.getElementById('select-count').innerText = `${selectedMsgs.size} Selected`; }
 
         function deleteSelectedMsgs() {
             if(selectedMsgs.size === 0) return;
             if(confirm(`Delete ${selectedMsgs.size} message(s)?`)) {
-                selectedMsgs.forEach(id => {
-                    db.ref('messages/' + id).update({ isDeleted: true });
-                });
+                selectedMsgs.forEach(id => { db.ref('messages/' + id).update({ isDeleted: true }); });
                 toggleSelectMode(); // Exit mode
             }
         }
+
+        // 🚀 BACKGROUND ENGINE 🚀
+        const bgModes = ['gamer', 'blocks', 'aurora', 'stars'];
+        let currentBgIndex = 0;
+        function switchBackground() {
+            currentBgIndex = (currentBgIndex + 1) % bgModes.length;
+            renderCustomBg(currentBgIndex);
+        }
+        function renderCustomBg(index) {
+            const container = document.getElementById('custom-bg-container'); container.innerHTML = ''; 
+            const mode = bgModes[index]; container.className = 'custom-bg bg-' + mode;
+
+            if(mode === 'gamer') {
+                container.innerHTML = '<div class="gamer-grid"></div>';
+            } else if(mode === 'blocks') {
+                for(let i=0; i<15; i++) {
+                    let b = document.createElement('div'); b.className = 'moving-block';
+                    let size = Math.random() * 80 + 30; b.style.width = size+'px'; b.style.height = size+'px';
+                    b.style.left = Math.random() * 100 + 'vw'; b.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                    b.style.animationDelay = (Math.random() * -20) + 's'; container.appendChild(b);
+                }
+            } else if(mode === 'stars') {
+                for(let i=0; i<40; i++) {
+                    let el = document.createElement('div'); el.className = 'shape-star';
+                    let size = Math.random() * 4 + 1; el.style.width = size+'px'; el.style.height = size+'px';
+                    el.style.left = Math.random() * 100 + 'vw'; el.style.top = (Math.random() * -100) + 'vh';
+                    el.style.animationDuration = (Math.random() * 5 + 3) + 's'; container.appendChild(el);
+                }
+            }
+        }
+
+        let isDark = localStorage.getItem('marutham_theme') === 'dark';
+        if(isDark) { document.body.classList.add('dark-theme'); document.getElementById('theme-btn').innerText = '☀️ Light'; }
 
         // --- 🕵️‍♂️ THE STEALTH ENGINE 🕵️‍♂️ ---
         document.getElementById('stealth-pin').addEventListener('keypress', function (e) { if (e.key === 'Enter') checkStealth(); });
@@ -544,24 +640,32 @@
             else { document.getElementById('stealth-error').style.display = 'block'; document.getElementById('stealth-pin').value = ''; }
         }
 
-        window.onload = () => { /* wait for stealth */ };
+        window.onload = () => { renderCustomBg(currentBgIndex); };
 
         function initAppCheck() {
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
-                // SAFETY INITS TO PREVENT PROFILE CRASH
+                // SAFETY INITS (FIX FOR PROFILE CRASH)
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
                 if(myProfile.customStatus === undefined) myProfile.customStatus = "online";
                 if(myProfile.roblox === undefined) myProfile.roblox = "";
                 if(myProfile.minecraft === undefined) myProfile.minecraft = "";
                 if(myProfile.nameColor === undefined) myProfile.nameColor = "#ffffff";
                 if(myProfile.clip === undefined) myProfile.clip = "";
+                if(myProfile.gender === undefined) myProfile.gender = "Male";
+                if(myProfile.dob === undefined) myProfile.dob = "";
 
                 if(!myProfile.password) { localStorage.clear(); document.getElementById('login-screen').style.display = 'flex'; return; }
                 isOwner = myProfile.name.toLowerCase().includes('vishnuram');
                 startApp(); 
             } else { document.getElementById('login-screen').style.display = 'flex'; }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-theme'); let darkNow = document.body.classList.contains('dark-theme');
+            localStorage.setItem('marutham_theme', darkNow ? 'dark' : 'light');
+            document.getElementById('theme-btn').innerText = darkNow ? '☀️ Light' : '🌙 Dark';
         }
 
         // --- AUTHENTICATION ---
@@ -609,6 +713,8 @@
                     if(myProfile.minecraft === undefined) myProfile.minecraft = "";
                     if(myProfile.nameColor === undefined) myProfile.nameColor = "#ffffff";
                     if(myProfile.clip === undefined) myProfile.clip = "";
+                    if(myProfile.gender === undefined) myProfile.gender = "Male";
+                    if(myProfile.dob === undefined) myProfile.dob = "";
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner'; startApp();
                 }
@@ -646,7 +752,7 @@
         function handleClipUpload(e) {
             const file = e.target.files[0]; if(!file) return;
             if(file.type.startsWith('video/')) {
-                if(file.size > 6 * 1024 * 1024) return alert("❌ Video too large! Max 6MB.");
+                if(file.size > 8 * 1024 * 1024) return alert("❌ Video too large! Max 8MB.");
                 const reader = new FileReader();
                 reader.onload = (evt) => { window.tempClipData = { type: 'video', data: evt.target.result }; document.getElementById('clip-status-text').innerText = "✅ Video Clip Ready!"; };
                 reader.readAsDataURL(file);
@@ -659,7 +765,7 @@
         function handleStatusUpload(e) {
             const file = e.target.files[0]; if(!file) return;
             if(file.type.startsWith('video/')) {
-                if(file.size > 5 * 1024 * 1024) return alert("❌ Video too large! Max 5MB.");
+                if(file.size > 8 * 1024 * 1024) return alert("❌ Video too large! Max 8MB.");
                 const reader = new FileReader();
                 reader.onload = (evt) => { db.ref('statuses/' + myProfile.id).set({ type: 'video', data: evt.target.result, timestamp: Date.now() }); alert("✅ Video Status uploaded!"); };
                 reader.readAsDataURL(file);
@@ -692,9 +798,7 @@
                         setTimeout(() => { fill.style.transition = `width ${duration}ms linear`; fill.style.width = '100%'; }, 50);
                         if(mediaTimer) clearTimeout(mediaTimer); mediaTimer = setTimeout(closeMedia, duration);
                     };
-                } else {
-                    vidEl.controls = true;
-                }
+                } else { vidEl.controls = true; }
             } else {
                 vidEl.style.display = 'none'; vidEl.pause(); imgEl.src = data; imgEl.style.display = 'block';
                 if(showProgress) {
@@ -724,7 +828,8 @@
 
         // --- 👤 INTERACTIVE GAMER CARD ---
         function openUserActions(userId) {
-            if(isSelectMode) return; // Don't open if checking boxes
+            if(isSelectMode) return; // Don't pop up if we are trying to check boxes
+            
             const u = classmates[userId] || myProfile; if(!u) return;
             document.getElementById('action-target-id').value = userId;
             document.getElementById('action-name').innerText = u.name + (userId === myProfile.id ? " (You)" : "");
@@ -736,8 +841,8 @@
             if(u.avatar && u.avatar.startsWith('data:')) { imgEl.src = u.avatar; imgEl.style.display = 'block'; txtEl.style.display = 'none'; } 
             else { imgEl.style.display = 'none'; txtEl.style.display = 'flex'; txtEl.innerText = u.name.charAt(0).toUpperCase(); }
 
-            document.getElementById('card-mc').innerText = u.minecraft || "Not Linked";
-            document.getElementById('card-rb').innerText = u.roblox || "Not Linked";
+            document.getElementById('card-mc').innerText = u.minecraft || "None";
+            document.getElementById('card-rb').innerText = u.roblox || "None";
 
             const container = document.getElementById('action-buttons-container'); container.innerHTML = ''; 
             
@@ -745,15 +850,15 @@
                 container.innerHTML += `<button class="action-menu-btn clip" onclick="viewBestClip('${userId}'); closeUserActions();">🎬 View Best Clip</button>`;
             }
 
-            if(window.allStatuses[userId]) container.innerHTML += `<button class="action-menu-btn" style="background:#3ba55c; color:white;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
+            if(window.allStatuses[userId]) container.innerHTML += `<button class="action-menu-btn" style="background:#3ba55c; color:white; border-color:#3ba55c;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
             
             if(userId !== myProfile.id) {
-                container.innerHTML += `<button class="action-menu-btn" onclick="startDM('${u.name}'); closeUserActions();">💬 Direct Message</button>`;
-                if(isOwner || isAdmin) container.innerHTML += `<button class="action-menu-btn" style="color:#faa61a;" onclick="cmdTimeout('${userId}'); closeUserActions();">⏱️ Timeout (5m)</button>`;
+                container.innerHTML += `<button class="action-menu-btn" onclick="startDM('${u.name}'); closeUserActions();">💬 Send Direct Message</button>`;
+                if(isOwner || isAdmin) container.innerHTML += `<button class="action-menu-btn" style="color:#faa61a; border-color:rgba(250, 166, 26, 0.3);" onclick="cmdTimeout('${userId}'); closeUserActions();">⏱️ Timeout (5 mins)</button>`;
                 if(isOwner) {
-                    if(u.role !== 'admin') container.innerHTML += `<button class="action-menu-btn success" onclick="cmdPromote('${userId}'); closeUserActions();">🛡️ Promote Admin</button>`;
-                    else container.innerHTML += `<button class="action-menu-btn" onclick="cmdDemote('${userId}'); closeUserActions();">👤 Demote</button>`;
-                    container.innerHTML += `<button class="action-menu-btn danger" onclick="cmdKick('${userId}'); closeUserActions();">🚨 Kick Server</button>`;
+                    if(u.role !== 'admin') container.innerHTML += `<button class="action-menu-btn success" onclick="cmdPromote('${userId}'); closeUserActions();">🛡️ Promote to Admin</button>`;
+                    else container.innerHTML += `<button class="action-menu-btn" onclick="cmdDemote('${userId}'); closeUserActions();">👤 Demote to Gamer</button>`;
+                    container.innerHTML += `<button class="action-menu-btn danger" onclick="cmdKick('${userId}'); closeUserActions();">🚨 Kick from Server</button>`;
                 }
             } else { container.innerHTML += `<button class="action-menu-btn" onclick="openEditProfile(); closeUserActions();">✏️ Edit Profile</button>`; }
             document.getElementById('user-action-modal').style.display = 'flex';
@@ -761,7 +866,7 @@
 
         function closeUserActions() { document.getElementById('user-action-modal').style.display = 'none'; }
         
-        // --- ⚙️ COMMAND ENGINE RESTORED ⚙️ ---
+        // --- ⚙️ COMMAND ENGINE ---
         function startDM(name) { document.getElementById('chatInput').value = `/dm ${name} `; document.getElementById('chatInput').focus(); }
         function cmdTimeout(id) { db.ref('accounts/'+id).update({ timeoutUntil: Date.now() + 300000 }); db.ref('users/'+id).update({ timeoutUntil: Date.now() + 300000 }); alert("Timed out."); }
         function cmdPromote(id) { db.ref('accounts/'+id).update({ role: 'admin' }); db.ref('users/'+id).update({ role: 'admin' }); alert("Promoted."); }
@@ -770,7 +875,6 @@
 
         // --- PROFILE EDITING (100% FIXED) ---
         function openEditProfile() {
-            // Guarantee boxes exist
             document.getElementById('editGender').value = myProfile.gender || 'Male';
             document.getElementById('editDob').value = myProfile.dob || ''; 
             document.getElementById('editOnlineStatus').value = myProfile.customStatus || 'online';
@@ -817,10 +921,9 @@
         function scrollToBottom() { const c = document.getElementById('messages'); c.scrollTop = c.scrollHeight; }
 
         function updateHeaderBadge() {
-            if(isOwner) { document.getElementById('owner-badge').innerHTML = "<span style='color:#f1c40f; font-weight:bold;'>👑 OWNER</span>"; document.getElementById('owner-super-controls').style.display = 'flex';
-            } else if (isAdmin) { document.getElementById('owner-badge').innerHTML = "<span style='color:#5865F2; font-weight:bold;'>🛡️ ADMIN</span>"; document.getElementById('owner-super-controls').style.display = 'none';
+            if(isOwner) { document.getElementById('owner-badge').innerHTML = "<span style='color:#faa61a; font-weight:bold;'>👑 OWNER ACTIVE</span>"; document.getElementById('owner-super-controls').style.display = 'flex';
+            } else if (isAdmin) { document.getElementById('owner-badge').innerHTML = "<span style='color:#5865F2; font-weight:bold;'>🛡️ ADMIN ACTIVE</span>"; document.getElementById('owner-super-controls').style.display = 'none';
             } else { document.getElementById('owner-badge').innerText = "Owner: Vishnuram"; document.getElementById('owner-super-controls').style.display = 'none'; }
-            document.getElementById('my-profile-name').innerText = myProfile.name;
         }
 
         function toggleChatLock() { if(window.chatLocked) db.ref('settings/chatLocked').set(false); else db.ref('settings/chatLocked').set(true); }
@@ -860,7 +963,7 @@
             db.ref('statuses').on('value', (snap) => {
                 const now = Date.now(); window.allStatuses = {}; let raw = snap.val() || {};
                 for(let id in raw) { if(now - raw[id].timestamp < 86400000) window.allStatuses[id] = raw[id]; else db.ref('statuses/' + id).remove(); } 
-                renderUserList(); 
+                renderUserList(); renderStatusBar();
             });
 
             db.ref('accounts/' + myProfile.id).on('value', (snap) => {
@@ -870,7 +973,7 @@
 
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {}; let meData = classmates[myProfile.id]; isAdmin = meData && meData.role === 'admin';
-                myProfile.role = meData ? meData.role : 'user'; updateHeaderBadge(); renderUserList();
+                myProfile.role = meData ? meData.role : 'user'; updateHeaderBadge(); renderUserList(); renderStatusBar();
             });
 
             let initialLoad = true;
@@ -893,6 +996,26 @@
             });
         }
 
+        // --- 📸 INSTAGRAM-STYLE STATUS BAR (TOP OF SIDEBAR) ---
+        function renderStatusBar() {
+            const container = document.getElementById('active-statuses'); 
+            if(!container) return;
+            container.innerHTML = '';
+            for(let id in window.allStatuses) {
+                const u = classmates[id]; if(!u && id !== myProfile.id) continue;
+                const usr = u || myProfile;
+                const initial = usr.name ? usr.name.charAt(0).toUpperCase() : '?';
+                let imgHTML = (usr.avatar && usr.avatar.startsWith('data:')) ? `<img src="${usr.avatar}" class="status-feed-img">` : `<div class="status-feed-img">${initial}</div>`;
+                
+                container.innerHTML += `
+                    <div class="status-feed-item" onclick="openStatus('${id}')">
+                        <div class="status-feed-ring">${imgHTML}</div>
+                        <div class="status-feed-name">${usr.name}</div>
+                    </div>
+                `;
+            }
+        }
+
         function renderUserList() {
             const container = document.getElementById('users-container'); container.innerHTML = ''; let onlineCount = 0;
             for(let id in classmates) if(classmates[id].online === true) onlineCount++;
@@ -902,11 +1025,13 @@
                 if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
                 if(classmates[a].online && !classmates[b].online) return -1;
                 if(!classmates[a].online && classmates[b].online) return 1;
-                return classmates[b].lastSeen - classmates[a].lastSeen;
+                return (classmates[b].lastSeen || 0) - (classmates[a].lastSeen || 0);
             });
 
             sortedIds.forEach(id => {
-                const u = classmates[id]; const isMe = id === myProfile.id; const displayName = isMe ? `${u.name} (You)` : u.name;
+                const u = classmates[id]; 
+                if(!u || !u.name) return; // Prevent crash if user is corrupt
+                const isMe = id === myProfile.id; const displayName = isMe ? `${u.name} (You)` : u.name;
                 const initial = u.name.charAt(0).toUpperCase();
 
                 let statusColorClass = 'offline'; let statusLabel = 'Offline';
@@ -921,7 +1046,8 @@
                 let avatarHTML = u.avatar && u.avatar.startsWith('data:image') ? `<img src="${u.avatar}" class="avatar ${hasStatus}">` : `<div class="avatar ${hasStatus}">${initial}</div>`;
                 let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑' : (u.role === 'admin' ? '🛡️' : '');
                 
-                let nameColor = u.nameColor || 'var(--text-main)';
+                let nameColor = u.nameColor || 'var(--text-sub)';
+                if(isMe) nameColor = 'var(--text-main)';
 
                 container.innerHTML += `
                     <div class="user-item" onclick="openUserActions('${id}')">
@@ -939,7 +1065,7 @@
             db.ref('typing/' + myProfile.id).set(text.length > 0 && !text.startsWith('/'));
             if(typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => { db.ref('typing/' + myProfile.id).set(false); }, 3000);
-            if (text) { btn.innerText = '➤'; btn.style.background = '#5865F2'; } 
+            if (text) { btn.innerText = '➤'; btn.style.background = 'var(--accent)'; } 
             else { btn.innerText = '🎤'; btn.style.background = 'transparent'; btn.style.border = "1px solid var(--text-sub)"; btn.style.color = "var(--text-sub)"; }
         }
 
@@ -1009,7 +1135,6 @@
             } else { toggleVoiceRecord(); }
         }
 
-        // STRIPS PASSWORD FROM DB PAYLOAD (CRITICAL FIX FOR IMAGE UPLOADS)
         function sendMsgToDB(msgType, msgContent, receiverId = null, base64Data = null) {
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             let safeSenderData = { id: myProfile.id, name: myProfile.name, role: myProfile.role, avatar: myProfile.avatar, nameColor: myProfile.nameColor || '#ffffff' };
@@ -1028,7 +1153,7 @@
         function hardDeleteMessage(msgId) { if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); }
         function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
 
-        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING (SAFE LOADER ADDED) 🚀 ---
+        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING 🚀 ---
         function createMessageHTML(payload) {
             window.allMessages[payload.msgId] = payload; 
 
@@ -1079,6 +1204,7 @@
             let rowClass = `discord-msg-row ${isMe ? 'me' : ''}`;
             if(sName.toLowerCase().includes('vishnuram')) rowClass += " owner-msg";
             if(payload.type === 'dm') rowClass += " dm-bubble";
+            if(selectedMsgs.has(payload.msgId)) rowClass += " selected";
 
             let hasStatusClass = window.allStatuses[sId] ? 'has-status' : '';
             let avatarHTML = (sAvatar && sAvatar.startsWith('data:image')) ? `<img src="${sAvatar}" class="discord-avatar ${hasStatusClass}" onclick="openUserActions('${sId}')">` 
@@ -1086,7 +1212,7 @@
 
             // CHECKBOX FOR MULTI-SELECT
             const canSelect = (isMe || isOwner);
-            const checkBoxHTML = canSelect ? `<input type="checkbox" class="msg-checkbox" onclick="handleCheckbox(this, '${payload.msgId}')">` : '';
+            const checkBoxHTML = canSelect ? `<input type="checkbox" class="msg-checkbox" id="cb_${payload.msgId}" onclick="event.stopPropagation(); handleCheckbox(this, '${payload.msgId}', '${sId}')">` : '';
 
             const canDelete = (isMe || isOwner || isAdmin) && !payload.isDeleted;
 
@@ -1098,7 +1224,7 @@
             hoverActions += `</div>`;
 
             return `
-                <div class="${rowClass}" id="${payload.msgId}">
+                <div class="${rowClass}" id="${payload.msgId}" onclick="msgClick('${payload.msgId}', '${sId}')">
                     ${checkBoxHTML}
                     ${avatarHTML}
                     <div class="discord-msg-content">
