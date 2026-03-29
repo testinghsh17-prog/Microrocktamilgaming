@@ -96,29 +96,30 @@
         .action-menu-btn.success { color: #55efc4; background: rgba(85, 239, 196, 0.1); }
 
         /* 📸 MEDIA VIEWER */
-        #media-viewer { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 500000; display: none; flex-direction: column; align-items: center; justify-content: center;}
-        .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; }
+        #media-viewer { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 500000; display: none; flex-direction: column; align-items: center; justify-content: center; width: 100vw; height: 100vh;}
+        .status-progress-container { display: flex; gap: 4px; padding: 15px 10px; position: absolute; top: 0; left: 0; right: 0; z-index: 5001; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .status-progress-bar { height: 4px; background: rgba(255,255,255,0.3); flex: 1; border-radius: 4px; overflow: hidden; }
         .status-progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
         .status-header { position: absolute; top: 30px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 5001; color: white;}
         .status-user-info { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px;}
         .status-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-        #media-image, #media-video { width: 100%; height: 100%; object-fit: contain; display: none; border-radius: 12px;}
-        #status-delete-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ff7675; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; z-index: 5001; display: none; }
+        #media-image { width: 100vw; height: 100vh; object-fit: contain; display: none; }
+        #media-video { width: 100vw; height: 100vh; object-fit: contain; display: none; }
+        #status-delete-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ff7675; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; font-size: 16px; cursor: pointer; z-index: 5001; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 
         /* 🖥️ APP LAYOUT */
         #app-screen { display: none; width: 100%; height: 100%; flex-direction: row; }
         
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 999;}
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
         .sidebar { width: 320px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);}
         .sidebar-title { font-weight: 900; font-size: 22px; color: var(--accent);}
         .header-actions { display: flex; align-items: center; gap: 8px; }
         .icon-btn-small { background: var(--input-bg); color: var(--text-main); border: none; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s;}
         .icon-btn-small:hover { background: var(--accent); color: white; }
-        .close-sidebar-btn { display: none; background: transparent; color: var(--text-sub); border: none; font-size: 20px; cursor: pointer; }
+        .close-sidebar-btn { display: none; background: transparent; color: var(--text-sub); border: none; font-size: 24px; cursor: pointer; }
 
-        /* 🤏 CUTE STATUS BAR */
+        /* 🤏 SMALLER CUTE STATUS BAR */
         .status-feed-container { display: flex; overflow-x: auto; padding: 10px 15px; gap: 10px; border-bottom: 1px solid var(--border-color); background: var(--bg-panel); }
         .status-feed-container::-webkit-scrollbar { display: none; } 
         .status-feed-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.2s; }
@@ -168,7 +169,7 @@
         
         .sys-msg { align-self: center; background: var(--bg-panel); color: var(--text-sub); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; margin: 10px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
         
-        /* 🌸 CUTE BUBBLE MESSAGES 🌸 */
+        /* 🌸 CUTE BUBBLE MESSAGES */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 12px; position: relative; align-items: flex-end; 
             max-width: 85%; align-self: flex-start; cursor: pointer; transition: 0.2s;
@@ -195,9 +196,9 @@
         
         .discord-sender-name { font-weight: 900; font-size: 14px; }
         .discord-timestamp { font-size: 10px; opacity: 0.7; font-weight: 700;}
+        
         .discord-msg-body { font-size: 15px; line-height: 1.4; word-wrap: break-word; font-weight: 600;}
-        .discord-msg-body a { color: #00b0f4; text-decoration: none;}
-
+        
         .role-tag { font-size: 9px; padding: 2px 6px; border-radius: 8px; font-weight: 900; text-transform: uppercase; }
         .role-tag.owner { background: #ffeaa7; color: #d35400; }
 
@@ -205,7 +206,7 @@
         .msg-image img { max-width: 250px; max-height: 250px; display: block; object-fit: cover; border-radius: 16px;}
         audio { height: 45px; max-width: 250px; margin-top: 8px; outline: none; border-radius: 25px;}
 
-        /* 🎲 CUTE CIRCLE BUTTONS IN INPUT BAR */
+        /* 🎲 BUTTONS IN INPUT BAR */
         .input-bar { padding: 15px 20px; background: var(--bg-panel); display: flex; gap: 10px; align-items: center; padding-bottom: max(15px, env(safe-area-inset-bottom)); z-index: 100; border-top: 1px solid var(--border-color);}
         .action-btn { background: var(--input-bg); color: var(--text-sub); border: none; font-size: 18px; cursor: pointer; width: 42px; height: 42px; border-radius: 50%; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-weight: bold;}
         .action-btn:hover { background: var(--accent); color: white; transform: scale(1.05); }
@@ -234,10 +235,10 @@
     <div id="stealth-screen">
         <div class="stealth-box">
             <h1 style="color:#2d3436; font-size:32px; margin-bottom: 10px; font-weight:900;">Study Portal</h1>
-            <p style="color:#a4b0be; margin-bottom: 25px; font-size:15px; font-weight:700;">Enter your access code.</p>
+            <p style="color:#a4b0be; margin-bottom: 25px; font-size:15px; font-weight:700;">Enter your school access code to view materials.</p>
             <input type="password" id="stealth-pin" class="stealth-input" placeholder="****" maxlength="4">
             <button class="stealth-btn" onclick="checkStealth()">Access Portal</button>
-            <p id="stealth-error" style="color:#ff7675; font-weight:800; font-size:14px; margin-top:15px; display:none;">Incorrect Code.</p>
+            <p id="stealth-error" style="color:#ff7675; font-weight:800; font-size:14px; margin-top:15px; display:none;">Incorrect Access Code.</p>
         </div>
     </div>
 
@@ -262,7 +263,7 @@
                 <div class="input-group"><label>Create Password</label><input type="password" id="regPwd" placeholder="Create password"></div>
                 <div class="input-group"><label>Gender</label><select id="regGender"><option>Male</option><option>Female</option></select></div>
                 <div class="input-group"><label>Date of Birth</label><input type="text" id="regDob" placeholder="e.g. 15/08/2005"></div>
-                <button class="primary" style="width:100%;" onclick="doSignUp()">Create Account</button>
+                <button class="primary" style="width:100%; background: #55efc4; color:#2d3436;" onclick="doSignUp()">Create Account</button>
             </div>
         </div>
     </div>
@@ -273,11 +274,16 @@
             <div class="input-group">
                 <label>Profile Picture</label>
                 <div style="display:flex; align-items:center; gap:15px; background:var(--input-bg); padding:10px; border-radius:16px;">
-                    <img id="avatar-preview" src="" style="width:55px; height:55px; border-radius:16px; object-fit:cover; background:var(--accent);">
-                    <button class="primary" style="margin-top:0; padding:12px; font-size:14px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Change Image</button>
+                    <img id="avatar-preview" src="" style="width:50px; height:50px; border-radius:50%; object-fit:cover; background:var(--accent);">
+                    <button class="primary" style="margin-top:0; padding:8px 15px; font-size:12px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Change Image</button>
                 </div>
             </div>
-            <div class="input-group"><label>Name Color (Glow)</label><input type="color" id="editNameColor" value="#a29bfe"></div>
+            
+            <div class="input-group">
+                <label>Name Color</label>
+                <input type="color" id="editNameColor" value="#ff9ff3" style="padding:0; height:35px; border-radius:8px; cursor:pointer;">
+            </div>
+
             <div class="input-group">
                 <label>Status Indicator</label>
                 <select id="editOnlineStatus">
@@ -286,18 +292,25 @@
                     <option value="dnd">🔴 Do Not Disturb</option>
                 </select>
             </div>
-            <div class="input-group"><label>Change Password (Optional)</label><input type="password" id="editPassword" placeholder="New password"></div>
+
+            <div class="input-group">
+                <label>Change Password (Optional)</label>
+                <input type="password" id="editPassword" placeholder="New password">
+            </div>
+
             <div style="display:flex; gap:10px;">
                 <div class="input-group" style="flex:1;"><label>Roblox</label><input type="text" id="editRoblox" placeholder="Username"></div>
                 <div class="input-group" style="flex:1;"><label>Minecraft</label><input type="text" id="editMinecraft" placeholder="Username"></div>
             </div>
+
             <div class="input-group">
                 <label>Best Gaming Clip</label>
-                <div style="display:flex; align-items:center; justify-content:space-between; background:var(--input-bg); padding:10px 15px; border-radius:12px;">
-                    <span id="clip-status-text" style="font-size:12px; font-weight:bold; color:var(--text-sub);">No clip uploaded</span>
-                    <button class="primary" style="margin-top:0; padding:8px 12px; font-size:12px;" onclick="document.getElementById('clip-uploader').click()">🎬 Upload</button>
+                <div style="display:flex; align-items:center; justify-content:space-between; background:var(--input-bg); padding:8px 12px; border-radius:8px;">
+                    <span id="clip-status-text" style="font-size:11px; font-weight:bold; color:var(--text-sub);">No clip uploaded</span>
+                    <button class="primary" style="margin-top:0; padding:6px 10px; font-size:11px;" onclick="document.getElementById('clip-uploader').click()">🎬 Upload</button>
                 </div>
             </div>
+
             <div class="input-group" style="display:none;"><label>Gender</label><select id="editGender"><option>Male</option><option>Female</option></select></div>
             <div class="input-group" style="display:none;"><label>Date of Birth</label><input type="text" id="editDob"></div>
             
@@ -321,29 +334,28 @@
     <div id="owner-bugs-screen" class="modal-screen" style="display: none;">
         <div class="modal-box" style="max-width: 500px;">
             <h2>Bug Reports</h2>
-            <div id="bug-list-container" style="max-height: 50vh; overflow-y: auto; display:flex; flex-direction:column; gap:10px;">
-                </div>
+            <div id="bug-list-container" style="max-height: 50vh; overflow-y: auto; display:flex; flex-direction:column; gap:10px;"></div>
             <button class="secondary" style="border:none; color:var(--text-sub);" onclick="document.getElementById('owner-bugs-screen').style.display='none'">Close</button>
         </div>
     </div>
 
-    <div id="user-action-modal" class="modal-screen" style="display: none; align-items: flex-end; padding-bottom: 20px;">
-        <div class="modal-box" style="width: 100%; max-width: 380px; border-radius: 24px; padding: 25px; animation: slideUp 0.2s ease-out;">
-            <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px;">
-                <img id="action-avatar" src="" style="width:65px; height:65px; border-radius:16px; object-fit:cover; background:var(--accent); display:none;">
-                <div id="action-avatar-text" style="width:65px; height:65px; border-radius:16px; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900;"></div>
+    <div id="user-action-modal" class="modal-screen" style="display: none; align-items: center;">
+        <div class="modal-box" style="width: 100%; max-width: 320px; border-radius: 12px; padding: 20px; animation: slideUp 0.2s ease-out;">
+            <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                <img id="action-avatar" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; background:var(--accent); display:none;">
+                <div id="action-avatar-text" style="width:60px; height:60px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:bold;"></div>
                 <div>
-                    <h3 id="action-name" style="margin:0; color:var(--text-main); font-size:24px; font-weight:900;">Name</h3>
-                    <p id="action-role" style="margin:0; font-size:14px; color:var(--text-sub); font-weight:800; text-transform:uppercase;">Role</p>
+                    <h3 id="action-name" style="margin:0; color:white; font-size:20px;">Name</h3>
+                    <p id="action-role" style="margin:0; font-size:12px; color:var(--text-sub); font-weight:bold; text-transform:uppercase;">Role</p>
                 </div>
             </div>
             
-            <div style="background: var(--input-bg); border-radius: 16px; padding: 15px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; font-weight: 800;">
-                    <span style="color: var(--text-sub);">Minecraft:</span> <div id="card-mc" style="color: var(--text-main);">None</div>
+            <div style="background: var(--input-bg); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; font-weight: bold;">
+                    <span style="color: var(--text-sub);">Minecraft:</span> <div id="card-mc" style="color: white;">None</div>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800;">
-                    <span style="color: var(--text-sub);">Roblox:</span> <div id="card-rb" style="color: var(--text-main);">None</div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold;">
+                    <span style="color: var(--text-sub);">Roblox:</span> <div id="card-rb" style="color: white;">None</div>
                 </div>
             </div>
 
@@ -354,16 +366,18 @@
     </div>
 
     <div id="media-viewer">
-        <div class="status-progress-container" id="media-progress-container"><div class="status-progress-bar"><div class="status-progress-fill" id="status-fill"></div></div></div>
+        <div class="status-progress-container" id="media-progress-container">
+            <div class="status-progress-bar"><div class="status-progress-fill" id="status-fill"></div></div>
+        </div>
         <div class="status-header">
             <div class="status-user-info">
-                <img id="status-view-avatar" src="" style="width:40px; height:40px; border-radius:12px; object-fit:cover; border:2px solid white;">
+                <img id="status-view-avatar" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid white;">
                 <span id="status-view-name">User Name</span>
             </div>
             <button class="status-close" onclick="closeMedia()">✕</button>
         </div>
-        <img id="media-image" src="" style="display:none; width: 100vw; height: 100vh; object-fit: contain;">
-        <video id="media-video" playsinline controls style="display:none; width: 100vw; height: 100vh; object-fit: contain; outline:none;"></video>
+        <img id="media-image" src="" style="display:none;">
+        <video id="media-video" playsinline controls style="display:none;"></video>
         <button id="status-delete-btn" onclick="ownerDeleteStatus()">🗑️ Delete Status</button>
     </div>
 
@@ -379,28 +393,26 @@
                 </div>
             </div>
 
-            <div style="display: flex; overflow-x: auto; padding: 12px 15px; gap: 12px; border-bottom: 1px solid var(--border-color); background: var(--bg-panel); min-height: 80px;">
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; min-width: 50px;" onclick="document.getElementById('status-uploader').click()">
-                    <div style="width: 44px; height: 44px; border-radius: 16px; background: var(--input-bg); border: 2px dashed var(--text-sub); display:flex; align-items:center; justify-content:center; transition: 0.2s;">
+            <div style="display: flex; overflow-x: auto; padding: 10px 15px; gap: 10px; border-bottom: 1px solid var(--border-color); background: var(--bg-panel); min-height: 80px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; min-width: 50px;" onclick="document.getElementById('status-uploader').click()">
+                    <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--input-bg); border: 2px dashed var(--text-sub); display:flex; align-items:center; justify-content:center;">
                         <span style="font-size: 20px; color: var(--text-sub); font-weight: bold;">+</span>
                     </div>
                     <span style="font-size: 10px; font-weight: 900; color: var(--text-sub);">Status</span>
                 </div>
-                <div id="active-statuses" style="display: flex; gap: 12px;"></div>
+                <div id="active-statuses" style="display: flex; gap: 10px;"></div>
             </div>
 
             <div class="user-list" id="users-container"></div>
             
             <div style="padding:15px; border-top: 1px solid var(--border-color); background: var(--bg-panel);">
-                
                 <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <button id="multi-select-toggle" onclick="toggleSelectMode()" style="flex:1; padding:12px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:12px; font-weight:900; cursor:pointer; font-size:13px;">🗑️ Select</button>
-                    <button onclick="toggleDarkMode()" style="flex:1; padding:12px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:12px; font-weight:900; cursor:pointer; font-size:13px;" id="theme-btn">🌙 Dark</button>
+                    <button id="multi-select-toggle" onclick="toggleSelectMode()" style="flex:1; padding:12px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:8px; font-weight:800; cursor:pointer; font-size:12px;">🗑️ Select</button>
+                    <button onclick="toggleDarkMode()" style="flex:1; padding:12px; background:var(--input-bg); color:var(--text-main); border:none; border-radius:8px; font-weight:800; cursor:pointer; font-size:12px;">🌙 Dark</button>
                 </div>
-                
-                <div id="owner-super-controls" style="display:none; margin-top: 10px; gap: 10px; flex-direction: column;">
-                    <button onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();" style="width:100%; padding:12px; background: #a29bfe; color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer; font-size:14px;">🛠️ View Bug Reports</button>
-                    <button onclick="nukeChat()" style="width:100%; padding:12px; background: #ff7675; color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer; font-size:14px;">☢️ Clear Chat</button>
+                <div id="owner-super-controls" style="display:none; margin-bottom: 10px; gap: 10px; flex-direction: column;">
+                    <button onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();" style="width:100%; padding:10px; background: #a29bfe; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; font-size:12px;">🛠️ Bug Reports</button>
+                    <button onclick="nukeChat()" style="width:100%; padding:10px; background: #ff7675; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; font-size:12px;">☢️ Clear Chat</button>
                 </div>
             </div>
         </div>
@@ -410,10 +422,10 @@
                 <span class="menu-btn" onclick="toggleSidebar()">☰</span>
                 <div class="header-info">
                     <div>
-                        <div style="font-weight: 900; font-size: 20px; display: flex; align-items: center; gap: 8px; color: var(--text-main);"># general</div>
+                        <div class="header-title"># general</div>
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                        <div id="online-counter" style="font-size: 12px; font-weight: 800; background: var(--input-bg); padding: 4px 10px; border-radius: 8px; color: var(--text-main);">👥 0 Online</div>
+                        <div id="online-counter" style="font-size: 11px; font-weight: 800; background: var(--input-bg); padding: 4px 10px; border-radius: 8px; color: var(--text-main);">👥 0 Online</div>
                     </div>
                 </div>
             </div>
@@ -432,7 +444,7 @@
             
             <div class="input-bar" id="input-bar-container">
                 <button class="action-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                <button class="action-btn" onclick="sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`);" title="Roll Dice">🎲</button>
+                <button class="action-btn" onclick="rollDice()" title="Roll Dice">🎲</button>
                 
                 <input type="text" id="chatInput" placeholder="Message #general..." oninput="handleTypingInput()">
                 <button class="send-btn" id="action-btn" onclick="handleActionClick()">🎤</button>
@@ -469,7 +481,7 @@
             } catch(e) {}
         }
 
-        // 🚀 BULK SELECT SYSTEM (FIXED - NO LAG, ONLY CLICK) 🚀
+        // 🚀 BUG-FREE BULK SELECT SYSTEM 🚀
         let isSelectMode = false;
         let selectedMsgs = new Set();
 
@@ -533,14 +545,13 @@
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
+                // SAFETY INITS TO PREVENT PROFILE CRASH
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
                 if(myProfile.customStatus === undefined) myProfile.customStatus = "online";
                 if(myProfile.roblox === undefined) myProfile.roblox = "";
                 if(myProfile.minecraft === undefined) myProfile.minecraft = "";
                 if(myProfile.nameColor === undefined) myProfile.nameColor = "#ff9ff3";
                 if(myProfile.clip === undefined) myProfile.clip = "";
-                if(myProfile.gender === undefined) myProfile.gender = "Male";
-                if(myProfile.dob === undefined) myProfile.dob = "";
 
                 if(!myProfile.password) { localStorage.clear(); document.getElementById('login-screen').style.display = 'flex'; return; }
                 isOwner = myProfile.name.toLowerCase().includes('vishnuram');
@@ -599,8 +610,6 @@
                     if(myProfile.minecraft === undefined) myProfile.minecraft = "";
                     if(myProfile.nameColor === undefined) myProfile.nameColor = "#ff9ff3";
                     if(myProfile.clip === undefined) myProfile.clip = "";
-                    if(myProfile.gender === undefined) myProfile.gender = "Male";
-                    if(myProfile.dob === undefined) myProfile.dob = "";
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner'; startApp();
                 }
@@ -618,31 +627,21 @@
         function submitBug() {
             const txt = document.getElementById('bugText').value.trim();
             if(!txt) return;
-            db.ref('bug_reports').push({
-                reporter: myProfile.name,
-                text: txt,
-                timestamp: Date.now()
-            });
-            alert("Bug reported to Owner!");
-            document.getElementById('bugText').value = '';
-            document.getElementById('bug-report-screen').style.display = 'none';
+            db.ref('bug_reports').push({ reporter: myProfile.name, text: txt, timestamp: Date.now() });
+            alert("Bug reported to Owner!"); document.getElementById('bugText').value = ''; document.getElementById('bug-report-screen').style.display = 'none';
         }
 
         function loadBugs() {
             db.ref('bug_reports').once('value').then(snap => {
-                const container = document.getElementById('bug-list-container');
-                container.innerHTML = '';
-                const bugs = snap.val() || {};
-                let hasBugs = false;
+                const container = document.getElementById('bug-list-container'); container.innerHTML = '';
+                const bugs = snap.val() || {}; let hasBugs = false;
                 for(let id in bugs) {
                     hasBugs = true;
-                    container.innerHTML += `
-                        <div style="background:var(--input-bg); padding:15px; border-radius:12px;">
-                            <div style="font-size:12px; color:var(--accent); font-weight:bold; margin-bottom:5px;">From: ${bugs[id].reporter}</div>
-                            <div style="font-size:14px; font-weight:600; margin-bottom:10px;">${bugs[id].text}</div>
-                            <button onclick="deleteBug('${id}')" style="background:#55efc4; color:#2d3436; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Mark Fixed</button>
-                        </div>
-                    `;
+                    container.innerHTML += `<div style="background:var(--input-bg); padding:15px; border-radius:12px;">
+                        <div style="font-size:12px; color:var(--accent); font-weight:bold; margin-bottom:5px;">From: ${bugs[id].reporter}</div>
+                        <div style="font-size:14px; font-weight:600; margin-bottom:10px;">${bugs[id].text}</div>
+                        <button onclick="deleteBug('${id}')" style="background:#55efc4; color:#2d3436; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Mark Fixed</button>
+                    </div>`;
                 }
                 if(!hasBugs) container.innerHTML = '<div style="text-align:center; font-weight:bold; color:var(--text-sub);">No bugs reported! 🎉</div>';
             });
@@ -650,7 +649,7 @@
         function deleteBug(id) { db.ref('bug_reports/' + id).remove(); loadBugs(); }
 
         // --- 🖼️ SAFE IMAGE & VIDEO UPLOAD ENGINE ---
-        function compressImage(file, maxRes, callback, quality=0.5) { // AGGRESSIVE COMPRESSION
+        function compressImage(file, maxRes, callback) {
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const img = new Image();
@@ -658,11 +657,21 @@
                     const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
                     let w = img.width, h = img.height; 
                     if(w > h) { if(w > maxRes) { h *= maxRes/w; w = maxRes; } } else { if(h > maxRes) { w *= maxRes/h; h = maxRes; } }
-                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', quality));
+                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6));
                 };
                 img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
+        }
+
+        function handleImageUpload(e) {
+            if(!e.target.files[0]) return;
+            document.getElementById('chatInput').placeholder = "Uploading image...";
+            compressImage(e.target.files[0], 800, (base64) => { 
+                sendMsgToDB('image', '', null, base64); 
+                document.getElementById('chatInput').placeholder = "Message #general...";
+            });
+            e.target.value = '';
         }
 
         function handleAvatarSelection(e) {
@@ -691,7 +700,7 @@
                 reader.onload = (evt) => { db.ref('statuses/' + myProfile.id).set({ type: 'video', data: evt.target.result, timestamp: Date.now() }); alert("✅ Video Status uploaded!"); };
                 reader.readAsDataURL(file);
             } else {
-                compressImage(file, 600, (base64) => { db.ref('statuses/' + myProfile.id).set({ type: 'image', data: base64, timestamp: Date.now() }); alert("✅ Image Status uploaded!"); });
+                compressImage(file, 800, (base64) => { db.ref('statuses/' + myProfile.id).set({ type: 'image', data: base64, timestamp: Date.now() }); alert("✅ Image Status uploaded!"); });
             }
             e.target.value = '';
         }
@@ -754,11 +763,9 @@
             const u = classmates[userId] || myProfile; if(!u) return;
             document.getElementById('action-target-id').value = userId;
             
-            // RGB OWNER NAME IN CARD
             const nameEl = document.getElementById('action-name');
             nameEl.innerText = u.name + (userId === myProfile.id ? " (You)" : "");
-            if(u.name.toLowerCase().includes('vishnuram')) nameEl.className = "owner-rgb";
-            else nameEl.className = "";
+            if(u.name.toLowerCase().includes('vishnuram')) nameEl.className = "owner-rgb"; else nameEl.className = "";
             
             let roleTxt = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎮 GAMER');
             document.getElementById('action-role').innerText = roleTxt;
@@ -777,7 +784,7 @@
                 if(isOwner) container.innerHTML += `<button class="action-menu-btn danger" onclick="deleteUserClip('${userId}');">🗑️ Delete Clip (Owner)</button>`;
             }
 
-            if(window.allStatuses[userId]) container.innerHTML += `<button class="action-menu-btn" style="background:var(--accent); color:white;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
+            if(window.allStatuses[userId]) container.innerHTML += `<button class="action-menu-btn" style="background:#55efc4; color:#2d3436;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
             
             if(userId !== myProfile.id) {
                 container.innerHTML += `<button class="action-menu-btn" onclick="startDM('${u.name}'); closeUserActions();">💬 Send Direct Message</button>`;
@@ -799,6 +806,7 @@
         function cmdPromote(id) { db.ref('accounts/'+id).update({ role: 'admin' }); db.ref('users/'+id).update({ role: 'admin' }); alert("Promoted."); }
         function cmdDemote(id) { db.ref('accounts/'+id).update({ role: 'user' }); db.ref('users/'+id).update({ role: 'user' }); alert("Demoted."); }
         function cmdKick(id) { if(confirm("Kick?")) { db.ref('accounts/'+id).remove(); db.ref('users/'+id).remove(); } }
+        function rollDice() { sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`); }
 
         // --- PROFILE EDITING (100% FIXED) ---
         function openEditProfile() {
@@ -844,11 +852,6 @@
             const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay');
             s.classList.toggle('open'); o.style.display = s.classList.contains('open') ? 'block' : 'none';
         }
-        function checkScroll() { const c = document.getElementById('messages'); const b = document.getElementById('scroll-bottom-btn'); if(c.scrollHeight - c.scrollTop - c.clientHeight > 150) b.style.display = 'flex'; else b.style.display = 'none'; }
-        function scrollToBottom() { const c = document.getElementById('messages'); c.scrollTop = c.scrollHeight; }
-
-        function nukeChat() { const pin = prompt("WARNING: Clear ALL messages. PIN (2013):"); if (pin === "2013") { db.ref('messages').remove(); document.getElementById('messages').innerHTML = '<div class="sys-msg">🔒 Wiped by Owner.</div>'; } }
-        function findUserByName(name) { for(let id in classmates) if(classmates[id].name.toLowerCase() === name.toLowerCase()) return id; return null; }
 
         function startApp() {
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'flex';
@@ -888,10 +891,10 @@
             db.ref('messages').on('child_changed', (snapshot) => { updateMessageOnScreen(snapshot.val()); });
             db.ref('messages').on('child_removed', (snapshot) => { 
                 const el = document.getElementById(snapshot.key); if (el) el.remove(); 
-                if(window.allMessages[snapshot.key]) delete window.allMessages[snapshot.key];
             });
         }
 
+        // --- 📸 INSTAGRAM-STYLE STATUS BAR ---
         function renderStatusBar() {
             const container = document.getElementById('active-statuses'); 
             if(!container) return;
@@ -938,11 +941,12 @@
                 
                 let nameColor = u.nameColor || 'var(--text-sub)';
                 if(isMe) nameColor = 'var(--text-main)';
+                let nameClass = u.name.toLowerCase().includes('vishnuram') ? 'name-text owner-rgb' : 'name-text';
 
                 container.innerHTML += `
                     <div class="user-item" onclick="openUserActions('${id}')">
                         <div class="avatar-wrap">${avatarHTML}<div class="status-dot-abs ${statusColorClass}"></div></div>
-                        <div class="user-details"><div class="name-text" style="color:${nameColor}">${displayName} ${roleBadge}</div></div>
+                        <div class="user-details"><div class="${nameClass}" style="color:${nameColor}">${displayName} ${roleBadge}</div></div>
                     </div>`;
             });
         }
@@ -955,22 +959,6 @@
             else { btn.innerText = '🎤'; }
         }
 
-        // --- 📋 CLIPBOARD PASTE IMAGE ---
-        document.getElementById('chatInput').addEventListener('paste', function(e) {
-            let items = e.clipboardData.items;
-            for(let i=0; i<items.length; i++) {
-                if(items[i].type.indexOf('image') !== -1) {
-                    let blob = items[i].getAsFile();
-                    document.getElementById('chatInput').placeholder = "Uploading image...";
-                    compressImage(blob, 400, (base64) => { 
-                        sendMsgToDB('image', '', null, base64); 
-                        document.getElementById('chatInput').placeholder = "Message #general...";
-                    });
-                    e.preventDefault(); 
-                }
-            }
-        });
-
         // --- ⚙️ ACTION CLICK / COMMAND ENGINE ---
         function handleActionClick() {
             const text = document.getElementById('chatInput').value.trim();
@@ -979,8 +967,6 @@
                     let parts = text.split(' '); let cmd = parts[0].toLowerCase(); let arg = text.substring(cmd.length).trim();
                     if(cmd === '/alert') { if(!isOwner && !isAdmin) return; sendMsgToDB('alert', arg); }
                     else if(cmd === '/clear') { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>'; }
-                    else if(cmd === '/dice') { sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`); }
-                    else if(cmd === '/coin') { sendMsgToDB('text', `🪙 Flipped: ${Math.random() > 0.5 ? 'Heads' : 'Tails'}!`); }
                     document.getElementById('chatInput').value = ''; handleTypingInput(); return; 
                 }
                 sendMsgToDB('text', text); document.getElementById('chatInput').value = ''; handleTypingInput(); 
@@ -992,7 +978,7 @@
             playSound('send');
             const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             
-            // Only send what is absolutely necessary to save database size!
+            // Only send what is absolutely necessary! No avatars!
             let safeSenderData = { id: myProfile.id, name: myProfile.name, role: myProfile.role, nameColor: myProfile.nameColor || 'var(--text-main)' };
             
             let payload = { 
@@ -1004,12 +990,11 @@
         }
 
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
-        function recoverMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: false }); }
         function hardDeleteMessage(msgId) { if(confirm("🔥 ERASE permanently?")) db.ref('messages/' + msgId).remove(); }
         function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
 
-        // --- 🚀 VOICE MSG (CAPPED TO 15 SECONDS TO PREVENT CRASH) 🚀 ---
-        let voiceTimeout;
+        // --- 🚀 VOICE MSG FIX 🚀 ---
+        let isRecording = false; let mediaRecorder; let audioChunks = []; let voiceTimeout;
         function toggleVoiceRecord() {
             const btn = document.getElementById('action-btn');
             if(!isRecording) {
@@ -1017,9 +1002,8 @@
                     const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
                     mediaRecorder = new MediaRecorder(stream, { mimeType }); 
                     mediaRecorder.start(); isRecording = true; 
-                    btn.innerText = '⏹'; audioChunks = [];
+                    btn.innerText = '⏹'; btn.style.background = '#ff7675'; audioChunks = [];
                     
-                    // Stop automatically after 15 seconds to save database space
                     voiceTimeout = setTimeout(() => { if(isRecording) toggleVoiceRecord(); }, 15000);
 
                     mediaRecorder.addEventListener("dataavailable", e => { if (e.data.size > 0) audioChunks.push(e.data); });
@@ -1030,17 +1014,16 @@
                         reader.onloadend = () => { sendMsgToDB('voice', '', null, reader.result); };
                         stream.getTracks().forEach(t => t.stop());
                     });
-                }).catch(e => alert("Mic error! " + e.message));
+                }).catch(e => alert("Mic error: Allow Microphone Permissions! " + e.message));
             } else { 
-                clearTimeout(voiceTimeout);
-                mediaRecorder.stop(); isRecording = false; btn.innerText = '🎤'; 
+                if(voiceTimeout) clearTimeout(voiceTimeout);
+                mediaRecorder.stop(); isRecording = false; 
+                btn.innerText = '🎤'; btn.style.background = 'transparent'; 
             }
         }
 
-        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING 🚀 ---
+        // --- 🚀 DISCORD-STYLE MESSAGE RENDERING (SAFE LOADER ADDED) 🚀 ---
         function createMessageHTML(payload) {
-            window.allMessages[payload.msgId] = payload; 
-
             const senderObj = payload.sender || {};
             const sName = senderObj.name || 'Unknown';
             const sId = senderObj.id || 'unknown';
@@ -1061,7 +1044,7 @@
 
             const isMe = sId === myProfile.id;
             let bodyHtml = '';
-            
+
             if(payload.isDeleted) {
                 bodyHtml = '<span class="deleted-text">🚫 Message deleted</span>';
             } else {
@@ -1077,7 +1060,6 @@
             let nameClass = sName.toLowerCase().includes('vishnuram') ? 'discord-sender-name owner-rgb' : 'discord-sender-name';
 
             let rowClass = `discord-msg-row ${isMe ? 'me' : ''}`;
-            if(sName.toLowerCase().includes('vishnuram')) rowClass += " owner-msg";
             if(selectedMsgs.has(payload.msgId)) rowClass += " selected";
 
             let hasStatusClass = window.allStatuses[sId] ? 'has-status' : '';
@@ -1086,9 +1068,10 @@
 
             const checkBoxHTML = (isMe || isOwner) ? `<input type="checkbox" class="msg-checkbox" id="cb_${payload.msgId}" onclick="event.stopPropagation(); handleCheckbox(this, '${payload.msgId}', '${sId}')">` : '';
 
+            const canDelete = (isMe || isOwner || isAdmin) && !payload.isDeleted;
+
             let hoverActions = `<div class="msg-actions">`;
-            if(!payload.isDeleted && (isMe || isOwner || isAdmin)) hoverActions += `<button class="action-icon-btn red" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️</button>`;
-            if(payload.isDeleted && (isMe || isOwner || isAdmin)) hoverActions += `<button class="action-icon-btn" style="color:#55efc4;" onclick="recoverMessage('${payload.msgId}')" title="Recover">♻️</button>`;
+            if(canDelete) hoverActions += `<button class="action-icon-btn red" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️</button>`;
             if(payload.isDeleted && isOwner) hoverActions += `<button class="action-icon-btn red" onclick="hardDeleteMessage('${payload.msgId}')" title="Erase Permanently">🔥</button>`;
             hoverActions += `</div>`;
 
@@ -1116,8 +1099,6 @@
                 if (isAtBottom || payload.sender.id === myProfile.id) container.scrollTop = container.scrollHeight;
             }
         }
-
-        function updateMessageOnScreen(data) { let oldRow = document.getElementById(data.msgId); if(oldRow) oldRow.outerHTML = createMessageHTML(data); }
 
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
