@@ -4,41 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gaming Club - by Vishnuram</title>
-    
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* 🎨 ZERO-LAG CORE VARIABLES */
+        /* 🌸 CUTE PINK VARIABLES (ZERO LAG) */
         :root {
-            --bg-main: #202225;
-            --bg-panel: #2f3136;
-            --bg-sidebar: #202225;
-            --text-main: #dcddde;
-            --text-sub: #8e9297;
-            --border-color: #202225;
-            --accent: #5865F2;
-            --accent-hover: #4752c4;
-            --input-bg: #40444b;
-            --danger: #ed4245;
-            --success: #57F287;
-            --warning: #fee75c;
-        }
-
-        html, body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; padding: 0; width: 100vw; height: 100dvh; 
-            background: var(--bg-main); color: var(--text-main); 
-            overflow: hidden; display: flex; flex-direction: column;
-        }
-        * { box-sizing: border-box; }
-
-        /* 🚀 FAST CSS GAMER BACKGROUND */
-        .bg-grid {
-            position: fixed; inset: 0; z-index: -10;
-            background-color: #18191c;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+            --bg-main: #fce4ec;       /* Soft pink background */
+            --bg-panel: #ffffff;      /* White cards/panels */
+            --bg-sidebar: #ffffff;    /* White sidebar */
+            --text-main: #2d3436;     /* Dark text for readability */
+            --text-sub: #a4b0be;      /* Soft grey text */
+            --border-color: #f1f2f6;  /* Soft borders */
+            --accent: #ff9ff3;        /* Cute bright pink accent */
+            --accent-hover: #f368e0;
+            --msg-me: #ff9ff3;        /* My message color */
+            --msg-me-text: #ffffff;
+            --msg-other: #f8f9fa;     /* Other message color */
+            --input-bg: #f1f2f6;      /* Soft grey input boxes */
+            --danger: #ff7675;        /* Soft red for delete */
+            --success: #55efc4;       /* Soft green */
+            --shadow: 0 8px 25px rgba(255, 159, 243, 0.15); /* Cute pink shadow */
         }
 
         /* 🌈 RGB OWNER TEXT */
@@ -50,116 +37,132 @@
             animation: rainbow 3s linear infinite; font-weight: 900 !important;
         }
 
-        /* 📱 FULL-SCREEN OVERLAYS (Stealth, Modals) */
-        .fullscreen-overlay { position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; display: flex; align-items: center; justify-content: center; flex-direction: column;}
-        .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); display: none; align-items: center; justify-content: center; z-index: 50000; padding: 15px;}
-        .modal-box { background: var(--bg-panel); padding: 25px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;}
-        
-        .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; font-weight: 900; color: white;}
-        .input-group { margin-bottom: 15px; width: 100%;}
-        .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; font-weight: bold; text-transform: uppercase;}
-        .input-style { width: 100%; padding: 14px; border-radius: 8px; border: none; background: var(--input-bg); color: white; font-size: 14px; outline: none; transition: 0.2s;}
-        .input-style:focus { box-shadow: 0 0 0 2px var(--accent); }
-        input[type="color"] { padding: 2px; height: 40px; cursor: pointer; border: none; }
-        
-        .btn-primary { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;}
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-secondary { background: transparent; color: var(--text-sub); border: 1px solid var(--text-sub); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px;}
-        .btn-danger { background: rgba(237, 66, 69, 0.1); color: var(--danger); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;}
-        .btn-danger:hover { background: var(--danger); color: white;}
+        /* 🧱 INDESTRUCTIBLE LAYOUT FOUNDATION */
+        html, body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; 
+            margin: 0; padding: 0; width: 100vw; height: 100dvh; 
+            background: var(--bg-main); color: var(--text-main); 
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+        * { box-sizing: border-box; }
 
-        .tab-container { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-sidebar); padding: 6px; border-radius: 10px;}
-        .tab { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-sub); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;}
-        .tab.active { background: var(--input-bg); color: white; }
+        /* 📱 FULL-SCREEN OVERLAYS */
+        .fullscreen-overlay { position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; display: flex; align-items: center; justify-content: center; flex-direction: column;}
+        .modal-screen { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 50000; padding: 15px;}
+        .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow); max-height: 90vh; overflow-y: auto;}
+        
+        .modal-box h2 { margin-top: 0; text-align: center; margin-bottom: 20px; font-weight: 900; color: var(--accent);}
+        
+        .input-group { margin-bottom: 15px; width: 100%;}
+        .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; font-weight: 800; text-transform: uppercase;}
+        .input-style { width: 100%; padding: 15px; border-radius: 16px; border: 2px solid var(--border-color); background: var(--input-bg); color: var(--text-main); font-size: 15px; font-weight: 600; outline: none; transition: 0.2s;}
+        .input-style:focus { border-color: var(--accent); background: var(--bg-panel);}
+        input[type="color"] { padding: 2px; height: 45px; cursor: pointer; border: none; }
+        
+        .btn-primary { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; box-shadow: var(--shadow);}
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px);}
+        .btn-secondary { background: transparent; color: var(--danger); border: 2px solid var(--danger); padding: 14px; border-radius: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;}
+        .btn-danger { background: rgba(255, 118, 117, 0.1); color: var(--danger); border: none; padding: 14px; border-radius: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;}
+
+        .tab-container { display: flex; gap: 8px; margin-bottom: 20px; background: var(--input-bg); padding: 6px; border-radius: 16px;}
+        .tab { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-sub); border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 14px;}
+        .tab.active { background: var(--bg-panel); color: var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         /* 🖥️ MAIN APP LAYOUT */
         #app-screen { display: none; flex: 1; flex-direction: row; width: 100%; overflow: hidden; position: relative; }
         
         /* SIDEBAR */
-        .sidebar-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 999;}
-        .sidebar { width: 300px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; flex-shrink: 0;}
-        .sidebar-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel);}
+        .sidebar-overlay { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.4); z-index: 999;}
+        .sidebar { width: 320px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid var(--border-color); z-index: 1000; flex-shrink: 0; transition: transform 0.3s;}
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel);}
+        .sidebar-title { font-weight: 900; font-size: 22px; color: var(--accent);}
         
-        /* 📸 STATUS BAR */
+        /* STATUS BAR (TOP OF SIDEBAR) */
         .status-feed { display: flex; overflow-x: auto; padding: 15px; gap: 12px; border-bottom: 1px solid var(--border-color); background: var(--bg-panel); flex-shrink: 0; scrollbar-width: none;}
         .status-feed::-webkit-scrollbar { display: none; }
-        .status-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; transition: 0.2s;}
+        .status-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex-shrink: 0; transition: 0.2s;}
         .status-item:hover { transform: scale(1.05); }
-        .status-ring { width: 48px; height: 48px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, #ff4757, var(--accent)); display: flex; align-items: center; justify-content: center;}
-        .status-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg-panel); object-fit: cover; background: var(--input-bg); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;}
-        .status-name { font-size: 10px; font-weight: bold; color: var(--text-main); max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+        .status-ring { width: 50px; height: 50px; border-radius: 50%; padding: 2px; background: linear-gradient(45deg, #ff9ff3, #a29bfe); display: flex; align-items: center; justify-content: center;}
+        .status-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--bg-panel); object-fit: cover; background: var(--input-bg); color: var(--text-sub); display: flex; align-items: center; justify-content: center; font-weight: 900;}
+        .status-name { font-size: 11px; font-weight: 800; color: var(--text-main); max-width: 55px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 
-        .user-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px;}
-        .user-item { display: flex; align-items: center; padding: 8px 10px; border-radius: 8px; cursor:pointer; transition: 0.1s;}
-        .user-item:hover { background: var(--bg-panel); }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; object-fit: cover; flex-shrink: 0; margin-right: 12px;}
-        .avatar.has-status { border: 2px solid var(--success); padding: 2px; background-clip: content-box; }
+        .user-list { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px;}
+        .user-item { display: flex; align-items: center; padding: 10px; border-radius: 16px; cursor:pointer; background: var(--bg-panel); border: 1px solid transparent; box-shadow: 0 2px 10px rgba(0,0,0,0.02); transition: 0.2s;}
+        .user-item:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow);}
+        .avatar { width: 44px; height: 44px; border-radius: 16px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; object-fit: cover; flex-shrink: 0; margin-right: 12px;}
+        .avatar.has-status { border: 3px solid var(--success); padding: 2px; background-clip: content-box; }
         
-        .user-details { flex: 1; min-width: 0; display: flex; flex-direction: column;}
-        .name-text { font-weight: bold; font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px;}
+        .name-text { font-weight: 800; font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px;}
+
+        /* NEAT TOOLS GRID IN SIDEBAR */
+        .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: var(--bg-panel); border-top: 1px solid var(--border-color);}
+        .tool-btn { padding: 12px; background: var(--input-bg); color: var(--text-main); border: none; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;}
+        .tool-btn:hover { background: var(--accent); color: white;}
 
         /* CHAT AREA */
         .chat-section { flex: 1; display: flex; flex-direction: column; min-width: 0; background: transparent; position: relative;}
-        .chat-header { padding: 12px 20px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10;}
-        .menu-btn { display: none; font-size: 24px; cursor: pointer; background: transparent; border: none; color: white;}
+        .chat-header { padding: 15px 25px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; flex-shrink: 0; z-index: 10;}
+        .menu-btn { display: none; font-size: 24px; cursor: pointer; background: var(--input-bg); border: none; color: var(--text-main); width: 45px; height: 45px; border-radius: 12px; align-items: center; justify-content: center;}
         
         .header-info { flex: 1; display: flex; justify-content: space-between; align-items: center; min-width: 0;}
-        .header-title { font-weight: 900; font-size: 18px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .header-title { font-weight: 900; font-size: 20px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
         /* 🟢 MULTI-SELECT BAR */
-        #multi-select-bar { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); border: 2px solid var(--danger); border-radius: 12px; padding: 10px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 2000; align-items: center; gap: 15px;}
+        #multi-select-bar { display: none; position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); border: 2px solid var(--danger); border-radius: 20px; padding: 10px 20px; box-shadow: var(--shadow); z-index: 2000; align-items: center; gap: 15px;}
         
-        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth;}
+        .messages-container { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth;}
         
-        .discord-msg-row { display: flex; flex-direction: row; gap: 12px; max-width: 90%; position: relative; padding: 4px 8px; border-radius: 8px;}
-        .discord-msg-row:hover { background: rgba(255,255,255,0.02); }
+        /* 🌸 CUTE MESSAGE BUBBLES */
+        .discord-msg-row { display: flex; flex-direction: row; gap: 12px; max-width: 85%; position: relative;}
         .discord-msg-row.me { align-self: flex-end; flex-direction: row-reverse; }
-        .discord-msg-row.selected { background: rgba(237, 66, 69, 0.1); border-left: 3px solid var(--danger); }
         
-        .msg-checkbox { display: none; margin-top: 10px; width: 18px; height: 18px; accent-color: var(--danger); flex-shrink: 0; cursor: pointer;}
+        .msg-checkbox { display: none; margin-top: 15px; width: 20px; height: 20px; accent-color: var(--danger); flex-shrink: 0; cursor: pointer;}
         .select-mode-active .msg-checkbox { display: block; }
+        .discord-msg-row.selected .msg-bubble { background: var(--danger); color: white; border: 2px solid white; box-shadow: 0 0 15px rgba(255, 118, 117, 0.5);}
 
-        .msg-bubble { background: var(--bg-panel); padding: 12px 16px; border-radius: 12px; border-top-left-radius: 2px; color: var(--text-main); font-size: 15px; line-height: 1.4; word-break: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative;}
-        .discord-msg-row.me .msg-bubble { background: var(--accent); color: white; border-top-left-radius: 12px; border-top-right-radius: 2px;}
-        .msg-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; cursor: pointer;}
-        .msg-name:hover { text-decoration: underline; }
+        .msg-bubble { background: var(--msg-other); padding: 15px 20px; border-radius: 20px; border-top-left-radius: 4px; color: var(--text-main); font-size: 15px; line-height: 1.5; word-break: break-word; box-shadow: 0 2px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column;}
+        .discord-msg-row.me .msg-bubble { background: var(--msg-me); color: var(--msg-me-text); border-top-left-radius: 20px; border-top-right-radius: 4px;}
+        
+        .msg-name { font-size: 14px; font-weight: 900; margin-bottom: 5px;}
         .discord-msg-row.me .msg-name { text-align: right; }
 
-        .msg-actions { opacity: 0; position: absolute; top: -10px; right: 15px; display: flex; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow: hidden; z-index: 10;}
+        /* ✅ FIXED ACTION BUTTONS (Neatly arranged under message) */
+        .msg-actions { display: flex; gap: 10px; margin-top: 8px; justify-content: flex-start; opacity: 0.5; transition: 0.2s;}
+        .discord-msg-row.me .msg-actions { justify-content: flex-end; }
         .discord-msg-row:hover .msg-actions { opacity: 1; }
         .select-mode-active .msg-actions { display: none !important; }
-        .action-icon-btn { background: transparent; border: none; border-right: 1px solid var(--border-color); color: var(--text-sub); font-size: 14px; cursor: pointer; padding: 6px 10px;}
-        .action-icon-btn:hover { background: var(--input-bg); color: white;}
-
-        /* 📞 CALL MODAL */
-        .call-user-item { display: flex; align-items: center; gap: 10px; background: var(--input-bg); padding: 10px; border-radius: 12px; margin-bottom: 8px;}
-        .call-action-btn { background: var(--input-bg); color: white; border: none; font-size: 22px; cursor: pointer; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
-        .call-action-btn.mute.active { background: white; color: var(--bg-panel); }
-        .call-action-btn.end { background: var(--danger); }
+        
+        .action-icon-btn { background: var(--input-bg); border: none; color: var(--text-sub); font-size: 12px; cursor: pointer; padding: 6px 12px; border-radius: 8px; font-weight: bold; transition: 0.2s;}
+        .discord-msg-row.me .action-icon-btn { background: rgba(0,0,0,0.1); color: white; }
+        .action-icon-btn:hover { filter: brightness(0.9); transform: scale(1.05);}
+        .action-icon-btn.red { color: var(--danger); }
 
         /* 🛠️ IRON-CLAD INPUT BAR */
-        .input-bar { padding: 12px 15px; background: var(--bg-panel); display: flex; gap: 8px; align-items: center; flex-shrink: 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border-color);}
-        .action-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 50%; background: var(--input-bg); color: var(--text-main); border: none; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s;}
+        .input-bar { padding: 15px 20px; background: var(--bg-panel); display: flex; gap: 10px; align-items: center; flex-shrink: 0; padding-bottom: max(15px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border-color);}
+        .action-btn { width: 48px; height: 48px; min-width: 48px; min-height: 48px; border-radius: 16px; background: var(--input-bg); color: var(--text-sub); border: none; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; font-weight: bold;}
         .action-btn:hover { background: var(--accent); color: white; }
-        .chat-input { flex: 1; min-width: 0; height: 44px; border-radius: 22px; background: var(--input-bg); border: none; padding: 0 15px; color: white; font-size: 15px; outline: none;}
-        .send-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: 0.2s;}
+        .chat-input { flex: 1; min-width: 0; height: 48px; border-radius: 24px; background: var(--input-bg); border: none; padding: 0 20px; color: var(--text-main); font-size: 16px; outline: none; font-weight: 600;}
+        .send-btn { width: 48px; height: 48px; min-width: 48px; min-height: 48px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-weight: bold; transition: 0.2s;}
+        
+        .sys-msg { align-self: center; background: var(--bg-panel); padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 800; color: var(--text-sub); margin: 10px 0; border: 1px solid var(--border-color);}
+        .msg-image { max-width: 250px; border-radius: 16px; margin-top: 8px; cursor: pointer;}
+        audio { height: 45px; max-width: 240px; margin-top: 8px; border-radius: 25px;}
 
-        .msg-image { max-width: 250px; border-radius: 8px; margin-top: 5px; cursor: pointer;}
-        audio { height: 40px; max-width: 220px; margin-top: 5px;}
-        .sys-msg { align-self: center; background: var(--input-bg); padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: bold; color: var(--text-sub); margin: 10px 0;}
+        /* 📞 ACTIVE CALL UI */
+        .active-call-banner { background: var(--success); color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-radius: 16px; margin-bottom: 15px; font-weight: bold; box-shadow: 0 4px 15px rgba(85, 239, 196, 0.3);}
+        .pulsing-avatar { animation: pulseCall 1.5s infinite; border: 2px solid white;}
+        @keyframes pulseCall { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); } 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
 
-        /* MEDIA VIEWER */
-        #media-viewer { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 999999; display: none; flex-direction: column; align-items: center; justify-content: center;}
-        #media-video, #media-image { max-width: 100vw; max-height: 100dvh; object-fit: contain; }
-
+        /* MOBILE FIXES */
         @media (max-width: 768px) {
-            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 5px 0 15px rgba(0,0,0,0.5);}
+            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); box-shadow: 5px 0 20px rgba(0,0,0,0.1);}
             .sidebar.open { transform: translateX(0); }
-            .menu-btn { display: block; }
-            .close-sidebar-btn { display: block; background: transparent; border: none; color: var(--text-sub); font-size: 20px;}
+            .menu-btn { display: flex; }
+            .close-sidebar-btn { display: block; }
             .discord-msg-row { max-width: 95%; }
-            .msg-actions { position: relative; top: 0; right: 0; opacity: 1; display: inline-flex; border: none; box-shadow: none; background: transparent; margin-top: 5px;}
-            .action-icon-btn { background: var(--input-bg); margin-right: 5px; border-radius: 6px; padding: 4px 8px;}
+            .input-bar { padding: 10px 15px; gap: 8px;}
+            .action-btn, .send-btn { width: 42px; height: 42px; min-width: 42px; min-height: 42px; font-size: 18px;}
+            .msg-actions { opacity: 1; } /* Always visible on mobile */
         }
     </style>
 </head>
@@ -168,24 +171,23 @@
     <audio id="sound-send" src="https://www.myinstants.com/media/sounds/pop_drip.mp3"></audio>
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3"></audio>
 
-    <div class="bg-grid"></div>
-
     <input type="file" id="image-picker" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
     <input type="file" id="status-uploader" accept="image/*,video/mp4" style="display: none;" onchange="handleStatusUpload(event)">
     <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="handleAvatarSelection(event)">
 
     <div id="stealth-screen" class="fullscreen-overlay">
         <div class="modal-box">
-            <h2 style="margin-bottom: 5px; font-size: 28px;">Study Portal</h2>
-            <p style="text-align: center; color: var(--text-sub); margin-bottom: 20px; font-weight: bold;">Enter access code.</p>
-            <input type="password" id="stealth-pin" class="input-style" placeholder="****" maxlength="4" style="text-align: center; letter-spacing: 5px; font-size: 24px;">
-            <button class="btn-primary" onclick="checkStealth()">Access Portal</button>
+            <h2 style="font-size: 32px; margin-bottom: 5px; color: var(--text-main);">Study Portal</h2>
+            <p style="color: var(--text-sub); margin-bottom: 20px; font-weight: bold;">Enter access code.</p>
+            <input type="password" id="stealth-pin" class="input-style" placeholder="****" maxlength="4" style="text-align: center; letter-spacing: 10px; font-size: 24px;">
+            <button class="btn-primary" onclick="checkStealth()">Access</button>
+            <p id="stealth-error" style="color:var(--danger); font-weight:bold; font-size:13px; margin-top:15px; display:none;">Incorrect Code.</p>
         </div>
     </div>
 
     <div id="login-screen" class="fullscreen-overlay" style="display: none;">
         <div class="modal-box">
-            <h2>Gamer Login</h2>
+            <h2>Gaming Club</h2>
             <div class="tab-container">
                 <button id="tab-login" class="tab active" onclick="switchAuthTab('login')">Login</button>
                 <button id="tab-signup" class="tab" onclick="switchAuthTab('signup')">Sign Up</button>
@@ -196,8 +198,8 @@
                 <button class="btn-primary" onclick="doLogin()">Login</button>
             </div>
             <div id="form-signup" style="display:none;">
-                <div class="input-group"><label>New Gamer Tag</label><input type="text" id="regName" class="input-style" placeholder="Create username"></div>
-                <div class="input-group"><label>Create Password</label><input type="password" id="regPwd" class="input-style" placeholder="Password"></div>
+                <div class="input-group"><label>Gamer Tag</label><input type="text" id="regName" class="input-style" placeholder="Create username"></div>
+                <div class="input-group"><label>Password</label><input type="password" id="regPwd" class="input-style" placeholder="Create password"></div>
                 <button class="btn-primary" style="background:var(--success); color:#000;" onclick="doSignUp()">Create Account</button>
             </div>
         </div>
@@ -206,52 +208,41 @@
     <div id="edit-screen" class="modal-screen">
         <div class="modal-box">
             <h2>⚙️ Edit Profile</h2>
-            
             <div class="input-group">
                 <label>Profile Picture</label>
-                <div style="display:flex; align-items:center; gap:15px; background:var(--input-bg); padding:10px; border-radius:12px;">
+                <div style="display:flex; align-items:center; gap:15px; background:var(--input-bg); padding:12px; border-radius:16px;">
                     <img id="avatar-preview" src="" style="width:50px; height:50px; border-radius:12px; object-fit:cover; background:var(--accent);">
-                    <button class="btn-primary" style="margin-top:0; padding:10px; font-size:12px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Change Image</button>
+                    <button class="btn-primary" style="margin-top:0; padding:12px; font-size:14px; flex:1;" onclick="document.getElementById('avatar-upload').click()">📷 Upload</button>
                 </div>
             </div>
-
-            <div class="input-group">
-                <label>Name Color (Glow)</label>
-                <input type="color" id="editNameColor" value="#ffffff">
-            </div>
-
+            <div class="input-group"><label>Name Color</label><input type="color" id="editNameColor" value="#ff9ff3" class="input-style" style="padding:0; height:45px;"></div>
             <div style="display:flex; gap:10px;">
                 <div class="input-group"><label>Roblox</label><input type="text" id="editRoblox" class="input-style" placeholder="Username"></div>
                 <div class="input-group"><label>Minecraft</label><input type="text" id="editMinecraft" class="input-style" placeholder="Username"></div>
             </div>
-
-            <div class="input-group">
-                <label>Change Password (Optional)</label>
-                <input type="password" id="editPassword" class="input-style" placeholder="New password">
-            </div>
-
+            <div class="input-group"><label>Change Password</label><input type="password" id="editPassword" class="input-style" placeholder="Optional"></div>
             <button class="btn-primary" onclick="saveProfile()">Save Profile</button>
             <button class="btn-secondary" style="border:none;" onclick="document.getElementById('edit-screen').style.display='none'">Cancel</button>
         </div>
     </div>
 
     <div id="user-action-modal" class="modal-screen">
-        <div class="modal-box" style="padding: 20px;">
-            <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
-                <img id="action-avatar" src="" style="width:65px; height:65px; border-radius:16px; object-fit:cover; background:var(--accent); display:none;">
-                <div id="action-avatar-text" style="width:65px; height:65px; border-radius:16px; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:bold;"></div>
+        <div class="modal-box" style="padding: 25px;">
+            <div style="display:flex; align-items:center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px;">
+                <img id="action-avatar" src="" style="width:70px; height:70px; border-radius:20px; object-fit:cover; background:var(--accent); display:none;">
+                <div id="action-avatar-text" style="width:70px; height:70px; border-radius:20px; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900;"></div>
                 <div>
-                    <h3 id="action-name" style="margin:0; font-size:22px;">Name</h3>
+                    <h3 id="action-name" style="margin:0; font-size:24px; font-weight:900;">Name</h3>
                     <p id="action-role" style="margin:0; font-size:12px; color:var(--text-sub); font-weight:800; text-transform:uppercase;">Role</p>
                 </div>
             </div>
             
-            <div style="background: var(--input-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; font-weight: bold;">
-                    <span style="color: var(--text-sub);">Minecraft:</span> <div id="card-mc" style="color: white;">Not Linked</div>
+            <div style="background: var(--input-bg); border-radius: 16px; padding: 15px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; font-weight: 800;">
+                    <span style="color: var(--text-sub);">Minecraft:</span> <div id="card-mc">Not Linked</div>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: bold;">
-                    <span style="color: var(--text-sub);">Roblox:</span> <div id="card-rb" style="color: white;">Not Linked</div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800;">
+                    <span style="color: var(--text-sub);">Roblox:</span> <div id="card-rb">Not Linked</div>
                 </div>
             </div>
 
@@ -262,43 +253,27 @@
     </div>
 
     <div id="call-modal" class="modal-screen">
-        <div class="modal-box" style="text-align: center; max-width: 320px;">
-            <div style="font-size: 40px; margin-bottom: 10px;">📞</div>
-            <h2 style="margin-bottom: 5px;">Group Call</h2>
-            <p id="call-status" style="color: var(--success); font-weight: bold; margin-bottom: 20px;">Connected</p>
+        <div class="modal-box" style="text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 10px;">📞</div>
+            <h2 style="margin-bottom: 5px;">Live Call Lobby</h2>
+            <p style="color: var(--text-sub); font-size:12px; font-weight:bold; margin-bottom: 20px;">Real WebRTC audio requires a paid server. This lobby syncs active members live via database!</p>
             
-            <div id="call-participants" style="background: var(--input-bg); border-radius: 12px; padding: 15px; margin-bottom: 20px; max-height: 200px; overflow-y: auto;">
+            <div id="call-participants" style="background: var(--input-bg); border-radius: 16px; padding: 15px; margin-bottom: 20px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
                 </div>
 
             <div style="display: flex; justify-content: center; gap: 20px;">
-                <button class="call-action-btn mute" id="call-mute-btn" onclick="toggleMuteCall()">🎤</button>
-                <button class="call-action-btn end" onclick="endCall()">📵</button>
+                <button class="action-btn" id="call-mute-btn" onclick="toggleMuteCall()" style="background:var(--bg-panel); box-shadow:var(--shadow);">🎤</button>
+                <button class="action-btn" onclick="endCall()" style="background:var(--danger); color:white; box-shadow:var(--shadow);">📵</button>
             </div>
         </div>
-    </div>
-
-    <div id="media-viewer">
-        <div style="position: absolute; top: 20px; left: 20px; color: white; font-weight: bold; font-size: 18px; z-index: 5001;" id="media-title">Status</div>
-        <button onclick="closeMedia()" style="position:absolute; top:20px; right:20px; z-index:5001; background:rgba(255,255,255,0.2); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer;">✕</button>
-        <img id="media-image" src="" style="display:none;">
-        <video id="media-video" playsinline controls style="display:none;"></video>
-        <button id="status-delete-btn" style="position:absolute; bottom:30px; background:var(--danger); color:white; border:none; padding:12px 25px; border-radius:25px; font-weight:bold; cursor:pointer; display:none; z-index:5001;" onclick="ownerDeleteStatus()">🗑️ Delete</button>
     </div>
 
     <div id="bug-report-screen" class="modal-screen">
         <div class="modal-box">
             <h2>🐛 Report Bug</h2>
-            <textarea id="bugText" class="input-style" rows="4" placeholder="Describe what went wrong..." style="resize:none; margin-bottom: 15px;"></textarea>
-            <button class="btn-primary" onclick="submitBug()">Submit</button>
+            <textarea id="bugText" class="input-style" rows="4" placeholder="Describe the glitch..." style="resize:none; margin-bottom: 15px;"></textarea>
+            <button class="btn-primary" onclick="submitBug()">Submit Report</button>
             <button class="btn-secondary" style="border:none;" onclick="document.getElementById('bug-report-screen').style.display='none'">Cancel</button>
-        </div>
-    </div>
-
-    <div id="owner-bugs-screen" class="modal-screen">
-        <div class="modal-box" style="max-width: 500px;">
-            <h2>🛠️ Bug Reports</h2>
-            <div id="bug-list-container" style="display:flex; flex-direction:column; gap:10px; max-height: 400px; overflow-y: auto;"></div>
-            <button class="btn-secondary" style="border:none;" onclick="document.getElementById('owner-bugs-screen').style.display='none'">Close</button>
         </div>
     </div>
 
@@ -307,9 +282,8 @@
         
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div style="font-weight: 900; font-size: 20px; color: white;">Gamers</div>
+                <div class="sidebar-title">Gamers</div>
                 <div class="header-actions">
-                    <button class="icon-btn-small" onclick="document.getElementById('bug-report-screen').style.display='flex'" title="Report Bug">🐛</button>
                     <button class="icon-btn-small" onclick="openEditProfile()" title="Settings">⚙️</button>
                     <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
                 </div>
@@ -318,25 +292,20 @@
             <div class="status-feed">
                 <div class="status-item" onclick="document.getElementById('status-uploader').click()">
                     <div class="status-ring" style="background: var(--input-bg); border: 2px dashed var(--text-sub);">
-                        <div class="status-img" style="background: transparent;">+</div>
+                        <div class="status-img" style="background: transparent; color: var(--text-sub);">+</div>
                     </div>
-                    <div class="status-name" style="color: var(--text-sub);">Add</div>
+                    <div class="status-name" style="color:var(--text-sub);">Add</div>
                 </div>
                 <div id="active-statuses" style="display: flex; gap: 12px;"></div>
             </div>
 
             <div class="user-list" id="users-container"></div>
             
-            <div style="padding:15px; background: var(--bg-panel); border-top: 1px solid var(--border-color);">
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <button class="btn-secondary" style="margin:0; color:white; border-color:var(--border-color); background:var(--input-bg);" onclick="toggleSelectMode()">🗑️ Select</button>
-                </div>
-                
-                <div id="owner-super-controls" style="display:none; flex-direction: column;">
-                    <button class="btn-primary" style="margin-top:0; margin-bottom:10px; background: #9b59b6;" onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bugs</button>
-                    <button class="btn-danger" style="margin-top:0; margin-bottom:10px;" onclick="nukeChat()">☢️ Clear Chat</button>
-                </div>
-                <button class="btn-danger" style="margin:0; background:transparent; border: 1px solid var(--danger);" onclick="logoutApp()">🚪 Logout</button>
+            <div class="tools-grid">
+                <button class="tool-btn" onclick="alert('Commands:\n/dm [name] [msg]\n/alert [msg]\n/clear\n/dice\n/nuke (Owner)')">⌨️ Cmds</button>
+                <button class="tool-btn" onclick="toggleSelectMode()" id="multi-select-toggle">🗑️ Select</button>
+                <button class="tool-btn" onclick="document.getElementById('bug-report-screen').style.display='flex'">🐛 Report</button>
+                <button class="tool-btn" onclick="logoutApp()" style="color: var(--danger);">🚪 Logout</button>
             </div>
         </div>
 
@@ -346,30 +315,35 @@
                 <div class="header-info">
                     <div>
                         <div class="header-title"># general</div>
-                        <div style="font-size:11px; color:var(--text-sub); font-weight:bold; margin-top:2px;">Owner: Vishnuram</div>
+                        <div style="font-size:12px; color:var(--text-sub); font-weight:bold; margin-top:2px;">Owner: Vishnuram</div>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size: 11px; font-weight: 800; background: var(--input-bg); padding: 4px 8px; border-radius: 6px;" id="online-counter">👥 0</span>
-                        <button onclick="startCall()" style="background:var(--success); color:#000; border:none; width:35px; height:35px; border-radius:8px; font-size:16px; cursor:pointer; font-weight:bold; box-shadow: 0 2px 10px rgba(87, 242, 135, 0.3);">📞</button>
+                        <span style="font-size: 12px; font-weight: 800; background: var(--input-bg); padding: 6px 12px; border-radius: 12px; color: var(--text-main);" id="online-counter">👥 0</span>
+                        <button onclick="startCall()" style="background:var(--success); color:#000; border:none; width:45px; height:45px; border-radius:14px; font-size:20px; cursor:pointer; font-weight:bold; box-shadow: var(--shadow); transition:0.2s;">📞</button>
                     </div>
                 </div>
+            </div>
+
+            <div id="active-call-banner" style="display:none; background:var(--success); color:#000; padding:10px 20px; font-weight:bold; font-size:13px; justify-content:space-between; align-items:center;">
+                <div>🎙️ Active Voice Call in progress!</div>
+                <button onclick="startCall()" style="background:rgba(0,0,0,0.2); border:none; color:#000; padding:5px 10px; border-radius:8px; font-weight:bold; cursor:pointer;">Join Lobby</button>
             </div>
 
             <div id="multi-select-bar">
                 <span id="select-count">0 Selected</span>
                 <div style="display:flex; gap:10px;">
-                    <button class="select-action-btn cancel" onclick="toggleSelectMode()">Cancel</button>
-                    <button class="select-action-btn" onclick="deleteSelectedMsgs()">Delete</button>
+                    <button class="btn-secondary" style="margin:0; padding:8px 16px;" onclick="toggleSelectMode()">Cancel</button>
+                    <button class="btn-danger" style="margin:0; padding:8px 16px; background:var(--danger); color:white;" onclick="deleteSelectedMsgs()">Delete</button>
                 </div>
             </div>
 
             <div class="messages-container" id="messages">
-                <div class="sys-msg">Welcome to the server.</div>
+                <div class="sys-msg">Welcome to the beautiful pink server! 🌸</div>
             </div>
 
-            <div id="reply-preview-bar" style="display: none; padding: 8px 15px; background: var(--input-bg); border-top: 1px solid var(--border-color); align-items: center; justify-content: space-between; font-size: 12px;">
-                <div>Replying to <span id="reply-preview-name" style="font-weight: bold; color: var(--accent);">Name</span></div>
-                <button onclick="cancelReply()" style="background: transparent; border: none; color: var(--text-sub); cursor: pointer; font-weight: bold;">✕</button>
+            <div id="reply-preview-bar" style="display: none; padding: 10px 20px; background: var(--input-bg); border-top: 1px solid var(--border-color); align-items: center; justify-content: space-between; font-size: 13px;">
+                <div>Replying to <span id="reply-preview-name" style="font-weight: 800; color: var(--accent);">Name</span></div>
+                <button onclick="cancelReply()" style="background: transparent; border: none; color: var(--text-sub); cursor: pointer; font-weight: bold; font-size:16px;">✕</button>
             </div>
 
             <div class="input-bar">
@@ -420,7 +394,7 @@
             const saved = localStorage.getItem('school_user');
             if (saved) { 
                 myProfile = JSON.parse(saved); 
-                if(!myProfile.nameColor) myProfile.nameColor = "#ffffff";
+                if(!myProfile.nameColor) myProfile.nameColor = "#ff9ff3";
                 if(!myProfile.password) { localStorage.clear(); document.getElementById('login-screen').style.display = 'flex'; return; }
                 isOwner = myProfile.name.toLowerCase().includes('vishnuram');
                 startApp(); 
@@ -443,7 +417,7 @@
                 if(snap.exists()) alert("Username taken!");
                 else {
                     let role = name.toLowerCase().includes('vishnuram') ? 'owner' : 'user';
-                    myProfile = { id: safeKey, name: name, role: role, password: pwd, nameColor: "#ffffff", avatar: "", roblox: "", minecraft: "" };
+                    myProfile = { id: safeKey, name: name, role: role, password: pwd, nameColor: "#ff9ff3", avatar: "" };
                     db.ref('accounts/' + safeKey).set(myProfile);
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = role === 'owner'; startApp();
@@ -456,7 +430,7 @@
             db.ref('accounts/' + formatKey(name)).once('value').then(snap => {
                 if(snap.exists() && snap.val().password === pwd) {
                     myProfile = snap.val();
-                    if(!myProfile.nameColor) myProfile.nameColor = "#ffffff";
+                    if(!myProfile.nameColor) myProfile.nameColor = "#ff9ff3";
                     localStorage.setItem('school_user', JSON.stringify(myProfile));
                     isOwner = myProfile.role === 'owner'; startApp();
                 } else { alert("Incorrect details."); }
@@ -468,73 +442,11 @@
             localStorage.removeItem('school_user'); location.reload();
         }
 
-        // 📞 GROUP CALL ENGINE
-        let isOnCall = false; let isMuted = false; let callParticipants = [];
-        
-        function startCall() {
-            document.getElementById('call-modal').style.display = 'flex';
-            isOnCall = true; isMuted = false;
-            document.getElementById('call-mute-btn').innerText = '🎤';
-            document.getElementById('call-mute-btn').classList.remove('active');
-            callParticipants = [myProfile]; // Add self
-            updateCallUI();
-            db.ref('group_call').set({ active: true, startedBy: myProfile.name, timestamp: Date.now() });
-            sendMsgToDB('alert', `📞 ${myProfile.name} started a Group Call!`);
-        }
-
-        function endCall() {
-            isOnCall = false;
-            document.getElementById('call-modal').style.display = 'none';
-            callParticipants = [];
-        }
-
-        function toggleMuteCall() {
-            isMuted = !isMuted;
-            const btn = document.getElementById('call-mute-btn');
-            btn.innerText = isMuted ? '🔇' : '🎤';
-            if(isMuted) btn.classList.add('active'); else btn.classList.remove('active');
-        }
-
-        function updateCallUI() {
-            const container = document.getElementById('call-participants');
-            container.innerHTML = '';
-            callParticipants.forEach(u => {
-                const initial = u.name.charAt(0).toUpperCase();
-                let avatarHTML = (u.avatar && u.avatar.startsWith('data:')) ? `<img src="${u.avatar}" class="avatar">` : `<div class="avatar">${initial}</div>`;
-                let nameClass = u.name.toLowerCase().includes('vishnuram') ? 'owner-rgb' : '';
-                container.innerHTML += `<div class="call-user-item">${avatarHTML}<div class="${nameClass}" style="color:${u.nameColor||'white'}; font-weight:bold;">${u.name}</div></div>`;
-            });
-        }
-
-        // 🐞 BUG REPORTER
-        function submitBug() {
-            const txt = document.getElementById('bugText').value.trim(); if(!txt) return;
-            db.ref('bug_reports').push({ reporter: myProfile.name, text: txt, timestamp: Date.now() });
-            alert("Bug reported to Owner!"); document.getElementById('bugText').value = ''; document.getElementById('bug-report-screen').style.display = 'none';
-        }
-        function loadBugs() {
-            db.ref('bug_reports').once('value').then(snap => {
-                const container = document.getElementById('bug-list-container'); container.innerHTML = '';
-                const bugs = snap.val() || {}; let hasBugs = false;
-                for(let id in bugs) {
-                    hasBugs = true;
-                    container.innerHTML += `<div style="background:var(--input-bg); padding:15px; border-radius:12px;">
-                        <div style="font-size:12px; color:var(--accent); font-weight:bold; margin-bottom:5px;">From: ${bugs[id].reporter}</div>
-                        <div style="font-size:14px; font-weight:bold; margin-bottom:10px;">${bugs[id].text}</div>
-                        <button onclick="deleteBug('${id}')" style="background:var(--success); color:#000; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Mark Fixed</button>
-                    </div>`;
-                }
-                if(!hasBugs) container.innerHTML = '<div style="text-align:center; font-weight:bold; color:var(--text-sub);">No bugs reported! 🎉</div>';
-            });
-        }
-        function deleteBug(id) { db.ref('bug_reports/' + id).remove(); loadBugs(); }
-
         // EDIT PROFILE
         function openEditProfile() {
-            document.getElementById('editNameColor').value = myProfile.nameColor || '#ffffff';
+            document.getElementById('editNameColor').value = myProfile.nameColor || '#ff9ff3';
             document.getElementById('editRoblox').value = myProfile.roblox || '';
             document.getElementById('editMinecraft').value = myProfile.minecraft || '';
-            document.getElementById('avatar-preview').src = (myProfile.avatar && myProfile.avatar.startsWith('data:')) ? myProfile.avatar : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             document.getElementById('edit-screen').style.display = 'flex';
         }
 
@@ -542,55 +454,224 @@
             myProfile.nameColor = document.getElementById('editNameColor').value;
             myProfile.roblox = document.getElementById('editRoblox').value.trim();
             myProfile.minecraft = document.getElementById('editMinecraft').value.trim();
-            myProfile.customStatus = document.getElementById('editOnlineStatus').value;
-            
             let newPwd = document.getElementById('editPassword').value.trim();
             if(newPwd !== "") myProfile.password = newPwd;
-            if(window.tempAvatarData) myProfile.avatar = window.tempAvatarData;
 
             localStorage.setItem('school_user', JSON.stringify(myProfile));
-            let updates = { nameColor: myProfile.nameColor, roblox: myProfile.roblox, minecraft: myProfile.minecraft, customStatus: myProfile.customStatus, avatar: myProfile.avatar };
+            let updates = { nameColor: myProfile.nameColor, roblox: myProfile.roblox, minecraft: myProfile.minecraft };
             if(newPwd !== "") updates.password = newPwd;
-            
             db.ref('accounts/' + myProfile.id).update(updates);
             db.ref('users/' + myProfile.id).update(updates);
             document.getElementById('edit-screen').style.display = 'none';
         }
 
-        // GAMER CARD
+        // 📞 LIVE CALL LOBBY ENGINE
+        let inCall = false;
+        function startCall() {
+            db.ref('users/' + myProfile.id).update({ inCall: true });
+            document.getElementById('call-modal').style.display = 'flex';
+            inCall = true;
+        }
+        function endCall() {
+            db.ref('users/' + myProfile.id).update({ inCall: false });
+            document.getElementById('call-modal').style.display = 'none';
+            inCall = false;
+        }
+        function toggleMuteCall() {
+            const btn = document.getElementById('call-mute-btn');
+            if(btn.innerText === '🎤') { btn.innerText = '🔇'; btn.style.background = '#ff7675'; btn.style.color = 'white'; }
+            else { btn.innerText = '🎤'; btn.style.background = 'var(--bg-panel)'; btn.style.color = 'var(--text-main)'; }
+        }
+        function renderCallLobby() {
+            const container = document.getElementById('call-participants');
+            container.innerHTML = ''; let callCount = 0;
+            for(let id in classmates) {
+                if(classmates[id].inCall) {
+                    callCount++;
+                    const u = classmates[id]; const initial = u.name.charAt(0).toUpperCase();
+                    let avatarHTML = (u.avatar && u.avatar.startsWith('data:')) ? `<img src="${u.avatar}" class="avatar pulsing-avatar">` : `<div class="avatar pulsing-avatar">${initial}</div>`;
+                    container.innerHTML += `<div style="display:flex; flex-direction:column; align-items:center; gap:5px;">${avatarHTML}<span style="font-size:10px; font-weight:bold;">${u.name}</span></div>`;
+                }
+            }
+            if(callCount > 0 && !inCall) document.getElementById('active-call-banner').style.display = 'flex';
+            else document.getElementById('active-call-banner').style.display = 'none';
+        }
+
+        // 🐞 BUG REPORTER
+        function submitBug() {
+            const txt = document.getElementById('bugText').value.trim(); if(!txt) return;
+            db.ref('bug_reports').push({ reporter: myProfile.name, text: txt, timestamp: Date.now() });
+            alert("Sent to Owner!"); document.getElementById('bugText').value = ''; document.getElementById('bug-report-screen').style.display = 'none';
+        }
+
+        function toggleSidebar() { 
+            const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay');
+            s.classList.toggle('open'); o.style.display = s.classList.contains('open') ? 'block' : 'none';
+        }
+
+        function startApp() {
+            document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'flex';
+            db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, inCall: false });
+
+            db.ref('statuses').on('value', (snap) => {
+                const now = Date.now(); window.allStatuses = {}; let raw = snap.val() || {};
+                for(let id in raw) { if(now - raw[id].timestamp < 86400000) window.allStatuses[id] = raw[id]; else db.ref('statuses/' + id).remove(); } 
+                renderStatusBar();
+            });
+
+            db.ref('users').on('value', (snapshot) => {
+                classmates = snapshot.val() || {}; renderUserList(); renderCallLobby();
+            });
+
+            db.ref('messages').on('value', (snap) => {
+                if(!snap.exists()) { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Chat is clear.</div>'; window.allMessages = {}; }
+            });
+
+            let initialLoad = true;
+            db.ref('messages').once('value').then(() => { initialLoad = false; }); 
+            db.ref('messages').on('child_added', (snapshot) => { 
+                const data = snapshot.val(); 
+                if(data) { renderMessage(data); if(!initialLoad && data.sender.id !== myProfile.id) playSound('receive'); }
+            });
+            db.ref('messages').on('child_changed', (snapshot) => { updateMessageOnScreen(snapshot.val()); });
+            db.ref('messages').on('child_removed', (snapshot) => { 
+                const el = document.getElementById(snapshot.key); if (el) el.remove(); 
+                if(window.allMessages[snapshot.key]) delete window.allMessages[snapshot.key];
+            });
+        }
+
+        function renderStatusBar() {
+            const container = document.getElementById('active-statuses'); container.innerHTML = '';
+            for(let id in window.allStatuses) {
+                const u = classmates[id] || myProfile; const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
+                let imgHTML = (u.avatar && u.avatar.startsWith('data:')) ? `<img src="${u.avatar}" class="status-img">` : `<div class="status-img">${initial}</div>`;
+                container.innerHTML += `<div class="status-item" onclick="openStatus('${id}')"><div class="status-ring">${imgHTML}</div><div class="status-name">${u.name}</div></div>`;
+            }
+        }
+
+        function renderUserList() {
+            const container = document.getElementById('users-container'); container.innerHTML = ''; let onlineCount = 0;
+            for(let id in classmates) if(classmates[id].online === true) onlineCount++;
+            document.getElementById('online-counter').innerText = `👥 ${onlineCount}`;
+
+            const sortedIds = Object.keys(classmates).sort((a, b) => {
+                if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
+                return (classmates[b].lastSeen || 0) - (classmates[a].lastSeen || 0);
+            });
+
+            sortedIds.forEach(id => {
+                const u = classmates[id]; if(!u || !u.name) return; 
+                const initial = u.name.charAt(0).toUpperCase();
+                let roleBadge = u.name.toLowerCase().includes('vishnuram') ? '👑' : '';
+                let nameClass = u.name.toLowerCase().includes('vishnuram') ? 'name-text owner-rgb' : 'name-text';
+                let avatarHTML = (u.avatar && u.avatar.startsWith('data:')) ? `<img src="${u.avatar}" class="avatar">` : `<div class="avatar">${initial}</div>`;
+                
+                container.innerHTML += `<div class="user-item" onclick="openUserActions('${id}')"><div class="avatar-wrap">${avatarHTML}</div><div class="user-details"><div class="${nameClass}" style="color:${u.nameColor||'var(--text-main)'}">${u.name} ${roleBadge}</div></div></div>`;
+            });
+        }
+
+        function handleTypingInput() {
+            const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
+            if (text) { btn.innerText = '➤'; } 
+            else { btn.innerText = '🎤'; }
+        }
+
+        function handleActionClick() {
+            const text = document.getElementById('chatInput').value.trim();
+            if (text) {
+                if(text.startsWith('/clear')) { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>'; document.getElementById('chatInput').value=''; return; }
+                if(text.startsWith('/nuke') && isOwner) { db.ref('messages').remove(); document.getElementById('chatInput').value=''; return; }
+                sendMsgToDB('text', text); document.getElementById('chatInput').value = ''; handleTypingInput(); 
+            } else { toggleVoiceRecord(); }
+        }
+
+        function sendMsgToDB(msgType, msgContent, receiverId = null, base64Data = null) {
+            playSound('send');
+            const msgId = 'msg_' + Date.now();
+            let safeSenderData = { id: myProfile.id, name: myProfile.name, nameColor: myProfile.nameColor || 'var(--text-main)' };
+            let payload = { msgId: msgId, sender: safeSenderData, type: msgType, text: msgContent, data: base64Data, time: new Date().toLocaleTimeString() };
+            if(currentReplyData) payload.replyTo = currentReplyData;
+            db.ref('messages/' + msgId).set(payload); cancelReply();
+        }
+        document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
+
+        // IMAGE UPLOAD
+        function compressImage(file, maxRes, callback) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image(); img.onload = function() {
+                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                    let w = img.width, h = img.height; 
+                    if(w > h) { if(w > maxRes) { h *= maxRes/w; w = maxRes; } } else { if(h > maxRes) { w *= maxRes/h; h = maxRes; } }
+                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6));
+                }; img.src = evt.target.result;
+            }; reader.readAsDataURL(file);
+        }
+        function handleImageUpload(e) {
+            if(!e.target.files[0]) return; document.getElementById('chatInput').placeholder = "Uploading...";
+            compressImage(e.target.files[0], 600, (base64) => { sendMsgToDB('image', '', null, base64); document.getElementById('chatInput').placeholder = "Message #general..."; });
+            e.target.value = '';
+        }
+
+        // VOICE RECORD
+        let isRecording = false; let mediaRecorder; let audioChunks = [];
+        function toggleVoiceRecord() {
+            const btn = document.getElementById('action-btn');
+            if(!isRecording) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); isRecording = true; 
+                    btn.innerText = '⏹'; btn.style.background = 'var(--danger)'; btn.style.color = "white"; audioChunks = [];
+                    mediaRecorder.addEventListener("dataavailable", e => { audioChunks.push(e.data); });
+                    mediaRecorder.addEventListener("stop", () => {
+                        const blob = new Blob(audioChunks); const reader = new FileReader(); reader.readAsDataURL(blob);
+                        reader.onloadend = () => { sendMsgToDB('voice', '', null, reader.result); }; stream.getTracks().forEach(t => t.stop());
+                    });
+                }).catch(e => alert("Mic error: " + e.message));
+            } else { mediaRecorder.stop(); isRecording = false; btn.innerText = '🎤'; btn.style.background = 'var(--accent)'; btn.style.color = "white"; }
+        }
+
+        // STATUS UPLOAD
+        function handleStatusUpload(e) {
+            const file = e.target.files[0]; if(!file) return;
+            compressImage(file, 800, (base64) => { db.ref('statuses/' + myProfile.id).set({ type: 'image', data: base64, timestamp: Date.now() }); alert("Status uploaded!"); });
+            e.target.value = '';
+        }
+
+        // GAMER CARD & ACTIONS
         function openUserActions(userId) {
-            if(isSelectMode) return msgClick(userId, userId); // If selecting, just check the box
+            if(isSelectMode) { const cb = document.getElementById('cb_' + userId); if(cb){ cb.checked = !cb.checked; handleCheckbox(cb, userId); } return; }
             const u = classmates[userId] || myProfile; if(!u) return;
-            
             document.getElementById('action-target-id').value = userId;
+            
             const nameEl = document.getElementById('action-name');
-            nameEl.innerText = u.name + (userId === myProfile.id ? " (You)" : "");
-            if(u.name.toLowerCase().includes('vishnuram')) nameEl.className = "owner-rgb"; else nameEl.className = "";
+            nameEl.innerText = u.name; if(u.name.toLowerCase().includes('vishnuram')) nameEl.className = "owner-rgb"; else nameEl.className = "";
+            document.getElementById('action-role').innerText = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : '🎮 GAMER';
             
-            document.getElementById('action-role').innerText = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎮 GAMER');
-            
+            const initial = u.name.charAt(0).toUpperCase();
             const imgEl = document.getElementById('action-avatar'); const txtEl = document.getElementById('action-avatar-text');
             if(u.avatar && u.avatar.startsWith('data:')) { imgEl.src = u.avatar; imgEl.style.display = 'block'; txtEl.style.display = 'none'; } 
-            else { imgEl.style.display = 'none'; txtEl.style.display = 'flex'; txtEl.innerText = u.name.charAt(0).toUpperCase(); }
+            else { imgEl.style.display = 'none'; txtEl.style.display = 'flex'; txtEl.innerText = initial; }
 
-            document.getElementById('card-mc').innerText = u.minecraft || "Not Linked";
-            document.getElementById('card-rb').innerText = u.roblox || "Not Linked";
+            document.getElementById('card-mc').innerText = u.minecraft || "Not Linked"; document.getElementById('card-rb').innerText = u.roblox || "Not Linked";
 
             const container = document.getElementById('action-buttons-container'); container.innerHTML = ''; 
-            
-            if(window.allStatuses[userId]) container.innerHTML += `<button class="action-menu-btn" style="background:var(--accent); color:white;" onclick="openStatus('${userId}'); closeUserActions();">👁️ View Status</button>`;
-            
             if(userId !== myProfile.id) {
                 container.innerHTML += `<button class="action-menu-btn" onclick="startDM('${u.name}'); closeUserActions();">💬 Private Message</button>`;
-                if(isOwner) {
-                    if(u.role !== 'admin') container.innerHTML += `<button class="action-menu-btn success" onclick="cmdPromote('${userId}'); closeUserActions();">🛡️ Promote Admin</button>`;
-                    else container.innerHTML += `<button class="action-menu-btn" onclick="cmdDemote('${userId}'); closeUserActions();">👤 Demote</button>`;
-                    container.innerHTML += `<button class="action-menu-btn danger" onclick="cmdKick('${userId}'); closeUserActions();">🚨 Kick from Server</button>`;
-                }
+                if(isOwner) { container.innerHTML += `<button class="action-menu-btn danger" onclick="cmdKick('${userId}'); closeUserActions();">🚨 Kick from Server</button>`; }
             } else { container.innerHTML += `<button class="action-menu-btn" onclick="openEditProfile(); closeUserActions();">✏️ Edit Profile</button>`; }
             document.getElementById('user-action-modal').style.display = 'flex';
         }
         function closeUserActions() { document.getElementById('user-action-modal').style.display = 'none'; }
+        
+        function cmdKick(id) { if(confirm("Kick?")) { db.ref('accounts/'+id).remove(); db.ref('users/'+id).remove(); } }
+        function setReply(msgId) {
+            const msg = window.allMessages[msgId]; if(!msg) return;
+            currentReplyData = { name: msg.sender.name, text: msg.type === 'text' ? msg.text : `[${msg.type.toUpperCase()}]`, color: msg.sender.nameColor || 'var(--accent)' };
+            document.getElementById('reply-preview-name').innerText = currentReplyData.name;
+            document.getElementById('reply-preview-bar').style.display = 'flex'; document.getElementById('chatInput').focus();
+        }
+        function cancelReply() { currentReplyData = null; document.getElementById('reply-preview-bar').style.display = 'none'; }
+        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
 
         // MASS DELETE
         let isSelectMode = false; let selectedMsgs = new Set();
@@ -609,12 +690,6 @@
                 selectedMsgs.clear();
             }
         }
-        function msgClick(msgId, senderId) {
-            if(!isSelectMode) return;
-            if(senderId !== myProfile.id && !isOwner) return; // Only owner can delete others
-            const cb = document.getElementById('cb_' + msgId);
-            if(cb) { cb.checked = !cb.checked; handleCheckbox(cb, msgId); }
-        }
         function handleCheckbox(checkbox, msgId) {
             const row = document.getElementById(msgId);
             if(checkbox.checked) { selectedMsgs.add(msgId); if(row) row.classList.add('selected'); } 
@@ -624,215 +699,25 @@
         function updateSelectCount() { document.getElementById('select-count').innerText = `${selectedMsgs.size} Selected`; }
         function deleteSelectedMsgs() {
             if(selectedMsgs.size === 0) return;
-            if(confirm(`Delete ${selectedMsgs.size} message(s)?`)) {
-                selectedMsgs.forEach(id => { db.ref('messages/' + id).update({ isDeleted: true }); });
+            db.ref('messages').once('value').then(snap => {
+                const msgs = snap.val() || {};
+                selectedMsgs.forEach(id => { 
+                    if(msgs[id] && (msgs[id].sender.id === myProfile.id || isOwner)) { db.ref('messages/' + id).update({ isDeleted: true }); }
+                });
                 toggleSelectMode(); 
-            }
-        }
-
-        function toggleSidebar() { 
-            const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay');
-            s.classList.toggle('open'); o.style.display = s.classList.contains('open') ? 'block' : 'none';
-        }
-
-        function nukeChat() { 
-            if(confirm("Clear Database?")) { 
-                db.ref('messages').remove(); 
-                document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Database wiped by Owner.</div>'; 
-            } 
-        }
-
-        function startApp() {
-            document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-screen').style.display = 'flex';
-            db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
-
-            document.getElementById('owner-super-controls').style.display = isOwner ? 'flex' : 'none';
-
-            db.ref('statuses').on('value', (snap) => {
-                const now = Date.now(); window.allStatuses = {}; let raw = snap.val() || {};
-                for(let id in raw) { if(now - raw[id].timestamp < 86400000) window.allStatuses[id] = raw[id]; else db.ref('statuses/' + id).remove(); } // 24 hour wipe
-                renderStatusBar();
-            });
-
-            db.ref('users').on('value', (snapshot) => {
-                classmates = snapshot.val() || {}; renderUserList(); renderStatusBar();
-            });
-
-            db.ref('messages').on('value', (snap) => {
-                if(!snap.exists()) { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Chat is clear.</div>'; window.allMessages = {}; }
-            });
-
-            let initialLoad = true;
-            db.ref('messages').once('value').then(() => { initialLoad = false; }); 
-            db.ref('messages').on('child_added', (snapshot) => { 
-                const data = snapshot.val(); 
-                if(data) { renderMessage(data); if(!initialLoad && data.sender.id !== myProfile.id) playSound('receive'); }
-            });
-            db.ref('messages').on('child_changed', (snapshot) => { updateMessageOnScreen(snapshot.val()); });
-            db.ref('messages').on('child_removed', (snapshot) => { 
-                const el = document.getElementById(snapshot.key); if (el) el.remove(); 
             });
         }
 
-        function renderStatusBar() {
-            const container = document.getElementById('active-statuses'); container.innerHTML = '';
-            for(let id in window.allStatuses) {
-                const u = classmates[id] || myProfile; const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
-                let imgHTML = (u.avatar && u.avatar.startsWith('data:')) ? `<img src="${u.avatar}" class="status-img">` : `<div class="status-img">${initial}</div>`;
-                container.innerHTML += `<div class="status-item" onclick="openStatus('${id}')"><div class="status-ring">${imgHTML}</div><div class="status-name">${u.name}</div></div>`;
-            }
-        }
-
-        function renderUserList() {
-            const container = document.getElementById('users-container'); container.innerHTML = ''; let onlineCount = 0;
-            for(let id in classmates) if(classmates[id].online === true) onlineCount++;
-            document.getElementById('online-counter').innerText = `👥 ${onlineCount} Online`;
-
-            const sortedIds = Object.keys(classmates).sort((a, b) => {
-                if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
-                return (classmates[b].lastSeen || 0) - (classmates[a].lastSeen || 0);
-            });
-
-            sortedIds.forEach(id => {
-                const u = classmates[id]; if(!u || !u.name) return; 
-                const initial = u.name.charAt(0).toUpperCase();
-                let nameClass = u.name.toLowerCase().includes('vishnuram') ? 'name-text owner-rgb' : 'name-text';
-                let statusColor = u.online ? (u.customStatus === 'dnd' ? '#ed4245' : (u.customStatus === 'idle' ? '#fee75c' : '#57F287')) : '#747f8d';
-                let avatarHTML = (u.avatar && u.avatar.startsWith('data:')) ? `<img src="${u.avatar}" class="avatar">` : `<div class="avatar">${initial}</div>`;
-                
-                container.innerHTML += `<div class="user-item" onclick="openUserActions('${id}')"><div class="avatar-wrap">${avatarHTML}<div class="status-dot-abs" style="background:${statusColor}"></div></div><div class="user-details"><div class="${nameClass}" style="color:${u.nameColor||'white'}">${u.name}</div></div></div>`;
-            });
-        }
-
-        function handleTypingInput() {
-            const text = document.getElementById('chatInput').value.trim(); const btn = document.getElementById('action-btn');
-            if (text) { btn.innerText = '➤'; btn.style.background = 'var(--accent)'; btn.style.color = 'white';} 
-            else { btn.innerText = '🎤'; btn.style.background = 'var(--input-bg)'; btn.style.color = 'var(--text-sub)';}
-        }
-
-        function handleActionClick() {
-            const text = document.getElementById('chatInput').value.trim();
-            if (text) {
-                if(text.startsWith('/clear')) { document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Screen cleared.</div>'; document.getElementById('chatInput').value=''; handleTypingInput(); return; }
-                sendMsgToDB('text', text); document.getElementById('chatInput').value = ''; handleTypingInput(); 
-            } else { toggleVoiceRecord(); }
-        }
-
-        function sendMsgToDB(msgType, msgContent, receiverId = null, base64Data = null) {
-            playSound('send');
-            const msgId = 'msg_' + Date.now();
-            let safeSenderData = { id: myProfile.id, name: myProfile.name, nameColor: myProfile.nameColor || '#fff' };
-            let payload = { msgId: msgId, sender: safeSenderData, type: msgType, text: msgContent, data: base64Data, time: new Date().toLocaleTimeString() };
-            if(currentReplyData) payload.replyTo = currentReplyData;
-            db.ref('messages/' + msgId).set(payload); cancelReply();
-        }
-        
-        function setReply(msgId) {
-            const msg = window.allMessages[msgId]; if(!msg) return;
-            currentReplyData = { name: msg.sender.name, text: msg.type === 'text' ? msg.text : `[${msg.type.toUpperCase()}]`, color: msg.sender.nameColor || 'var(--accent)' };
-            document.getElementById('reply-preview-name').innerText = currentReplyData.name;
-            document.getElementById('reply-preview-name').style.color = currentReplyData.color;
-            document.getElementById('reply-preview-bar').style.display = 'flex';
-            document.getElementById('chatInput').focus();
-        }
-        function cancelReply() { currentReplyData = null; document.getElementById('reply-preview-bar').style.display = 'none'; }
-
-        document.getElementById('chatInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') handleActionClick(); });
-
-        // IMAGE UPLOAD
-        function compressImage(file, maxRes, callback) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const img = new Image(); img.onload = function() {
-                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                    let w = img.width, h = img.height; 
-                    if(w > h) { if(w > maxRes) { h *= maxRes/w; w = maxRes; } } else { if(h > maxRes) { w *= maxRes/h; h = maxRes; } }
-                    canvas.width = w; canvas.height = h; ctx.drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6));
-                }; img.src = evt.target.result;
-            }; reader.readAsDataURL(file);
-        }
-        function handleImageUpload(e) {
-            if(!e.target.files[0]) return; document.getElementById('chatInput').placeholder = "Uploading image...";
-            compressImage(e.target.files[0], 600, (base64) => { sendMsgToDB('image', '', null, base64); document.getElementById('chatInput').placeholder = "Message #general..."; });
-            e.target.value = '';
-        }
-        document.getElementById('chatInput').addEventListener('paste', function(e) {
-            let items = e.clipboardData.items;
-            for(let i=0; i<items.length; i++) {
-                if(items[i].type.indexOf('image') !== -1) {
-                    let blob = items[i].getAsFile(); document.getElementById('chatInput').placeholder = "Uploading image...";
-                    compressImage(blob, 500, (base64) => { sendMsgToDB('image', '', null, base64); document.getElementById('chatInput').placeholder = "Message #general..."; });
-                    e.preventDefault(); 
-                }
-            }
-        });
-
-        // VOICE RECORD
-        let isRecording = false; let mediaRecorder; let audioChunks = [];
-        function toggleVoiceRecord() {
-            const btn = document.getElementById('action-btn');
-            if(!isRecording) {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-                    mediaRecorder = new MediaRecorder(stream, {mimeType}); mediaRecorder.start(); isRecording = true; 
-                    btn.innerText = '⏹'; btn.style.background = '#ed4245'; btn.style.color = "white"; audioChunks = [];
-                    mediaRecorder.addEventListener("dataavailable", e => { audioChunks.push(e.data); });
-                    mediaRecorder.addEventListener("stop", () => {
-                        const blob = new Blob(audioChunks, {type: mimeType}); const reader = new FileReader(); reader.readAsDataURL(blob);
-                        reader.onloadend = () => { sendMsgToDB('voice', '', null, reader.result); }; stream.getTracks().forEach(t => t.stop());
-                    });
-                }).catch(e => alert("Mic error: " + e.message));
-            } else { mediaRecorder.stop(); isRecording = false; btn.innerText = '🎤'; btn.style.background = 'var(--input-bg)'; btn.style.color = "var(--text-sub)"; }
-        }
-
-        // STATUS UPLOAD & VIEW
-        function handleStatusUpload(e) {
-            const file = e.target.files[0]; if(!file) return;
-            if(file.type.startsWith('video/')) {
-                if(file.size > 5 * 1024 * 1024) return alert("Video too large! Max 5MB.");
-                const reader = new FileReader(); reader.onload = (evt) => { db.ref('statuses/' + myProfile.id).set({ type: 'video', data: evt.target.result, timestamp: Date.now() }); alert("Status uploaded!"); }; reader.readAsDataURL(file);
-            } else { compressImage(file, 800, (base64) => { db.ref('statuses/' + myProfile.id).set({ type: 'image', data: base64, timestamp: Date.now() }); alert("Status uploaded!"); }); }
-            e.target.value = '';
-        }
-        
-        let mediaTimer = null;
-        function openStatus(userId) {
-            const s = window.allStatuses[userId]; if(!s) return;
-            document.getElementById('action-target-id').value = userId;
-            document.getElementById('status-delete-btn').style.display = (isOwner || userId === myProfile.id) ? 'block' : 'none';
-            document.getElementById('media-title').innerText = "Status";
-            
-            const imgEl = document.getElementById('media-image'); const vidEl = document.getElementById('media-video');
-            document.getElementById('media-viewer').style.display = 'flex';
-            if(s.type === 'video') { 
-                imgEl.style.display = 'none'; vidEl.src = s.data; vidEl.style.display = 'block'; vidEl.play();
-                vidEl.onloadedmetadata = () => { let d = vidEl.duration * 1000; if(d > 120000) d = 120000; if(mediaTimer) clearTimeout(mediaTimer); mediaTimer = setTimeout(closeMedia, d); };
-            } 
-            else { 
-                vidEl.style.display = 'none'; vidEl.pause(); imgEl.src = s.data; imgEl.style.display = 'block'; 
-                if(mediaTimer) clearTimeout(mediaTimer); mediaTimer = setTimeout(closeMedia, 5000);
-            }
-        }
-        function closeMedia() { document.getElementById('media-viewer').style.display = 'none'; const vidEl = document.getElementById('media-video'); vidEl.pause(); vidEl.src = ""; if(mediaTimer) clearTimeout(mediaTimer);}
-        function ownerDeleteStatus() { let tId = document.getElementById('action-target-id').value; db.ref('statuses/' + tId).remove(); closeMedia(); alert("Status deleted."); }
-        function deleteMessage(msgId) { db.ref('messages/' + msgId).update({ isDeleted: true }); }
-        function hardDeleteMessage(msgId) { if(confirm("Erase permanently?")) db.ref('messages/' + msgId).remove(); }
-        function cmdKick(id) { if(confirm("Kick?")) { db.ref('accounts/'+id).remove(); db.ref('users/'+id).remove(); closeUserActions();} }
-        function cmdPromote(id) { db.ref('accounts/'+id).update({ role: 'admin' }); db.ref('users/'+id).update({ role: 'admin' }); alert("Promoted."); closeUserActions();}
-        function cmdDemote(id) { db.ref('accounts/'+id).update({ role: 'user' }); db.ref('users/'+id).update({ role: 'user' }); alert("Demoted."); closeUserActions();}
-        function cmdTimeout(id) { db.ref('accounts/'+id).update({ timeoutUntil: Date.now() + 300000 }); db.ref('users/'+id).update({ timeoutUntil: Date.now() + 300000 }); alert("Timed out."); closeUserActions();}
-
+        // RENDERING
         function createMessageHTML(payload) {
             const sId = payload.sender.id || 'unknown'; const sName = payload.sender.name || 'Unknown';
             const sColor = payload.sender.nameColor || 'var(--text-main)';
             const isMe = sId === myProfile.id; let bodyHtml = '';
             
             if(payload.type === 'alert' && !payload.isDeleted) {
-                const canDel = isOwner || isAdmin;
                 return `<div class="sys-alert-msg" id="${payload.msgId}">
-                    ${canDel ? `<button class="action-icon-btn red" style="position:absolute; top:10px; right:10px; border:none;" onclick="hardDeleteMessage('${payload.msgId}')">🗑️</button>` : ''}
-                    <div class="sys-alert-title owner-rgb">🚨 ANNOUNCEMENT</div>
-                    <div class="sys-alert-text">${payload.text}</div>
+                    ${isOwner ? `<button class="action-icon-btn red" style="position:absolute; top:10px; right:10px; border:none;" onclick="db.ref('messages/${payload.msgId}').remove()">🗑️</button>` : ''}
+                    <div class="sys-alert-title owner-rgb">🚨 ANNOUNCEMENT</div><div class="sys-alert-text">${payload.text}</div>
                 </div>`;
             }
 
@@ -840,10 +725,7 @@
             if(payload.replyTo && !payload.isDeleted) replyHtml = `<div class="reply-quote"><div class="reply-quote-name" style="color:${payload.replyTo.color || 'var(--accent)'}">${payload.replyTo.name}</div>${payload.replyTo.text}</div>`;
 
             if(payload.isDeleted) bodyHtml = '<span class="deleted-text">🚫 Message deleted</span>';
-            else if(payload.type === 'text' || payload.type === 'dm') {
-                bodyHtml = payload.text.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank">${url}</a>`);
-                if(payload.type === 'dm') bodyHtml = `<div style="font-size:10px; color:var(--accent); font-weight:900; margin-bottom:6px; text-transform:uppercase;">🕵️ DM ${isMe ? 'To: Private' : `From: ${sName}`}</div>` + bodyHtml;
-            }
+            else if(payload.type === 'text') bodyHtml = payload.text;
             else if (payload.type === 'image') bodyHtml = `<img src="${payload.data}" class="msg-image" onclick="document.getElementById('lightbox-img').src='${payload.data}'; document.getElementById('lightbox').classList.add('active');">`;
             else if (payload.type === 'voice') bodyHtml = `<audio controls src="${payload.data}"></audio>`;
 
@@ -851,43 +733,43 @@
             let rowClass = `discord-msg-row ${isMe ? 'me' : ''}`;
             if(selectedMsgs.has(payload.msgId)) rowClass += " selected";
 
-            // Local Avatar lookup
             const currentProfile = classmates[sId] || (sId === myProfile.id ? myProfile : {});
             const sAvatar = currentProfile.avatar || '';
-            let hasStatusClass = window.allStatuses[sId] ? 'has-status' : '';
-            let avatarHTML = (sAvatar && sAvatar.startsWith('data:image')) ? `<img src="${sAvatar}" class="avatar ${hasStatusClass}" onclick="openUserActions('${sId}')" style="cursor:pointer;">` 
-                                       : `<div class="avatar ${hasStatusClass}" onclick="openUserActions('${sId}')" style="cursor:pointer;">${sName.charAt(0).toUpperCase()}</div>`;
+            const initial = sName.charAt(0).toUpperCase();
+            let avatarHTML = (sAvatar && sAvatar.startsWith('data:image')) ? `<img src="${sAvatar}" class="avatar" onclick="openUserActions('${sId}')" style="cursor:pointer;">` 
+                                       : `<div class="avatar" onclick="openUserActions('${sId}')" style="cursor:pointer;">${initial}</div>`;
 
-            const checkBoxHTML = (isMe || isOwner) ? `<input type="checkbox" class="msg-checkbox" id="cb_${payload.msgId}" onclick="event.stopPropagation(); handleCheckbox(this, '${payload.msgId}')">` : '';
+            const checkBoxHTML = `<input type="checkbox" class="msg-checkbox" id="cb_${payload.msgId}" onclick="event.stopPropagation(); handleCheckbox(this, '${payload.msgId}')">`;
 
-            const canDelete = (isMe || isOwner || isAdmin) && !payload.isDeleted;
+            const canDelete = (isMe || isOwner) && !payload.isDeleted;
             let hoverActions = `<div class="msg-actions">`;
-            if(!payload.isDeleted) hoverActions += `<button class="action-icon-btn" onclick="setReply('${payload.msgId}')" title="Reply">↩️</button>`;
-            if(canDelete) hoverActions += `<button class="action-icon-btn red" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️</button>`;
-            if(payload.isDeleted && isOwner) hoverActions += `<button class="action-icon-btn red" onclick="hardDeleteMessage('${payload.msgId}')" title="Erase Permanently">🔥</button>`;
+            if(!payload.isDeleted) hoverActions += `<button class="action-icon-btn" onclick="setReply('${payload.msgId}')" title="Reply">↩️ Reply</button>`;
+            if(canDelete) hoverActions += `<button class="action-icon-btn red" onclick="deleteMessage('${payload.msgId}')" title="Delete">🗑️ Delete</button>`;
             hoverActions += `</div>`;
 
             return `
-                <div class="${rowClass}" id="${payload.msgId}" onclick="msgClick('${payload.msgId}', '${sId}')">
+                <div class="${rowClass}" id="${payload.msgId}">
                     ${checkBoxHTML}
                     ${avatarHTML}
-                    <div class="msg-bubble">
-                        <div class="${nameClass}" style="color:${sColor};" onclick="openUserActions('${sId}')">${sName}</div>
-                        ${replyHtml}
-                        <div>${bodyHtml}</div>
-                        <div style="font-size:9px; opacity:0.5; margin-top:4px; text-align:${isMe?'right':'left'}">${payload.time}</div>
+                    <div style="display:flex; flex-direction:column; position:relative;">
+                        <div class="msg-bubble">
+                            <div class="${nameClass}" style="color:${sColor};" onclick="openUserActions('${sId}')">${sName}</div>
+                            ${replyHtml}
+                            <div>${bodyHtml}</div>
+                            <div style="font-size:9px; opacity:0.5; margin-top:4px; text-align:${isMe?'right':'left'}">${payload.time}</div>
+                        </div>
                         ${hoverActions}
                     </div>
                 </div>`;
         }
 
         function renderMessage(payload) {
-            const sId = payload.sender.id || 'unknown';
-            if(payload.receiverId && sId !== myProfile.id && payload.receiverId !== myProfile.id && !isOwner) return;
+            window.allMessages[payload.msgId] = payload; 
             const container = document.getElementById('messages');
             const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
-            if (!document.getElementById(payload.msgId)) { container.insertAdjacentHTML('beforeend', createMessageHTML(payload)); if (isAtBottom || sId === myProfile.id) container.scrollTop = container.scrollHeight; }
+            if (!document.getElementById(payload.msgId)) { container.insertAdjacentHTML('beforeend', createMessageHTML(payload)); if (isAtBottom || payload.sender.id === myProfile.id) container.scrollTop = container.scrollHeight; }
         }
+        function updateMessageOnScreen(data) { let oldRow = document.getElementById(data.msgId); if(oldRow) oldRow.outerHTML = createMessageHTML(data); }
     </script>
 </body>
 </html>
