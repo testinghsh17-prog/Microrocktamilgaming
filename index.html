@@ -4,31 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gaming Club - by Vishnuram</title>
-    
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         /* =========================================================
-           1. CORE CSS VARIABLES (CUTE PINK & DARK THEMES)
+           1. CORE CSS VARIABLES (BEAUTIFUL PINK UI)
            ========================================================= */
         :root {
-            --bg-main: #fce4ec;       
-            --bg-panel: #ffffff;      
-            --bg-sidebar: #ffffff;    
-            --text-main: #2d3436;     
-            --text-sub: #a4b0be;      
-            --border-color: #f1f2f6;  
-            --accent: #ff9ff3;        
-            --accent-hover: #f368e0;
-            --msg-me: #ff9ff3;        
-            --msg-me-text: #ffffff;
-            --msg-other: #f8f9fa;     
-            --msg-other-text: #2d3436;
-            --input-bg: #f1f2f6;      
-            --danger: #ff7675;        
-            --success: #55efc4;       
-            --shadow: 0 8px 25px rgba(255, 159, 243, 0.15); 
+            --bg-main: #fce4ec;       /* Cute soft pink background */
+            --bg-panel: #ffffff;      /* Pure white panels */
+            --bg-sidebar: #ffffff;    /* Pure white sidebar */
+            --text-main: #2d3436;     /* Dark grey text for readability */
+            --text-sub: #a4b0be;      /* Soft grey for secondary text */
+            --border-color: #f8a5c2;  /* Soft pinkish borders */
+            --accent: #ff9ff3;        /* Bright cute pink accent */
+            --accent-hover: #f368e0;  /* Darker pink on hover */
+            --msg-me: #ff9ff3;        /* Your messages bubble color */
+            --msg-me-text: #ffffff;   /* Text inside your bubbles */
+            --msg-other: #f8f9fa;     /* Other people's bubbles */
+            --msg-other-text: #2d3436;/* Text inside their bubbles */
+            --input-bg: #fdf5f8;      /* Very soft pink input boxes */
+            --danger: #ff7675;        /* Soft red for delete buttons */
+            --danger-hover: #d63031;
+            --success: #55efc4;       /* Soft green */
+            --shadow: 0 8px 25px rgba(255, 159, 243, 0.25); /* Pink glow shadow */
         }
 
         .dark-theme {
@@ -38,9 +39,9 @@
             --text-main: #f5f6fa;
             --text-sub: #7f8fa6;
             --border-color: #404654;
-            --accent: #a29bfe; 
-            --accent-hover: #6c5ce7;
-            --msg-me: #a29bfe;
+            --accent: #ff9ff3; /* Kept pink accent even in dark mode for theme! */
+            --accent-hover: #f368e0;
+            --msg-me: #ff9ff3;
             --msg-me-text: #ffffff;
             --msg-other: #404654;
             --msg-other-text: #f5f6fa;
@@ -70,22 +71,7 @@
         }
 
         /* =========================================================
-           3. BACKGROUND ENGINE (CONTROLLED BY OWNER)
-           ========================================================= */
-        .global-bg {
-            position: fixed; 
-            inset: 0; 
-            z-index: -10; 
-            transition: background 0.5s ease;
-        }
-        
-        .bg-style-dark { background: #1e272e; }
-        .bg-style-gamer { background-color: #202225; background-image: linear-gradient(rgba(255, 159, 243, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(162, 155, 254, 0.1) 2px, transparent 2px); background-size: 40px 40px; }
-        .bg-style-pink { background: #fce4ec; }
-        .bg-style-stars { background: radial-gradient(circle at bottom, #2f3640 0%, #192a56 100%); }
-
-        /* =========================================================
-           4. ROLE EFFECTS (OWNER RGB & ADMIN GLOWS)
+           3. OWNER RGB ANIMATIONS
            ========================================================= */
         @keyframes rainbowGlow { 
             0% { background-position: 0% 50%; } 
@@ -105,7 +91,7 @@
         .admin-emerald { color: #2ecc71; text-shadow: 0 0 8px rgba(46, 204, 113, 0.6); font-weight: 900 !important; }
 
         /* =========================================================
-           5. MASSIVE FULL SCREEN ALERT OVERLAY
+           4. MASSIVE FULL SCREEN ALERT OVERLAY
            ========================================================= */
         #massive-alert-screen {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 99999999;
@@ -125,6 +111,22 @@
         .massive-alert-body { font-size: 22px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; line-height: 1.5; word-wrap: break-word; }
 
         /* =========================================================
+           5. LOADING SCREEN OVERLAY
+           ========================================================= */
+        #loading-overlay { 
+            position: fixed; inset: 0; background: var(--bg-main); z-index: 9999999; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner { 
+            width: 70px; height: 70px; border: 8px solid var(--border-color); 
+            border-top: 8px solid var(--accent); border-radius: 50%; 
+            animation: spin 1s linear infinite; margin-bottom: 25px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* =========================================================
            6. FULL-SCREEN MODALS & BOXES
            ========================================================= */
         .fullscreen-overlay { 
@@ -133,7 +135,7 @@
         }
 
         .modal-screen { 
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); 
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); 
             display: none; align-items: center; justify-content: center; 
             z-index: 999999; padding: 15px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
         }
@@ -184,7 +186,7 @@
             background: var(--danger); color: white; border: none; padding: 15px; border-radius: 18px; 
             font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 118, 117, 0.3);
         }
-        .btn-danger:hover { background: #d63031; transform: translateY(-3px); }
+        .btn-danger:hover { background: var(--danger-hover); transform: translateY(-3px); }
 
         /* Tabs */
         .tab-container { display: flex; gap: 10px; margin-bottom: 25px; background: var(--input-bg); padding: 8px; border-radius: 18px; }
@@ -368,20 +370,28 @@
            10. IRON-CLAD INPUT BAR (FIXED FOR NO SQUISHING)
            ========================================================= */
         .input-bar { 
-            padding: 15px 25px; background: var(--bg-panel); display: flex; gap: 12px; align-items: center; 
-            flex-shrink: 0; padding-bottom: max(15px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border-color);
+            padding: 15px 20px; 
+            background: var(--bg-panel); 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+            width: 100%; /* Ensures it spans exactly full width */
+            box-sizing: border-box; /* Crucial for preventing overflow */
+            flex-shrink: 0; 
+            padding-bottom: max(15px, env(safe-area-inset-bottom)); 
+            border-top: 1px solid var(--border-color);
         }
         
         .action-btn { 
             /* Strict Flexbox Rules to prevent squishing */
-            flex: 0 0 54px; 
-            width: 54px; 
-            height: 54px; 
+            flex: 0 0 50px; 
+            width: 50px; 
+            height: 50px; 
             border-radius: 18px; 
             background: var(--input-bg); 
             color: var(--text-sub); 
             border: none; 
-            font-size: 24px; 
+            font-size: 22px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -394,12 +404,13 @@
         
         .chat-input { 
             flex: 1 1 auto; /* Allows input to stretch and shrink safely */
-            min-width: 0; 
-            height: 54px; 
-            border-radius: 27px; 
+            width: 100%;
+            min-width: 50px; /* Gives it a minimum safe shrinking bound */
+            height: 50px; 
+            border-radius: 25px; 
             background: var(--input-bg); 
             border: 2px solid transparent; 
-            padding: 0 25px; 
+            padding: 0 20px; 
             color: var(--text-main); 
             font-size: 16px; 
             outline: none; 
@@ -410,14 +421,14 @@
         
         .send-btn { 
             /* Strict Flexbox Rules */
-            flex: 0 0 54px; 
-            width: 54px; 
-            height: 54px; 
+            flex: 0 0 50px; 
+            width: 50px; 
+            height: 50px; 
             border-radius: 50%; 
             background: var(--accent); 
             color: white; 
             border: none; 
-            font-size: 24px; 
+            font-size: 22px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -446,12 +457,13 @@
             .discord-msg-row { max-width: 95%; }
             
             /* Compact Input Bar for Mobile */
-            .input-bar { padding: 12px 15px; gap: 8px; }
+            .input-bar { padding: 10px; gap: 8px; }
             .action-btn, .send-btn { 
-                flex: 0 0 46px; 
-                width: 46px; 
-                height: 46px; 
-                font-size: 20px; 
+                flex: 0 0 45px; 
+                width: 45px; 
+                height: 45px; 
+                font-size: 18px; 
+                border-radius: 50%; /* Make them fully round on mobile */
             }
             
             .msg-actions { opacity: 1; } /* Always visible on mobile to avoid hover issues */
@@ -476,12 +488,10 @@
         .lb-btn:hover { transform: translateY(-3px); }
     </style>
 </head>
-<body class="dark-theme">
+<body>
 
     <audio id="sound-send" src="https://www.myinstants.com/media/sounds/pop_drip.mp3" preload="auto"></audio>
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3" preload="auto"></audio>
-
-    <div id="global-bg" class="global-bg bg-style-dark"></div>
 
     <div id="massive-alert-screen">
         <div class="massive-alert-box">
@@ -601,25 +611,12 @@
         </div>
     </div>
 
-    <div id="owner-panel-screen" class="modal-screen">
-        <div class="modal-box">
-            <h2>👑 Owner Dashboard</h2>
-            <p style="text-align: center; color: var(--text-sub); margin-bottom: 20px;">Master Control Center</p>
-
-            <button class="btn-primary" style="background: #a29bfe;" onclick="changeGlobalBackground()">🌌 Change Global Background</button>
-            <button class="btn-primary" style="background: var(--success); color: black;" onclick="document.getElementById('owner-panel-screen').style.display='none'; document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
-            <button class="btn-danger" style="margin-top: 20px;" onclick="nukeChat()">☢️ Wipe Entire Database</button>
-            
-            <button class="btn-secondary" style="margin-top: 20px;" onclick="document.getElementById('owner-panel-screen').style.display='none'">Close Dashboard</button>
-        </div>
-    </div>
-
     <div id="owner-bugs-screen" class="modal-screen">
         <div class="modal-box" style="max-width: 550px;">
             <h2>🛠️ User Bug Reports</h2>
             <div id="bug-list-container" style="display:flex; flex-direction:column; gap:12px; max-height: 50vh; overflow-y: auto; padding-right:8px;">
                 </div>
-            <button class="btn-secondary" style="border:none; background:var(--input-bg); color:var(--text-main);" onclick="document.getElementById('owner-bugs-screen').style.display='none'">Close Reports</button>
+            <button class="btn-secondary" style="border:none; background:var(--input-bg); color:var(--text-main);" onclick="document.getElementById('owner-bugs-screen').style.display='none'">Close Dashboard</button>
         </div>
     </div>
 
@@ -707,14 +704,18 @@
                 </div>
             
             <div class="tools-grid">
-                <button id="owner-panel-btn" class="tool-btn" style="grid-column: span 2; background: var(--accent); color: white; display: none;" onclick="document.getElementById('owner-panel-screen').style.display='flex'">👑 Owner Panel</button>
-                
                 <button class="tool-btn" onclick="document.getElementById('cmd-screen').style.display='flex'">⌨️ Cmds</button>
                 <button class="tool-btn" id="multi-select-toggle" onclick="toggleSelectMode()">🗑️ Select</button>
                 <button class="tool-btn" onclick="document.getElementById('bug-report-screen').style.display='flex'">🐛 Report</button>
-                <button class="tool-btn" onclick="toggleDarkMode()" id="theme-btn">🌙 Dark Mode</button>
+                <button class="tool-btn" onclick="toggleDarkMode()" id="theme-btn">🌙 Dark</button>
                 <button class="tool-btn" style="grid-column: span 2;" onclick="openEditProfile()">⚙️ Settings</button>
                 <button class="tool-btn" style="grid-column: span 2; color: var(--danger); background: rgba(255, 118, 117, 0.1);" onclick="logoutApp()">🚪 Logout</button>
+            </div>
+
+            <div id="owner-super-controls" style="display:none; padding: 0 20px 20px 20px; flex-direction: column; gap:12px; background:var(--bg-panel);">
+                <h4 style="margin: 0; color: var(--accent); text-align: center; font-weight: 900; font-size: 16px;">👑 Owner Controls</h4>
+                <button class="btn-primary" style="margin:0; background: #55efc4; color: black; padding:14px; box-shadow:none;" onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
+                <button class="btn-danger" style="margin:0; padding:14px; box-shadow:none;" onclick="nukeChat()">☢️ Wipe Database</button>
             </div>
         </div>
 
@@ -735,9 +736,9 @@
             <div id="multi-select-bar">
                 <span id="select-count">0 Selected</span>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-secondary" style="margin:0; padding:8px 16px; border:none; color:var(--text-main); background:var(--input-bg);" onclick="toggleSelectMode()">Cancel</button>
-                    <button class="btn-danger" style="margin:0; padding:8px 16px; border:none;" onclick="deleteSelectedMsgs(false)">Hide</button>
-                    <button id="perm-delete-btn" class="btn-danger" style="margin:0; padding:8px 16px; background:#d63031; border:none; display:none;" onclick="deleteSelectedMsgs(true)">Erase Forever</button>
+                    <button class="select-action-btn cancel" onclick="toggleSelectMode()">Cancel</button>
+                    <button class="select-action-btn" onclick="deleteSelectedMsgs(false)">Hide</button>
+                    <button id="perm-delete-btn" class="select-action-btn" style="background:#d63031; display:none;" onclick="deleteSelectedMsgs(true)">Erase Forever</button>
                 </div>
             </div>
 
@@ -889,21 +890,27 @@
             const confirmMsg = isPermanent ? `WARNING: ERASE ${selectedMsgs.size} message(s) FOREVER?` : `Hide ${selectedMsgs.size} message(s)?`;
             
             if(confirm(confirmMsg)) {
+                // Process each ID carefully
+                let updates = {};
                 selectedMsgs.forEach(id => { 
                     if(isPermanent && (isOwner || isAdmin)) {
-                        db.ref('messages/' + id).remove();
+                        db.ref('messages/' + id).remove(); // True permanent delete
                     } else {
-                        db.ref('messages/' + id).update({ isDeleted: true }); 
+                        db.ref('messages/' + id).update({ isDeleted: true }); // Soft hide
                     }
                 });
+                
                 toggleSelectMode(); 
             }
         }
 
         // Check Theme
         let isDark = localStorage.getItem('marutham_theme') === 'dark';
-        if(isDark) { 
-            document.body.classList.add('dark-theme'); 
+        if(!isDark) { 
+            // Default to dark because user asked for "pink better ui" which works best combined with dark or native pink
+            document.body.classList.remove('dark-theme'); 
+            document.getElementById('theme-btn').innerText = '🌙 Dark Mode'; 
+        } else {
             document.getElementById('theme-btn').innerText = '☀️ Light Mode'; 
         }
 
@@ -912,7 +919,7 @@
             if (e.key === 'Enter') checkStealth(); 
         });
         
-        // Show stealth immediately
+        // Show stealth immediately on load
         document.getElementById('stealth-screen').style.display = 'flex';
 
         function checkStealth() {
@@ -1149,37 +1156,15 @@
             o.style.display = s.classList.contains('open') ? 'block' : 'none';
         }
 
-        // 🌍 GLOBAL BACKGROUND ENGINE (Owner Only)
-        const bgClasses = ['bg-style-dark', 'bg-style-gamer', 'bg-style-pink', 'bg-style-stars'];
-        let currentGlobalBg = 0;
-
-        function changeGlobalBackground() {
-            if(!isOwner) return;
-            currentGlobalBg = (currentGlobalBg + 1) % bgClasses.length;
-            db.ref('settings/globalBackground').set(currentGlobalBg);
-            alert("Global Background Changed for Everyone!");
-        }
-
         function startApp() {
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('app-screen').style.display = 'flex';
             
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
-            // Reveal Owner button in sidebar if Owner
             if(isOwner) {
-                document.getElementById('owner-panel-btn').style.display = 'flex';
+                document.getElementById('owner-super-controls').style.display = 'flex';
             }
-
-            db.ref('settings/globalBackground').on('value', (snap) => {
-                let bgIndex = snap.val();
-                if(bgIndex === null) bgIndex = 0;
-                currentGlobalBg = bgIndex; // Sync local state
-                const bgContainer = document.getElementById('global-bg');
-                if(bgContainer) {
-                    bgContainer.className = `global-bg ${bgClasses[bgIndex]}`;
-                }
-            });
 
             db.ref('settings/chatLocked').on('value', (snap) => {
                 window.chatLocked = snap.val() === true;
@@ -1545,9 +1530,16 @@
             const btn = document.getElementById('action-btn-voice');
             
             if(!isRecording) {
-                // Let browser choose native format so it works on iOS Safari
+                // Determine format
+                let mimeType = '';
+                if (MediaRecorder.isTypeSupported('audio/webm')) {
+                    mimeType = 'audio/webm';
+                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    mimeType = 'audio/mp4';
+                }
+                
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream); 
+                    mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined); 
                     mediaRecorder.start(); 
                     isRecording = true; 
                     
@@ -1561,16 +1553,13 @@
                     });
                     
                     mediaRecorder.addEventListener("stop", () => {
-                        // Create blob using the recorder's actual mimetype, fallback to mp4 for iOS
-                        const mimeType = mediaRecorder.mimeType || 'audio/mp4'; 
-                        const blob = new Blob(audioChunks, { type: mimeType }); 
+                        const blob = new Blob(audioChunks, mimeType ? { type: mimeType } : undefined); 
                         const reader = new FileReader(); 
                         reader.readAsDataURL(blob);
                         reader.onloadend = () => { 
                             sendMsgToDB('voice', '', null, reader.result); 
                         }; 
                         
-                        // Stop all tracks to fully release the microphone
                         stream.getTracks().forEach(t => t.stop());
                     });
                 }).catch(e => {
@@ -1714,9 +1703,13 @@
         
         // Owner Commands Logic
         function nukeChat() { 
-            if(confirm("Clear Entire Database?")) { 
-                db.ref('messages').remove(); 
-                document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Database wiped by Owner.</div>'; 
+            if(confirm("WARNING: Wipe Database FOREVER?")) { 
+                db.ref('messages').remove().then(() => {
+                    db.ref('statuses').remove();
+                    window.allMessages = {};
+                    document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Database wiped by Owner.</div>'; 
+                    alert("Database erased!");
+                }).catch(e => alert("Error: " + e.message));
             } 
         }
 
