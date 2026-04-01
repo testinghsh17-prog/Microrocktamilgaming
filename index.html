@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gaming Club - by Vishnuram</title>
-
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -133,7 +133,7 @@
         }
 
         .modal-screen { 
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); 
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); 
             display: none; align-items: center; justify-content: center; 
             z-index: 999999; padding: 15px; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
         }
@@ -184,7 +184,7 @@
             background: var(--danger); color: white; border: none; padding: 15px; border-radius: 18px; 
             font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 118, 117, 0.3);
         }
-        .btn-danger:hover { background: var(--danger-hover); transform: translateY(-3px); }
+        .btn-danger:hover { background: #d63031; transform: translateY(-3px); }
 
         /* Tabs */
         .tab-container { display: flex; gap: 10px; margin-bottom: 25px; background: var(--input-bg); padding: 8px; border-radius: 18px; }
@@ -365,7 +365,7 @@
         audio { height: 50px; max-width: 260px; margin-top: 10px; outline: none; border-radius: 25px; }
 
         /* =========================================================
-           10. IRON-CLAD INPUT BAR (PREVENTS SQUISHING)
+           10. IRON-CLAD INPUT BAR (FIXED FOR NO SQUISHING)
            ========================================================= */
         .input-bar { 
             padding: 15px 25px; background: var(--bg-panel); display: flex; gap: 12px; align-items: center; 
@@ -373,25 +373,58 @@
         }
         
         .action-btn { 
-            width: 54px; height: 54px; min-width: 54px; min-height: 54px; border-radius: 18px; 
-            background: var(--input-bg); color: var(--text-sub); border: none; font-size: 24px; 
-            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; 
-            transition: 0.3s; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            /* Strict Flexbox Rules to prevent squishing */
+            flex: 0 0 54px; 
+            width: 54px; 
+            height: 54px; 
+            border-radius: 18px; 
+            background: var(--input-bg); 
+            color: var(--text-sub); 
+            border: none; 
+            font-size: 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         .action-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); }
         
         .chat-input { 
-            flex: 1; min-width: 0; height: 54px; border-radius: 27px; background: var(--input-bg); 
-            border: 2px solid transparent; padding: 0 25px; color: var(--text-main); font-size: 16px; 
-            outline: none; font-weight: 700; transition: 0.3s;
+            flex: 1 1 auto; /* Allows input to stretch and shrink safely */
+            min-width: 0; 
+            height: 54px; 
+            border-radius: 27px; 
+            background: var(--input-bg); 
+            border: 2px solid transparent; 
+            padding: 0 25px; 
+            color: var(--text-main); 
+            font-size: 16px; 
+            outline: none; 
+            font-weight: 700; 
+            transition: 0.3s;
         }
         .chat-input:focus { border-color: var(--accent); background: var(--bg-panel); box-shadow: 0 0 15px rgba(255, 159, 243, 0.2); }
         
         .send-btn { 
-            width: 54px; height: 54px; min-width: 54px; min-height: 54px; border-radius: 50%; 
-            background: var(--accent); color: white; border: none; font-size: 24px; display: flex; 
-            align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; 
-            font-weight: bold; transition: 0.3s; box-shadow: var(--shadow);
+            /* Strict Flexbox Rules */
+            flex: 0 0 54px; 
+            width: 54px; 
+            height: 54px; 
+            border-radius: 50%; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            font-size: 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            box-shadow: var(--shadow);
         }
         .send-btn:hover { transform: scale(1.1); background: var(--accent-hover); }
 
@@ -411,8 +444,16 @@
             .menu-btn { display: flex; }
             .close-sidebar-btn { display: block; background: transparent; border: none; color: var(--text-sub); font-size: 28px; }
             .discord-msg-row { max-width: 95%; }
+            
+            /* Compact Input Bar for Mobile */
             .input-bar { padding: 12px 15px; gap: 8px; }
-            .action-btn, .send-btn { width: 48px; height: 48px; min-width: 48px; min-height: 48px; font-size: 20px; }
+            .action-btn, .send-btn { 
+                flex: 0 0 46px; 
+                width: 46px; 
+                height: 46px; 
+                font-size: 20px; 
+            }
+            
             .msg-actions { opacity: 1; } /* Always visible on mobile to avoid hover issues */
         }
 
@@ -560,12 +601,25 @@
         </div>
     </div>
 
+    <div id="owner-panel-screen" class="modal-screen">
+        <div class="modal-box">
+            <h2>👑 Owner Dashboard</h2>
+            <p style="text-align: center; color: var(--text-sub); margin-bottom: 20px;">Master Control Center</p>
+
+            <button class="btn-primary" style="background: #a29bfe;" onclick="changeGlobalBackground()">🌌 Change Global Background</button>
+            <button class="btn-primary" style="background: var(--success); color: black;" onclick="document.getElementById('owner-panel-screen').style.display='none'; document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
+            <button class="btn-danger" style="margin-top: 20px;" onclick="nukeChat()">☢️ Wipe Entire Database</button>
+            
+            <button class="btn-secondary" style="margin-top: 20px;" onclick="document.getElementById('owner-panel-screen').style.display='none'">Close Dashboard</button>
+        </div>
+    </div>
+
     <div id="owner-bugs-screen" class="modal-screen">
         <div class="modal-box" style="max-width: 550px;">
             <h2>🛠️ User Bug Reports</h2>
             <div id="bug-list-container" style="display:flex; flex-direction:column; gap:12px; max-height: 50vh; overflow-y: auto; padding-right:8px;">
                 </div>
-            <button class="btn-secondary" style="border:none; background:var(--input-bg); color:var(--text-main);" onclick="document.getElementById('owner-bugs-screen').style.display='none'">Close Dashboard</button>
+            <button class="btn-secondary" style="border:none; background:var(--input-bg); color:var(--text-main);" onclick="document.getElementById('owner-bugs-screen').style.display='none'">Close Reports</button>
         </div>
     </div>
 
@@ -653,19 +707,14 @@
                 </div>
             
             <div class="tools-grid">
+                <button id="owner-panel-btn" class="tool-btn" style="grid-column: span 2; background: var(--accent); color: white; display: none;" onclick="document.getElementById('owner-panel-screen').style.display='flex'">👑 Owner Panel</button>
+                
                 <button class="tool-btn" onclick="document.getElementById('cmd-screen').style.display='flex'">⌨️ Cmds</button>
                 <button class="tool-btn" id="multi-select-toggle" onclick="toggleSelectMode()">🗑️ Select</button>
                 <button class="tool-btn" onclick="document.getElementById('bug-report-screen').style.display='flex'">🐛 Report</button>
                 <button class="tool-btn" onclick="toggleDarkMode()" id="theme-btn">🌙 Dark Mode</button>
                 <button class="tool-btn" style="grid-column: span 2;" onclick="openEditProfile()">⚙️ Settings</button>
                 <button class="tool-btn" style="grid-column: span 2; color: var(--danger); background: rgba(255, 118, 117, 0.1);" onclick="logoutApp()">🚪 Logout</button>
-            </div>
-
-            <div id="owner-super-controls" style="display:none; padding: 0 20px 20px 20px; flex-direction: column; gap:12px; background:var(--bg-panel);">
-                <h4 style="margin: 0; color: var(--accent); text-align: center; font-weight: 900; font-size: 16px;">👑 Owner Controls</h4>
-                <button class="btn-primary" style="margin:0; background: #a29bfe; padding:14px; box-shadow:none;" onclick="changeGlobalBackground()">🌌 Change Global BG</button>
-                <button class="btn-primary" style="margin:0; background: #55efc4; color: black; padding:14px; box-shadow:none;" onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
-                <button class="btn-danger" style="margin:0; padding:14px; box-shadow:none;" onclick="nukeChat()">☢️ Wipe Database</button>
             </div>
         </div>
 
@@ -686,9 +735,9 @@
             <div id="multi-select-bar">
                 <span id="select-count">0 Selected</span>
                 <div style="display:flex; gap:10px;">
-                    <button class="select-action-btn cancel" onclick="toggleSelectMode()">Cancel</button>
-                    <button class="select-action-btn" onclick="deleteSelectedMsgs(false)">Hide</button>
-                    <button id="perm-delete-btn" class="select-action-btn" style="background:#d63031; display:none;" onclick="deleteSelectedMsgs(true)">Erase Forever</button>
+                    <button class="btn-secondary" style="margin:0; padding:8px 16px; border:none; color:var(--text-main); background:var(--input-bg);" onclick="toggleSelectMode()">Cancel</button>
+                    <button class="btn-danger" style="margin:0; padding:8px 16px; border:none;" onclick="deleteSelectedMsgs(false)">Hide</button>
+                    <button id="perm-delete-btn" class="btn-danger" style="margin:0; padding:8px 16px; background:#d63031; border:none; display:none;" onclick="deleteSelectedMsgs(true)">Erase Forever</button>
                 </div>
             </div>
 
@@ -1117,8 +1166,9 @@
             
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
+            // Reveal Owner button in sidebar if Owner
             if(isOwner) {
-                document.getElementById('owner-super-controls').style.display = 'flex';
+                document.getElementById('owner-panel-btn').style.display = 'flex';
             }
 
             db.ref('settings/globalBackground').on('value', (snap) => {
@@ -1170,18 +1220,12 @@
                     window.allMessages = {}; 
                 }
             });
-
-            // Handle Initial Load
-            let initialLoad = true;
-            db.ref('messages').once('value').then(() => { 
-                initialLoad = false; 
-            }); 
             
             db.ref('messages').on('child_added', (snapshot) => { 
                 const data = snapshot.val(); 
                 if(data && data.type !== 'global_alert') { 
                     renderMessage(data); 
-                    if(!initialLoad && data.sender.id !== myProfile.id) playSound('receive'); 
+                    if(data.sender.id !== myProfile.id) playSound('receive'); 
                 } else if (data && data.type === 'global_alert' && !data.isDeleted) {
                     showFullScreenAlert(data.text);
                 }
@@ -1669,6 +1713,13 @@
         }
         
         // Owner Commands Logic
+        function nukeChat() { 
+            if(confirm("Clear Entire Database?")) { 
+                db.ref('messages').remove(); 
+                document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Database wiped by Owner.</div>'; 
+            } 
+        }
+
         function cmdKick(id) { 
             if(confirm("Kick player permanently?")) { 
                 db.ref('accounts/'+id).remove(); 
