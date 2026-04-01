@@ -56,7 +56,7 @@
             margin: 0; 
             padding: 0; 
             width: 100vw; 
-            height: 100dvh; /* 100dvh is best for mobile browsers */
+            height: 100dvh; 
             background: var(--bg-main); 
             color: var(--text-main); 
             overflow: hidden; 
@@ -73,11 +73,14 @@
            3. BACKGROUND ENGINE (CONTROLLED BY OWNER)
            ========================================================= */
         .global-bg {
-            position: fixed; inset: 0; z-index: -10; transition: 0.5s;
+            position: fixed; 
+            inset: 0; 
+            z-index: -10; 
+            transition: background 0.5s ease;
         }
         
-        .bg-style-gamer { background-image: linear-gradient(rgba(255, 159, 243, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(162, 155, 254, 0.1) 2px, transparent 2px); background-size: 40px 40px; }
         .bg-style-dark { background: #1e272e; }
+        .bg-style-gamer { background-color: #202225; background-image: linear-gradient(rgba(255, 159, 243, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(162, 155, 254, 0.1) 2px, transparent 2px); background-size: 40px 40px; }
         .bg-style-pink { background: #fce4ec; }
         .bg-style-stars { background: radial-gradient(circle at bottom, #2f3640 0%, #192a56 100%); }
 
@@ -122,7 +125,23 @@
         .massive-alert-body { font-size: 22px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; line-height: 1.5; word-wrap: break-word; }
 
         /* =========================================================
-           6. FULL-SCREEN MODALS & BOXES
+           6. LOADING SCREEN OVERLAY
+           ========================================================= */
+        #loading-overlay { 
+            position: fixed; inset: 0; background: var(--bg-main); z-index: 9999999; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner { 
+            width: 70px; height: 70px; border: 8px solid var(--border-color); 
+            border-top: 8px solid var(--accent); border-radius: 50%; 
+            animation: spin 1s linear infinite; margin-bottom: 25px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* =========================================================
+           7. FULL-SCREEN MODALS & BOXES
            ========================================================= */
         .fullscreen-overlay { 
             position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; 
@@ -189,7 +208,7 @@
         .tab.active { background: var(--bg-panel); color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
         /* =========================================================
-           7. MAIN APP LAYOUT & SIDEBAR
+           8. MAIN APP LAYOUT & SIDEBAR
            ========================================================= */
         #app-screen { display: none; flex: 1; flex-direction: row; width: 100%; overflow: hidden; position: relative; }
         
@@ -266,7 +285,7 @@
         .tool-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); box-shadow: var(--shadow);}
 
         /* =========================================================
-           8. CHAT SECTION
+           9. CHAT SECTION
            ========================================================= */
         .chat-section { flex: 1; display: flex; flex-direction: column; min-width: 0; background: transparent; position: relative; }
         
@@ -310,7 +329,7 @@
         }
 
         /* =========================================================
-           9. CUTE MESSAGE BUBBLES & ACTIONS
+           10. CUTE MESSAGE BUBBLES & ACTIONS
            ========================================================= */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; max-width: 85%; position: relative; align-items: flex-end; transition: 0.3s;
@@ -362,7 +381,7 @@
         audio { height: 50px; max-width: 260px; margin-top: 10px; outline: none; border-radius: 25px; }
 
         /* =========================================================
-           10. IRON-CLAD INPUT BAR (PREVENTS SQUISHING)
+           11. IRON-CLAD INPUT BAR (PREVENTS SQUISHING)
            ========================================================= */
         .input-bar { 
             padding: 15px 25px; background: var(--bg-panel); display: flex; gap: 12px; align-items: center; 
@@ -398,7 +417,7 @@
         }
 
         /* =========================================================
-           11. MOBILE RESPONSIVENESS
+           12. MOBILE RESPONSIVENESS
            ========================================================= */
         @media (max-width: 768px) {
             .sidebar { 
@@ -414,7 +433,7 @@
         }
 
         /* =========================================================
-           12. LIGHTBOX & STATUS VIEWERS
+           13. LIGHTBOX & STATUS VIEWERS
            ========================================================= */
         #media-viewer { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500000; 
@@ -438,6 +457,12 @@
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3" preload="auto"></audio>
 
     <div id="global-bg" class="global-bg bg-style-dark"></div>
+
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <h2 style="color:var(--accent); font-weight: 900; font-size: 28px; margin-bottom: 10px;">Loading Chat...</h2>
+        <p style="color:var(--text-sub); font-weight: 800; text-align: center; font-size: 16px;">Please wait.<br>You cannot send messages until loading is complete.</p>
+    </div>
 
     <div id="massive-alert-screen">
         <div class="massive-alert-box">
@@ -703,7 +728,7 @@
                 
                 <input type="text" id="chatInput" class="chat-input" placeholder="Message #general..." oninput="handleTypingInput()">
                 
-                <button class="send-btn" id="action-btn-voice" onclick="handleActionClick()">🎤</button>
+                <button class="send-btn" id="action-btn-voice" onclick="toggleVoiceRecord()">🎤</button>
             </div>
         </div>
     </div>
@@ -730,6 +755,7 @@
         window.allStatuses = {}; 
         window.allMessages = {}; 
         let currentReplyData = null;
+        let isLoading = true; 
         let myTimeoutTime = 0;
 
         // 🎨 COLOR PALETTE GENERATOR
@@ -771,6 +797,7 @@
         let selectedMsgs = new Set();
 
         function toggleSelectMode() {
+            if(isLoading) return;
             isSelectMode = !isSelectMode;
             const container = document.getElementById('messages');
             
@@ -1105,11 +1132,20 @@
             if(!isOwner) return;
             currentGlobalBg = (currentGlobalBg + 1) % bgClasses.length;
             db.ref('settings/globalBackground').set(currentGlobalBg);
+            alert("Global Background Changed for Everyone!");
         }
 
         function startApp() {
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('app-screen').style.display = 'flex';
+            
+            // Initiate Loading Lock
+            isLoading = true;
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('chatInput').disabled = true;
+            document.getElementById('action-btn-voice').disabled = true;
+            document.getElementById('attach-btn').disabled = true;
+            document.getElementById('dice-btn').disabled = true;
             
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
@@ -1118,9 +1154,13 @@
             }
 
             db.ref('settings/globalBackground').on('value', (snap) => {
-                let bgIndex = snap.val() || 0;
+                let bgIndex = snap.val();
+                if(bgIndex === null) bgIndex = 0;
+                currentGlobalBg = bgIndex; // Sync local state
                 const bgContainer = document.getElementById('global-bg');
-                bgContainer.className = `global-bg ${bgClasses[bgIndex]}`;
+                if(bgContainer) {
+                    bgContainer.className = `global-bg ${bgClasses[bgIndex]}`;
+                }
             });
 
             db.ref('settings/chatLocked').on('value', (snap) => {
@@ -1167,6 +1207,20 @@
             let initialLoad = true;
             db.ref('messages').once('value').then(() => { 
                 initialLoad = false; 
+                isLoading = false;
+                
+                // Fade out loading screen
+                document.getElementById('loading-overlay').style.opacity = '0';
+                setTimeout(() => { 
+                    document.getElementById('loading-overlay').style.display = 'none'; 
+                }, 500);
+                
+                // Enable Inputs
+                document.getElementById('chatInput').disabled = false;
+                document.getElementById('chatInput').placeholder = "Message #general...";
+                document.getElementById('action-btn-voice').disabled = false;
+                document.getElementById('attach-btn').disabled = false;
+                document.getElementById('dice-btn').disabled = false;
             }); 
             
             db.ref('messages').on('child_added', (snapshot) => { 
@@ -1194,6 +1248,7 @@
 
             // Timeout Checking Loop
             setInterval(() => {
+                if(isLoading) return;
                 const inp = document.getElementById('chatInput');
                 if (myTimeoutTime > Date.now()) {
                     let mins = Math.ceil((myTimeoutTime - Date.now()) / 60000);
@@ -1307,6 +1362,7 @@
 
         // --- ⌨️ ALL COMMANDS ENGINE ---
         function handleActionClick() {
+            if (isLoading) return;
             const text = document.getElementById('chatInput').value.trim();
             
             if (text) {
@@ -1474,6 +1530,7 @@
         }
 
         function handleImageUpload(e) {
+            if(isLoading) return;
             if(!e.target.files[0]) return; 
             
             document.getElementById('chatInput').placeholder = "Compressing image...";
@@ -1490,14 +1547,17 @@
         let audioChunks = [];
 
         function toggleVoiceRecord() {
+            if(isLoading) return;
+            
             const btn = document.getElementById('action-btn-voice');
             
             if(!isRecording) {
-                // Let browser choose native format so it works on iOS Safari
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    // Let the browser choose its native format instead of forcing webm/mp4
                     mediaRecorder = new MediaRecorder(stream); 
                     mediaRecorder.start(); 
                     isRecording = true; 
+                    
                     btn.innerText = '⏹'; 
                     btn.style.background = 'var(--danger)'; 
                     btn.style.color = "white"; 
@@ -1508,17 +1568,21 @@
                     });
                     
                     mediaRecorder.addEventListener("stop", () => {
-                        const blob = new Blob(audioChunks); 
+                        // Create blob using the recorder's actual mimetype, fallback to mp4 for iOS
+                        const mimeType = mediaRecorder.mimeType || 'audio/mp4'; 
+                        const blob = new Blob(audioChunks, { type: mimeType }); 
                         const reader = new FileReader(); 
                         reader.readAsDataURL(blob);
                         reader.onloadend = () => { 
                             sendMsgToDB('voice', '', null, reader.result); 
                         }; 
+                        
+                        // Stop all tracks to fully release the microphone
                         stream.getTracks().forEach(t => t.stop());
                     });
                 }).catch(e => {
                     console.error("Mic error:", e);
-                    alert("Please allow Microphone Permissions.");
+                    alert("Please allow Microphone Permissions. If on iPhone, ensure you are not on Silent mode.");
                 });
             } else { 
                 mediaRecorder.stop(); 
