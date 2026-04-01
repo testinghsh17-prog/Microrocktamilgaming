@@ -122,23 +122,7 @@
         .massive-alert-body { font-size: 22px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; line-height: 1.5; word-wrap: break-word; }
 
         /* =========================================================
-           6. LOADING SCREEN OVERLAY
-           ========================================================= */
-        #loading-overlay { 
-            position: fixed; inset: 0; background: var(--bg-main); z-index: 9999999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            transition: opacity 0.5s ease;
-        }
-
-        .loading-spinner { 
-            width: 70px; height: 70px; border: 8px solid var(--border-color); 
-            border-top: 8px solid var(--accent); border-radius: 50%; 
-            animation: spin 1s linear infinite; margin-bottom: 25px;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* =========================================================
-           7. FULL-SCREEN MODALS & BOXES
+           6. FULL-SCREEN MODALS & BOXES
            ========================================================= */
         .fullscreen-overlay { 
             position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; 
@@ -205,7 +189,7 @@
         .tab.active { background: var(--bg-panel); color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
         /* =========================================================
-           8. MAIN APP LAYOUT & SIDEBAR
+           7. MAIN APP LAYOUT & SIDEBAR
            ========================================================= */
         #app-screen { display: none; flex: 1; flex-direction: row; width: 100%; overflow: hidden; position: relative; }
         
@@ -282,7 +266,7 @@
         .tool-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); box-shadow: var(--shadow);}
 
         /* =========================================================
-           9. CHAT SECTION
+           8. CHAT SECTION
            ========================================================= */
         .chat-section { flex: 1; display: flex; flex-direction: column; min-width: 0; background: transparent; position: relative; }
         
@@ -326,7 +310,7 @@
         }
 
         /* =========================================================
-           10. CUTE MESSAGE BUBBLES & ACTIONS
+           9. CUTE MESSAGE BUBBLES & ACTIONS
            ========================================================= */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; max-width: 85%; position: relative; align-items: flex-end; transition: 0.3s;
@@ -378,7 +362,7 @@
         audio { height: 50px; max-width: 260px; margin-top: 10px; outline: none; border-radius: 25px; }
 
         /* =========================================================
-           11. IRON-CLAD INPUT BAR (PREVENTS SQUISHING)
+           10. IRON-CLAD INPUT BAR (PREVENTS SQUISHING)
            ========================================================= */
         .input-bar { 
             padding: 15px 25px; background: var(--bg-panel); display: flex; gap: 12px; align-items: center; 
@@ -414,7 +398,7 @@
         }
 
         /* =========================================================
-           12. MOBILE RESPONSIVENESS
+           11. MOBILE RESPONSIVENESS
            ========================================================= */
         @media (max-width: 768px) {
             .sidebar { 
@@ -430,7 +414,7 @@
         }
 
         /* =========================================================
-           13. LIGHTBOX & STATUS VIEWERS
+           12. LIGHTBOX & STATUS VIEWERS
            ========================================================= */
         #media-viewer { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500000; 
@@ -454,12 +438,6 @@
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3" preload="auto"></audio>
 
     <div id="global-bg" class="global-bg bg-style-dark"></div>
-
-    <div id="loading-overlay">
-        <div class="loading-spinner"></div>
-        <h2 style="color:var(--accent); font-weight: 900; font-size: 28px; margin-bottom: 10px;">Loading Chat...</h2>
-        <p style="color:var(--text-sub); font-weight: 800; text-align: center; font-size: 16px;">Please wait.<br>You cannot send messages until loading is complete.</p>
-    </div>
 
     <div id="massive-alert-screen">
         <div class="massive-alert-box">
@@ -704,7 +682,7 @@
             
             <div id="multi-select-bar">
                 <span id="select-count">0 Selected</span>
-                <div style="display:flex; gap:12px;">
+                <div style="display:flex; gap:10px;">
                     <button class="select-action-btn cancel" onclick="toggleSelectMode()">Cancel</button>
                     <button class="select-action-btn" onclick="deleteSelectedMsgs(false)">Hide</button>
                     <button id="perm-delete-btn" class="select-action-btn" style="background:#d63031; display:none;" onclick="deleteSelectedMsgs(true)">Erase Forever</button>
@@ -752,7 +730,6 @@
         window.allStatuses = {}; 
         window.allMessages = {}; 
         let currentReplyData = null;
-        let isLoading = true; 
         let myTimeoutTime = 0;
 
         // 🎨 COLOR PALETTE GENERATOR
@@ -794,14 +771,15 @@
         let selectedMsgs = new Set();
 
         function toggleSelectMode() {
-            if(isLoading) return;
             isSelectMode = !isSelectMode;
             const container = document.getElementById('messages');
             
             if(isSelectMode) {
+                // Enter Select Mode
                 container.classList.add('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'flex';
                 
+                // Show Permanent Erase button only for Owner/Admin
                 if(isOwner || isAdmin) {
                     document.getElementById('perm-delete-btn').style.display = 'block';
                 }
@@ -809,12 +787,15 @@
                 selectedMsgs.clear(); 
                 updateSelectCount();
             } else {
+                // Exit Select Mode
                 container.classList.remove('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'none';
                 
+                // Uncheck all boxes
                 const checkboxes = container.querySelectorAll('.msg-checkbox');
                 checkboxes.forEach(cb => cb.checked = false);
                 
+                // Remove highlight classes
                 selectedMsgs.forEach(id => { 
                     let el = document.getElementById(id); 
                     if(el) el.classList.remove('selected'); 
@@ -879,6 +860,9 @@
             if (e.key === 'Enter') checkStealth(); 
         });
         
+        // Show stealth immediately
+        document.getElementById('stealth-screen').style.display = 'flex';
+
         function checkStealth() {
             if(document.getElementById('stealth-pin').value === '0000') { 
                 document.getElementById('stealth-screen').style.display = 'none'; 
@@ -894,6 +878,7 @@
             if (saved) { 
                 myProfile = JSON.parse(saved); 
                 
+                // SAFETY INITS TO PREVENT PROFILE CRASH
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
                 if(myProfile.roblox === undefined) myProfile.roblox = "";
                 if(myProfile.minecraft === undefined) myProfile.minecraft = "";
@@ -973,6 +958,7 @@
                 if(snap.exists() && snap.val().password === pwd) {
                     myProfile = snap.val();
                     
+                    // Safety check missing fields
                     if(!myProfile.nameColor) myProfile.nameColor = "#ff9ff3";
                     if(!myProfile.ownerEffect) myProfile.ownerEffect = "none";
                     if(!myProfile.timeoutUntil) myProfile.timeoutUntil = 0;
@@ -1125,14 +1111,6 @@
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('app-screen').style.display = 'flex';
             
-            // Initiate Loading Lock
-            isLoading = true;
-            document.getElementById('loading-overlay').style.display = 'flex';
-            document.getElementById('chatInput').disabled = true;
-            document.getElementById('action-btn-voice').disabled = true;
-            document.getElementById('attach-btn').disabled = true;
-            document.getElementById('dice-btn').disabled = true;
-            
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
             if(isOwner) {
@@ -1189,20 +1167,6 @@
             let initialLoad = true;
             db.ref('messages').once('value').then(() => { 
                 initialLoad = false; 
-                isLoading = false;
-                
-                // Fade out loading screen
-                document.getElementById('loading-overlay').style.opacity = '0';
-                setTimeout(() => { 
-                    document.getElementById('loading-overlay').style.display = 'none'; 
-                }, 500);
-                
-                // Enable Inputs
-                document.getElementById('chatInput').disabled = false;
-                document.getElementById('chatInput').placeholder = "Message #general...";
-                document.getElementById('action-btn-voice').disabled = false;
-                document.getElementById('attach-btn').disabled = false;
-                document.getElementById('dice-btn').disabled = false;
             }); 
             
             db.ref('messages').on('child_added', (snapshot) => { 
@@ -1230,7 +1194,6 @@
 
             // Timeout Checking Loop
             setInterval(() => {
-                if(isLoading) return;
                 const inp = document.getElementById('chatInput');
                 if (myTimeoutTime > Date.now()) {
                     let mins = Math.ceil((myTimeoutTime - Date.now()) / 60000);
@@ -1344,7 +1307,6 @@
 
         // --- ⌨️ ALL COMMANDS ENGINE ---
         function handleActionClick() {
-            if (isLoading) return;
             const text = document.getElementById('chatInput').value.trim();
             
             if (text) {
@@ -1512,7 +1474,6 @@
         }
 
         function handleImageUpload(e) {
-            if(isLoading) return;
             if(!e.target.files[0]) return; 
             
             document.getElementById('chatInput').placeholder = "Compressing image...";
@@ -1523,31 +1484,20 @@
             e.target.value = '';
         }
 
-        // 🎤 VOICE RECORD LOGIC (100% FIXED)
+        // 🎤 VOICE RECORD LOGIC (UNIVERSAL FIX)
         let isRecording = false; 
         let mediaRecorder; 
         let audioChunks = [];
 
         function toggleVoiceRecord() {
-            if(isLoading) return;
-            if(myTimeoutTime > Date.now()) return alert("You are timed out.");
-            
             const btn = document.getElementById('action-btn-voice');
             
             if(!isRecording) {
-                // UNIVERSAL FIX: Try WebM, fallback to MP4, fallback to letting browser decide.
-                let mimeType = '';
-                if (MediaRecorder.isTypeSupported('audio/webm')) {
-                    mimeType = 'audio/webm';
-                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                    mimeType = 'audio/mp4';
-                }
-
+                // Let browser choose native format so it works on iOS Safari
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined); 
+                    mediaRecorder = new MediaRecorder(stream); 
                     mediaRecorder.start(); 
                     isRecording = true; 
-                    
                     btn.innerText = '⏹'; 
                     btn.style.background = 'var(--danger)'; 
                     btn.style.color = "white"; 
@@ -1558,7 +1508,7 @@
                     });
                     
                     mediaRecorder.addEventListener("stop", () => {
-                        const blob = new Blob(audioChunks, mimeType ? { type: mimeType } : undefined); 
+                        const blob = new Blob(audioChunks); 
                         const reader = new FileReader(); 
                         reader.readAsDataURL(blob);
                         reader.onloadend = () => { 
@@ -1648,10 +1598,7 @@
             if(u.ownerEffect && u.ownerEffect !== 'none') nameEl.className = u.ownerEffect; 
             else nameEl.className = "";
             
-            let rBadge = "🎮 GAMER";
-            if(u.role === 'owner') rBadge = "👑 OWNER";
-            if(u.role === 'admin') rBadge = "🛡️ ADMIN";
-            document.getElementById('action-role').innerText = rBadge;
+            document.getElementById('action-role').innerText = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎮 GAMER');
             
             const initial = u.name.charAt(0).toUpperCase();
             const imgEl = document.getElementById('action-avatar'); 
@@ -1679,22 +1626,22 @@
                 // 👑 OWNER TOOLKIT
                 if(isOwner) { 
                     container.innerHTML += `
-                        <div style="background:var(--input-bg); padding:20px; border-radius:20px; margin-top:20px; border: 2px solid var(--border-color);">
-                            <h4 style="margin:0 0 15px 0; color:var(--accent); text-align:center; font-size:18px;">👑 Owner Controls</h4>
+                        <div style="background:var(--input-bg); padding:15px; border-radius:16px; margin-top:15px; border: 1px solid var(--border-color);">
+                            <h4 style="margin:0 0 10px 0; color:var(--accent);">👑 Owner Tools</h4>
                             
-                            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                                <input type="number" id="timeout-mins-${userId}" class="input-style" style="padding:15px; width:90px; text-align:center;" placeholder="Mins">
-                                <button class="btn-primary" style="margin:0; padding:15px; width:auto; flex:1; font-size:14px;" onclick="cmdTimeout('${userId}', document.getElementById('timeout-mins-${userId}').value)">⏱️ Timeout</button>
+                            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                                <input type="number" id="timeout-mins-${userId}" class="input-style" style="padding:10px; width:70px; text-align:center;" placeholder="Mins">
+                                <button class="btn-primary" style="margin:0; padding:10px 15px; width:auto; flex:1;" onclick="cmdTimeout('${userId}', document.getElementById('timeout-mins-${userId}').value)">⏱️ Timeout</button>
                             </div>
                             
-                            <button class="btn-secondary" style="margin:0 0 15px 0; padding:15px; width:100%;" onclick="cmdUntimeout('${userId}')">Remove Timeout</button>
+                            <button class="btn-secondary" style="margin:0 0 10px 0; padding:10px; width:100%; border: 2px solid var(--text-sub); color: var(--text-main);" onclick="cmdUntimeout('${userId}')">Remove Timeout</button>
                             
-                            <div style="display:flex; gap:10px; margin-bottom: 15px;">
-                                <button class="btn-primary" style="margin:0; flex:1; background:var(--success); color:black; box-shadow:none; font-size:14px;" onclick="cmdPromote('${userId}')">🛡️ Make Admin</button>
-                                <button class="btn-secondary" style="margin:0; flex:1; color:var(--text-sub); border-color:var(--text-sub); font-size:14px;" onclick="cmdDemote('${userId}')">👤 Demote</button>
+                            <div style="display:flex; gap:8px; margin-bottom: 10px;">
+                                <button class="btn-primary" style="margin:0; flex:1; background:var(--success); color:black;" onclick="cmdPromote('${userId}')">🛡️ Make Admin</button>
+                                <button class="btn-secondary" style="margin:0; flex:1; color:var(--text-sub); border-color:var(--text-sub);" onclick="cmdDemote('${userId}')">👤 Demote</button>
                             </div>
 
-                            <button class="btn-danger" style="margin:0; padding:15px; font-size:16px;" onclick="cmdKick('${userId}')">🚨 Kick Player</button>
+                            <button class="btn-danger" style="margin:0;" onclick="cmdKick('${userId}')">🚨 Kick Player</button>
                         </div>
                     `; 
                 }
@@ -1751,6 +1698,14 @@
             const sName = payload.sender.name || 'Unknown';
             const isMe = sId === myProfile.id; 
             let bodyHtml = '';
+            
+            // Render Alerts
+            if(payload.type === 'alert' && !payload.isDeleted) {
+                return `<div class="sys-alert-msg" id="${payload.msgId}">
+                    ${isOwner ? `<button class="action-text-btn red" style="position:absolute; top:10px; right:10px; border:none; font-size:20px;" onclick="db.ref('messages/${payload.msgId}').remove()">✕</button>` : ''}
+                    <div class="sys-alert-title owner-rgb">🚨 ANNOUNCEMENT</div><div class="sys-alert-text">${payload.text}</div>
+                </div>`;
+            }
 
             // Render Reply Box
             let replyHtml = '';
