@@ -92,14 +92,12 @@
             100% { background-position: 200% 50%; } 
         }
         
-        /* OWNER ONLY - 4 RGB EFFECTS */
         .rgb-classic { background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #1e90ff, #9c88ff, #ff4757); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 3s linear infinite; font-weight: 900 !important; }
         .rgb-fire { background: linear-gradient(90deg, #ff4757, #ffa502, #ff7f50, #ff4757); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 2s linear infinite; font-weight: 900 !important; }
         .rgb-ocean { background: linear-gradient(90deg, #1e90ff, #00cec9, #70a1ff, #1e90ff); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 3s linear infinite; font-weight: 900 !important; }
         .rgb-neon { background: linear-gradient(90deg, #ff9ff3, #feca57, #ff9ff3); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 2s linear infinite; font-weight: 900 !important; }
         .owner-rgb { background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #1e90ff, #9c88ff, #ff4757); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 3s linear infinite; font-weight: 900 !important; }
 
-        /* ADMIN ONLY - 3 SOLID GLOW EFFECTS */
         .admin-gold { color: #f1c40f; text-shadow: 0 0 8px rgba(241, 196, 15, 0.6); font-weight: 900 !important; }
         .admin-purple { color: #9b59b6; text-shadow: 0 0 8px rgba(155, 89, 182, 0.6); font-weight: 900 !important; }
         .admin-emerald { color: #2ecc71; text-shadow: 0 0 8px rgba(46, 204, 113, 0.6); font-weight: 900 !important; }
@@ -125,23 +123,7 @@
         .massive-alert-body { font-size: 22px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; line-height: 1.5; word-wrap: break-word; }
 
         /* =========================================================
-           6. LOADING SCREEN OVERLAY
-           ========================================================= */
-        #loading-overlay { 
-            position: fixed; inset: 0; background: var(--bg-main); z-index: 9999999; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            transition: opacity 0.5s ease;
-        }
-
-        .loading-spinner { 
-            width: 70px; height: 70px; border: 8px solid var(--border-color); 
-            border-top: 8px solid var(--accent); border-radius: 50%; 
-            animation: spin 1s linear infinite; margin-bottom: 25px;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* =========================================================
-           7. FULL-SCREEN MODALS & BOXES
+           6. FULL-SCREEN MODALS & BOXES
            ========================================================= */
         .fullscreen-overlay { 
             position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; 
@@ -208,7 +190,7 @@
         .tab.active { background: var(--bg-panel); color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
         /* =========================================================
-           8. MAIN APP LAYOUT & SIDEBAR
+           7. MAIN APP LAYOUT & SIDEBAR
            ========================================================= */
         #app-screen { display: none; flex: 1; flex-direction: row; width: 100%; overflow: hidden; position: relative; }
         
@@ -284,38 +266,8 @@
         }
         .tool-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); box-shadow: var(--shadow);}
 
-        /* 👑 Minimized Owner Menu Styling */
-        #owner-super-controls {
-            padding: 0 20px 20px 20px; 
-            flex-direction: column; 
-            background: var(--bg-panel);
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .owner-menu-header {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            cursor: pointer; 
-            padding: 10px 0;
-        }
-
-        .owner-menu-header h4 {
-            margin: 0; 
-            color: var(--accent); 
-            font-weight: 900; 
-            font-size: 16px;
-        }
-
-        #owner-menu-content {
-            display: none; 
-            flex-direction: column; 
-            gap: 12px; 
-            margin-top: 10px;
-        }
-
         /* =========================================================
-           9. CHAT SECTION
+           8. CHAT SECTION
            ========================================================= */
         .chat-section { flex: 1; display: flex; flex-direction: column; min-width: 0; background: transparent; position: relative; }
         
@@ -359,7 +311,7 @@
         }
 
         /* =========================================================
-           10. CUTE MESSAGE BUBBLES & ACTIONS
+           9. CUTE MESSAGE BUBBLES & ACTIONS
            ========================================================= */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; max-width: 85%; position: relative; align-items: flex-end; transition: 0.3s;
@@ -411,15 +363,22 @@
         audio { height: 50px; max-width: 260px; margin-top: 10px; outline: none; border-radius: 25px; }
 
         /* =========================================================
-           11. IRON-CLAD INPUT BAR (FIXED SEPARATE MIC & SEND BUTTONS)
+           10. IRON-CLAD INPUT BAR (FIXED SEPARATE MIC & SEND BUTTONS)
            ========================================================= */
         .input-bar { 
-            padding: 15px 25px; background: var(--bg-panel); display: flex; gap: 12px; align-items: center; 
-            flex-shrink: 0; padding-bottom: max(15px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border-color);
+            padding: 15px 20px; 
+            background: var(--bg-panel); 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            width: 100%; 
+            box-sizing: border-box; 
+            flex-shrink: 0; 
+            padding-bottom: max(15px, env(safe-area-inset-bottom)); 
+            border-top: 1px solid var(--border-color);
         }
         
         .action-btn { 
-            /* Strict Flexbox Rules to prevent squishing */
             flex: 0 0 50px; 
             width: 50px; 
             height: 50px; 
@@ -442,11 +401,12 @@
         .voice-btn {
             background: var(--danger);
             color: white;
+            border-radius: 50%; /* Make it round to match send */
         }
         .voice-btn:hover { background: var(--danger-hover); }
 
         .chat-input { 
-            flex: 1 1 auto; /* Allows input to stretch and shrink safely */
+            flex: 1 1 auto; 
             min-width: 50px; 
             height: 50px; 
             border-radius: 25px; 
@@ -487,7 +447,7 @@
         }
 
         /* =========================================================
-           12. MOBILE RESPONSIVENESS
+           11. MOBILE RESPONSIVENESS
            ========================================================= */
         @media (max-width: 768px) {
             .sidebar { 
@@ -505,14 +465,13 @@
                 width: 42px; 
                 height: 42px; 
                 font-size: 18px; 
-                border-radius: 50%; /* Make them fully round on mobile */
             }
             
             .msg-actions { opacity: 1; } /* Always visible on mobile to avoid hover issues */
         }
 
         /* =========================================================
-           13. LIGHTBOX & STATUS VIEWERS
+           12. LIGHTBOX & STATUS VIEWERS
            ========================================================= */
         #media-viewer { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500000; 
@@ -536,12 +495,6 @@
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3" preload="auto"></audio>
 
     <div id="global-bg" class="global-bg bg-style-dark"></div>
-
-    <div id="loading-overlay">
-        <div class="loading-spinner"></div>
-        <h2 style="color:var(--accent); font-weight: 900; font-size: 28px; margin-bottom: 10px;">Loading Chat...</h2>
-        <p style="color:var(--text-sub); font-weight: 800; text-align: center; font-size: 16px;">Please wait.<br>You cannot send messages until loading is complete.</p>
-    </div>
 
     <div id="massive-alert-screen">
         <div class="massive-alert-box">
@@ -725,7 +678,6 @@
                 <p><b>/kick [name]</b><br><span style="color:var(--text-sub);">(Owner) Ban gamer.</span></p>
                 <p><b>/clear</b><br><span style="color:var(--text-sub);">(Everyone) Clear local screen.</span></p>
                 <p><b>/dice & /coin</b><br><span style="color:var(--text-sub);">(Everyone) Roll die / flip coin.</span></p>
-                <p><b>/nuke</b><br><span style="color:var(--text-sub);">(Owner) Wipe entire database.</span></p>
             </div>
             <button class="btn-primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
         </div>
@@ -810,10 +762,11 @@
 
             <div class="input-bar" id="input-bar-container">
                 <button class="action-btn" id="attach-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                
-                <button class="action-btn voice-btn" id="action-btn-voice" onclick="toggleVoiceRecord()" title="Voice Message">🎤</button>
+                <button class="action-btn" id="dice-btn" onclick="sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`);" title="Roll Dice">🎲</button>
                 
                 <input type="text" id="chatInput" class="chat-input" placeholder="Message #general..." onkeypress="if(event.key === 'Enter') handleActionClick();">
+                
+                <button class="action-btn voice-btn" id="voice-btn" onclick="toggleVoiceRecord()" title="Voice Message">🎤</button>
                 
                 <button class="send-btn" id="send-btn" onclick="handleActionClick()" title="Send">➤</button>
             </div>
@@ -842,7 +795,6 @@
         window.allStatuses = {}; 
         window.allMessages = {}; 
         let currentReplyData = null;
-        let isLoading = true; 
         let myTimeoutTime = 0;
 
         // 🎨 COLOR PALETTE GENERATOR
@@ -896,14 +848,15 @@
         let selectedMsgs = new Set();
 
         function toggleSelectMode() {
-            if(isLoading) return;
             isSelectMode = !isSelectMode;
             const container = document.getElementById('messages');
             
             if(isSelectMode) {
+                // Enter Select Mode
                 container.classList.add('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'flex';
                 
+                // Show Permanent Erase button only for Owner/Admin
                 if(isOwner || isAdmin) {
                     document.getElementById('perm-delete-btn').style.display = 'block';
                 }
@@ -911,12 +864,15 @@
                 selectedMsgs.clear(); 
                 updateSelectCount();
             } else {
+                // Exit Select Mode
                 container.classList.remove('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'none';
                 
+                // Uncheck all boxes
                 const checkboxes = container.querySelectorAll('.msg-checkbox');
                 checkboxes.forEach(cb => cb.checked = false);
                 
+                // Remove highlight classes
                 selectedMsgs.forEach(id => { 
                     let el = document.getElementById(id); 
                     if(el) el.classList.remove('selected'); 
@@ -958,21 +914,27 @@
             const confirmMsg = isPermanent ? `WARNING: ERASE ${selectedMsgs.size} message(s) FOREVER?` : `Hide ${selectedMsgs.size} message(s)?`;
             
             if(confirm(confirmMsg)) {
+                // Process each ID carefully
+                let updates = {};
                 selectedMsgs.forEach(id => { 
                     if(isPermanent && (isOwner || isAdmin)) {
-                        db.ref('messages/' + id).remove();
+                        db.ref('messages/' + id).remove(); // True permanent delete
                     } else {
-                        db.ref('messages/' + id).update({ isDeleted: true }); 
+                        db.ref('messages/' + id).update({ isDeleted: true }); // Soft hide
                     }
                 });
+                
                 toggleSelectMode(); 
             }
         }
 
         // Check Theme
         let isDark = localStorage.getItem('marutham_theme') === 'dark';
-        if(isDark) { 
-            document.body.classList.add('dark-theme'); 
+        if(!isDark) { 
+            // Default to dark because user asked for "pink better ui" which works best combined with dark or native pink
+            document.body.classList.remove('dark-theme'); 
+            document.getElementById('theme-btn').innerText = '🌙 Dark Mode'; 
+        } else {
             document.getElementById('theme-btn').innerText = '☀️ Light Mode'; 
         }
 
@@ -981,7 +943,7 @@
             if (e.key === 'Enter') checkStealth(); 
         });
         
-        // Show stealth immediately
+        // Show stealth immediately on load
         document.getElementById('stealth-screen').style.display = 'flex';
 
         function checkStealth() {
@@ -999,7 +961,7 @@
             if (saved) { 
                 myProfile = JSON.parse(saved); 
                 
-                // SAFETY INITS
+                // SAFETY INITS TO PREVENT PROFILE CRASH
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
                 if(myProfile.roblox === undefined) myProfile.roblox = "";
                 if(myProfile.minecraft === undefined) myProfile.minecraft = "";
@@ -1079,6 +1041,7 @@
                 if(snap.exists() && snap.val().password === pwd) {
                     myProfile = snap.val();
                     
+                    // Safety check missing fields
                     if(!myProfile.nameColor) myProfile.nameColor = "#ff9ff3";
                     if(!myProfile.ownerEffect) myProfile.ownerEffect = "none";
                     if(!myProfile.timeoutUntil) myProfile.timeoutUntil = 0;
@@ -1123,7 +1086,7 @@
                     <option value="rgb-neon">⚡ Neon Cyber</option>
                 `;
                 effectSelect.value = myProfile.ownerEffect || 'none';
-                document.getElementById('user-color-section').style.display = 'none';
+                document.getElementById('user-color-section').style.display = 'none'; // Hide standard colors for owner
             } else if (isAdmin) {
                 effectSection.style.display = 'block';
                 effectLabel.innerText = "🛡️ Admin Glow Effects";
@@ -1134,7 +1097,7 @@
                     <option value="admin-emerald">💎 Emerald Glow</option>
                 `;
                 effectSelect.value = myProfile.ownerEffect || 'none';
-                document.getElementById('user-color-section').style.display = 'none';
+                document.getElementById('user-color-section').style.display = 'none'; // Hide standard colors for admin
             } else {
                 effectSection.style.display = 'none';
                 document.getElementById('user-color-section').style.display = 'block';
@@ -1175,7 +1138,7 @@
             document.getElementById('edit-screen').style.display = 'none';
         }
 
-        // 🐞 BUG REPORTER
+        // 🐞 BUG REPORTER (FOR EVERYONE)
         function submitBug() {
             const txt = document.getElementById('bugText').value.trim(); 
             if(!txt) return;
@@ -1245,7 +1208,6 @@
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('app-screen').style.display = 'flex';
             
-            // Set User as Online
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
             // Make Owner menu visible
@@ -1264,7 +1226,17 @@
                 }
             });
 
-            // Listen for user updates (online/offline)
+            db.ref('settings/chatLocked').on('value', (snap) => {
+                window.chatLocked = snap.val() === true;
+                document.getElementById('chat-lock-icon').style.display = window.chatLocked ? 'inline' : 'none';
+            });
+
+            db.ref('accounts/' + myProfile.id).on('value', (snap) => {
+                if(snap.exists()) {
+                    myTimeoutTime = snap.val().timeoutUntil || 0;
+                }
+            });
+
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {}; 
                 renderUserList(); 
@@ -1280,6 +1252,7 @@
                     if(now - raw[id].timestamp < 86400000) {
                         window.allStatuses[id] = raw[id]; 
                     } else {
+                        // Status is older than 24 hours, delete it
                         db.ref('statuses/' + id).remove(); 
                     }
                 } 
@@ -1294,19 +1267,10 @@
                 }
             });
 
+            // Ensure no loading screen
             let initialLoad = true;
             db.ref('messages').once('value').then(() => { 
                 initialLoad = false; 
-                isLoading = false;
-                
-                // Fade out loading screen safely
-                const loadScreen = document.getElementById('loading-overlay');
-                if(loadScreen) {
-                    loadScreen.style.opacity = '0';
-                    setTimeout(() => { 
-                        loadScreen.style.display = 'none'; 
-                    }, 500);
-                }
             }); 
             
             db.ref('messages').on('child_added', (snapshot) => { 
@@ -1331,6 +1295,24 @@
                 if (el) el.remove(); 
                 if(window.allMessages[snapshot.key]) delete window.allMessages[snapshot.key];
             });
+
+            // Timeout Checking Loop
+            setInterval(() => {
+                const inp = document.getElementById('chatInput');
+                if (myTimeoutTime > Date.now()) {
+                    let mins = Math.ceil((myTimeoutTime - Date.now()) / 60000);
+                    inp.placeholder = `⏱️ Muted for ${mins}m`;
+                    inp.disabled = true;
+                } else if (window.chatLocked && !isOwner && !isAdmin) {
+                    inp.placeholder = "🔒 Chat Locked";
+                    inp.disabled = true;
+                } else {
+                    if(inp.disabled) {
+                        inp.placeholder = "Message #general...";
+                        inp.disabled = false;
+                    }
+                }
+            }, 1000);
         }
 
         // 🚨 FULL SCREEN ALERT COMMAND
@@ -1371,6 +1353,7 @@
 
             const sortedIds = Object.keys(classmates).sort((a, b) => {
                 if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
+                // Owners & Admins at top
                 if(classmates[a].role === 'owner') return -1;
                 if(classmates[b].role === 'owner') return 1;
                 if(classmates[a].role === 'admin' && classmates[b].role !== 'admin') return -1;
@@ -1415,7 +1398,6 @@
 
         // --- ⌨️ ALL COMMANDS ENGINE ---
         function handleActionClick() {
-            if (isLoading) return;
             const text = document.getElementById('chatInput').value.trim();
             
             if (text) {
@@ -1469,6 +1451,12 @@
                         case '/kick':
                             if(isOwner) { let f = findUserByName(arg); if(f) cmdKick(f); }
                             break;
+                        case '/lock':
+                            if(isOwner || isAdmin) db.ref('settings/chatLocked').set(true);
+                            break;
+                        case '/unlock':
+                            if(isOwner || isAdmin) db.ref('settings/chatLocked').set(false);
+                            break;
                         case '/dice':
                             sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`);
                             break;
@@ -1513,7 +1501,7 @@
                 type: msgType, 
                 text: msgContent, 
                 data: base64Data, 
-                time: formatIST(Date.now()) // Use clean Tamil Nadu time for chat
+                time: formatIST(Date.now()) // Clean Tamil Nadu time for chat
             };
             
             if(currentReplyData) payload.replyTo = currentReplyData;
@@ -1543,6 +1531,10 @@
             document.getElementById('reply-preview-bar').style.display = 'none'; 
         }
 
+        document.getElementById('chatInput').addEventListener('keypress', (e) => { 
+            if(e.key === 'Enter') handleActionClick(); 
+        });
+
         // 🖼️ IMAGE UPLOAD LOGIC
         function compressImage(file, maxRes, callback) {
             const reader = new FileReader();
@@ -1569,7 +1561,6 @@
         }
 
         function handleImageUpload(e) {
-            if(isLoading) return;
             if(!e.target.files[0]) return; 
             
             document.getElementById('chatInput').placeholder = "Compressing image...";
@@ -1586,8 +1577,6 @@
         let audioChunks = [];
 
         function toggleVoiceRecord() {
-            if(isLoading) return;
-            
             const btn = document.getElementById('voice-btn');
             
             if(!isRecording) {
@@ -1682,7 +1671,7 @@
             alert("Status deleted."); 
         }
 
-        // 👤 GAMER CARD LOGIC (WITH NEW TIMESTAMP)
+        // 👤 GAMER CARD LOGIC
         function openUserActions(userId) {
             if(isSelectMode) { 
                 const cb = document.getElementById('cb_' + userId); 
@@ -1765,9 +1754,11 @@
         function nukeChat() { 
             if(confirm("WARNING: Wipe Database FOREVER?")) { 
                 db.ref('messages').remove().then(() => {
+                    db.ref('statuses').remove();
                     window.allMessages = {};
                     document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Database wiped by Owner.</div>'; 
-                });
+                    alert("Database erased!");
+                }).catch(e => alert("Error: " + e.message));
             } 
         }
 
