@@ -10,26 +10,25 @@
 
     <style>
         /* =========================================================
-           1. CORE CSS VARIABLES (BEAUTIFUL PINK UI)
+           1. CORE CSS VARIABLES (CUTE PINK & DARK THEMES)
            ========================================================= */
         :root {
-            --bg-main: #fce4ec;       /* Cute soft pink background */
-            --bg-panel: #ffffff;      /* Pure white panels */
-            --bg-sidebar: #ffffff;    /* Pure white sidebar */
-            --text-main: #2d3436;     /* Dark grey text for readability */
-            --text-sub: #a4b0be;      /* Soft grey for secondary text */
-            --border-color: #f8a5c2;  /* Soft pinkish borders */
-            --accent: #ff9ff3;        /* Bright cute pink accent */
-            --accent-hover: #f368e0;  /* Darker pink on hover */
-            --msg-me: #ff9ff3;        /* Your messages bubble color */
-            --msg-me-text: #ffffff;   /* Text inside your bubbles */
-            --msg-other: #f8f9fa;     /* Other people's bubbles */
-            --msg-other-text: #2d3436;/* Text inside their bubbles */
-            --input-bg: #fdf5f8;      /* Very soft pink input boxes */
-            --danger: #ff7675;        /* Soft red for delete buttons */
-            --danger-hover: #d63031;
-            --success: #55efc4;       /* Soft green */
-            --shadow: 0 8px 25px rgba(255, 159, 243, 0.25); /* Pink glow shadow */
+            --bg-main: #fce4ec;       
+            --bg-panel: #ffffff;      
+            --bg-sidebar: #ffffff;    
+            --text-main: #2d3436;     
+            --text-sub: #a4b0be;      
+            --border-color: #f1f2f6;  
+            --accent: #ff9ff3;        
+            --accent-hover: #f368e0;
+            --msg-me: #ff9ff3;        
+            --msg-me-text: #ffffff;
+            --msg-other: #f8f9fa;     
+            --msg-other-text: #2d3436;
+            --input-bg: #f1f2f6;      
+            --danger: #ff7675;        
+            --success: #55efc4;       
+            --shadow: 0 8px 25px rgba(255, 159, 243, 0.15); 
         }
 
         .dark-theme {
@@ -39,9 +38,9 @@
             --text-main: #f5f6fa;
             --text-sub: #7f8fa6;
             --border-color: #404654;
-            --accent: #ff9ff3; /* Kept pink accent even in dark mode for theme! */
-            --accent-hover: #f368e0;
-            --msg-me: #ff9ff3;
+            --accent: #a29bfe; 
+            --accent-hover: #6c5ce7;
+            --msg-me: #a29bfe;
             --msg-me-text: #ffffff;
             --msg-other: #404654;
             --msg-other-text: #f5f6fa;
@@ -57,7 +56,7 @@
             margin: 0; 
             padding: 0; 
             width: 100vw; 
-            height: 100dvh; /* 100dvh is best for mobile browsers */
+            height: 100dvh; 
             background: var(--bg-main); 
             color: var(--text-main); 
             overflow: hidden; 
@@ -71,7 +70,22 @@
         }
 
         /* =========================================================
-           3. OWNER RGB ANIMATIONS
+           3. BACKGROUND ENGINE (CONTROLLED BY OWNER)
+           ========================================================= */
+        .global-bg {
+            position: fixed; 
+            inset: 0; 
+            z-index: -10; 
+            transition: background 0.5s ease;
+        }
+        
+        .bg-style-dark { background: #1e272e; }
+        .bg-style-gamer { background-color: #202225; background-image: linear-gradient(rgba(255, 159, 243, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(162, 155, 254, 0.1) 2px, transparent 2px); background-size: 40px 40px; }
+        .bg-style-pink { background: #fce4ec; }
+        .bg-style-stars { background: radial-gradient(circle at bottom, #2f3640 0%, #192a56 100%); }
+
+        /* =========================================================
+           4. ROLE EFFECTS (OWNER RGB & ADMIN GLOWS)
            ========================================================= */
         @keyframes rainbowGlow { 
             0% { background-position: 0% 50%; } 
@@ -91,7 +105,7 @@
         .admin-emerald { color: #2ecc71; text-shadow: 0 0 8px rgba(46, 204, 113, 0.6); font-weight: 900 !important; }
 
         /* =========================================================
-           4. MASSIVE FULL SCREEN ALERT OVERLAY
+           5. MASSIVE FULL SCREEN ALERT OVERLAY
            ========================================================= */
         #massive-alert-screen {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 99999999;
@@ -111,7 +125,7 @@
         .massive-alert-body { font-size: 22px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; line-height: 1.5; word-wrap: break-word; }
 
         /* =========================================================
-           5. LOADING SCREEN OVERLAY
+           6. LOADING SCREEN OVERLAY
            ========================================================= */
         #loading-overlay { 
             position: fixed; inset: 0; background: var(--bg-main); z-index: 9999999; 
@@ -127,7 +141,7 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         /* =========================================================
-           6. FULL-SCREEN MODALS & BOXES
+           7. FULL-SCREEN MODALS & BOXES
            ========================================================= */
         .fullscreen-overlay { 
             position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; 
@@ -186,7 +200,7 @@
             background: var(--danger); color: white; border: none; padding: 15px; border-radius: 18px; 
             font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 118, 117, 0.3);
         }
-        .btn-danger:hover { background: var(--danger-hover); transform: translateY(-3px); }
+        .btn-danger:hover { background: #d63031; transform: translateY(-3px); }
 
         /* Tabs */
         .tab-container { display: flex; gap: 10px; margin-bottom: 25px; background: var(--input-bg); padding: 8px; border-radius: 18px; }
@@ -194,7 +208,7 @@
         .tab.active { background: var(--bg-panel); color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
         /* =========================================================
-           7. MAIN APP LAYOUT & SIDEBAR
+           8. MAIN APP LAYOUT & SIDEBAR
            ========================================================= */
         #app-screen { display: none; flex: 1; flex-direction: row; width: 100%; overflow: hidden; position: relative; }
         
@@ -270,8 +284,38 @@
         }
         .tool-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); box-shadow: var(--shadow);}
 
+        /* 👑 Minimized Owner Menu Styling */
+        #owner-super-controls {
+            padding: 0 20px 20px 20px; 
+            flex-direction: column; 
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .owner-menu-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            padding: 10px 0;
+        }
+
+        .owner-menu-header h4 {
+            margin: 0; 
+            color: var(--accent); 
+            font-weight: 900; 
+            font-size: 16px;
+        }
+
+        #owner-menu-content {
+            display: none; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-top: 10px;
+        }
+
         /* =========================================================
-           8. CHAT SECTION
+           9. CHAT SECTION
            ========================================================= */
         .chat-section { flex: 1; display: flex; flex-direction: column; min-width: 0; background: transparent; position: relative; }
         
@@ -315,7 +359,7 @@
         }
 
         /* =========================================================
-           9. CUTE MESSAGE BUBBLES & ACTIONS
+           10. CUTE MESSAGE BUBBLES & ACTIONS
            ========================================================= */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; max-width: 85%; position: relative; align-items: flex-end; transition: 0.3s;
@@ -367,19 +411,11 @@
         audio { height: 50px; max-width: 260px; margin-top: 10px; outline: none; border-radius: 25px; }
 
         /* =========================================================
-           10. IRON-CLAD INPUT BAR (FIXED FOR NO SQUISHING)
+           11. IRON-CLAD INPUT BAR (FIXED SEPARATE MIC & SEND BUTTONS)
            ========================================================= */
         .input-bar { 
-            padding: 15px 20px; 
-            background: var(--bg-panel); 
-            display: flex; 
-            gap: 12px; 
-            align-items: center; 
-            width: 100%; /* Ensures it spans exactly full width */
-            box-sizing: border-box; /* Crucial for preventing overflow */
-            flex-shrink: 0; 
-            padding-bottom: max(15px, env(safe-area-inset-bottom)); 
-            border-top: 1px solid var(--border-color);
+            padding: 15px 25px; background: var(--bg-panel); display: flex; gap: 12px; align-items: center; 
+            flex-shrink: 0; padding-bottom: max(15px, env(safe-area-inset-bottom)); border-top: 1px solid var(--border-color);
         }
         
         .action-btn { 
@@ -402,10 +438,16 @@
         }
         .action-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); }
         
+        /* Dedicated Voice Button Styling */
+        .voice-btn {
+            background: var(--danger);
+            color: white;
+        }
+        .voice-btn:hover { background: var(--danger-hover); }
+
         .chat-input { 
             flex: 1 1 auto; /* Allows input to stretch and shrink safely */
-            width: 100%;
-            min-width: 50px; /* Gives it a minimum safe shrinking bound */
+            min-width: 50px; 
             height: 50px; 
             border-radius: 25px; 
             background: var(--input-bg); 
@@ -419,8 +461,8 @@
         }
         .chat-input:focus { border-color: var(--accent); background: var(--bg-panel); box-shadow: 0 0 15px rgba(255, 159, 243, 0.2); }
         
+        /* Dedicated Send Button */
         .send-btn { 
-            /* Strict Flexbox Rules */
             flex: 0 0 50px; 
             width: 50px; 
             height: 50px; 
@@ -445,7 +487,7 @@
         }
 
         /* =========================================================
-           11. MOBILE RESPONSIVENESS
+           12. MOBILE RESPONSIVENESS
            ========================================================= */
         @media (max-width: 768px) {
             .sidebar { 
@@ -457,11 +499,11 @@
             .discord-msg-row { max-width: 95%; }
             
             /* Compact Input Bar for Mobile */
-            .input-bar { padding: 10px; gap: 8px; }
+            .input-bar { padding: 10px; gap: 6px; }
             .action-btn, .send-btn { 
-                flex: 0 0 45px; 
-                width: 45px; 
-                height: 45px; 
+                flex: 0 0 42px; 
+                width: 42px; 
+                height: 42px; 
                 font-size: 18px; 
                 border-radius: 50%; /* Make them fully round on mobile */
             }
@@ -470,7 +512,7 @@
         }
 
         /* =========================================================
-           12. LIGHTBOX & STATUS VIEWERS
+           13. LIGHTBOX & STATUS VIEWERS
            ========================================================= */
         #media-viewer { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500000; 
@@ -488,10 +530,18 @@
         .lb-btn:hover { transform: translateY(-3px); }
     </style>
 </head>
-<body>
+<body class="dark-theme">
 
     <audio id="sound-send" src="https://www.myinstants.com/media/sounds/pop_drip.mp3" preload="auto"></audio>
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3" preload="auto"></audio>
+
+    <div id="global-bg" class="global-bg bg-style-dark"></div>
+
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <h2 style="color:var(--accent); font-weight: 900; font-size: 28px; margin-bottom: 10px;">Loading Chat...</h2>
+        <p style="color:var(--text-sub); font-weight: 800; text-align: center; font-size: 16px;">Please wait.<br>You cannot send messages until loading is complete.</p>
+    </div>
 
     <div id="massive-alert-screen">
         <div class="massive-alert-box">
@@ -623,12 +673,13 @@
     <div id="user-action-modal" class="modal-screen">
         <div class="modal-box" style="width: 100%; max-width: 400px; padding: 30px; border-radius: 28px;">
             
-            <div style="display:flex; align-items:center; gap: 18px; margin-bottom: 25px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px;">
+            <div style="display:flex; align-items:center; gap: 18px; margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 20px;">
                 <img id="action-avatar" src="" style="width:80px; height:80px; border-radius:24px; object-fit:cover; background:var(--accent); display:none; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                 <div id="action-avatar-text" style="width:80px; height:80px; border-radius:24px; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"></div>
                 <div>
                     <h3 id="action-name" style="margin:0; font-size:26px; font-weight:900;">Name</h3>
                     <p id="action-role" style="margin:0; font-size:14px; color:var(--text-sub); font-weight:900; text-transform:uppercase; margin-top:4px;">Role</p>
+                    <p id="card-last-seen" style="margin:4px 0 0 0; font-size:12px; color:var(--text-sub); font-weight:700;">Last Seen: ...</p>
                 </div>
             </div>
             
@@ -707,15 +758,22 @@
                 <button class="tool-btn" onclick="document.getElementById('cmd-screen').style.display='flex'">⌨️ Cmds</button>
                 <button class="tool-btn" id="multi-select-toggle" onclick="toggleSelectMode()">🗑️ Select</button>
                 <button class="tool-btn" onclick="document.getElementById('bug-report-screen').style.display='flex'">🐛 Report</button>
-                <button class="tool-btn" onclick="toggleDarkMode()" id="theme-btn">🌙 Dark</button>
+                <button class="tool-btn" onclick="toggleDarkMode()" id="theme-btn">🌙 Dark Mode</button>
                 <button class="tool-btn" style="grid-column: span 2;" onclick="openEditProfile()">⚙️ Settings</button>
                 <button class="tool-btn" style="grid-column: span 2; color: var(--danger); background: rgba(255, 118, 117, 0.1);" onclick="logoutApp()">🚪 Logout</button>
             </div>
 
-            <div id="owner-super-controls" style="display:none; padding: 0 20px 20px 20px; flex-direction: column; gap:12px; background:var(--bg-panel);">
-                <h4 style="margin: 0; color: var(--accent); text-align: center; font-weight: 900; font-size: 16px;">👑 Owner Controls</h4>
-                <button class="btn-primary" style="margin:0; background: #55efc4; color: black; padding:14px; box-shadow:none;" onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
-                <button class="btn-danger" style="margin:0; padding:14px; box-shadow:none;" onclick="nukeChat()">☢️ Wipe Database</button>
+            <div id="owner-super-controls" style="display:none; padding: 0 20px 20px 20px; flex-direction: column; background:var(--bg-panel);">
+                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding: 10px 0; border-top: 1px solid var(--border-color);" onclick="toggleOwnerMenu()">
+                    <h4 style="margin: 0; color: var(--accent); font-weight: 900; font-size: 16px;">👑 Owner Controls</h4>
+                    <span id="owner-menu-arrow" style="color:var(--accent); font-weight:bold;">▼</span>
+                </div>
+                
+                <div id="owner-menu-content" style="display:none; flex-direction:column; gap:12px; margin-top:10px;">
+                    <button class="btn-primary" style="margin:0; background: #a29bfe; padding:14px; box-shadow:none;" onclick="changeGlobalBackground()">🌌 Change Global BG</button>
+                    <button class="btn-primary" style="margin:0; background: #55efc4; color: black; padding:14px; box-shadow:none;" onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
+                    <button class="btn-danger" style="margin:0; padding:14px; box-shadow:none;" onclick="nukeChat()">☢️ Wipe Database</button>
+                </div>
             </div>
         </div>
 
@@ -752,11 +810,12 @@
 
             <div class="input-bar" id="input-bar-container">
                 <button class="action-btn" id="attach-btn" onclick="document.getElementById('image-picker').click()" title="Add Image">📎</button>
-                <button class="action-btn" id="dice-btn" onclick="sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`);" title="Roll Dice">🎲</button>
                 
-                <input type="text" id="chatInput" class="chat-input" placeholder="Message #general..." oninput="handleTypingInput()">
+                <button class="action-btn voice-btn" id="action-btn-voice" onclick="toggleVoiceRecord()" title="Voice Message">🎤</button>
                 
-                <button class="send-btn" id="action-btn-voice" onclick="toggleVoiceRecord()">🎤</button>
+                <input type="text" id="chatInput" class="chat-input" placeholder="Message #general..." onkeypress="if(event.key === 'Enter') handleActionClick();">
+                
+                <button class="send-btn" id="send-btn" onclick="handleActionClick()" title="Send">➤</button>
             </div>
         </div>
     </div>
@@ -783,6 +842,7 @@
         window.allStatuses = {}; 
         window.allMessages = {}; 
         let currentReplyData = null;
+        let isLoading = true; 
         let myTimeoutTime = 0;
 
         // 🎨 COLOR PALETTE GENERATOR
@@ -819,20 +879,31 @@
             }
         }
 
+        // 🕒 TAMIL NADU 12-HOUR TIME FORMATTER
+        function formatIST(timestamp) {
+            if(!timestamp) return "Never";
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-US', { 
+                timeZone: 'Asia/Kolkata', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true 
+            });
+        }
+
         // 🚀 BUG-FREE BULK SELECT SYSTEM 🚀
         let isSelectMode = false;
         let selectedMsgs = new Set();
 
         function toggleSelectMode() {
+            if(isLoading) return;
             isSelectMode = !isSelectMode;
             const container = document.getElementById('messages');
             
             if(isSelectMode) {
-                // Enter Select Mode
                 container.classList.add('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'flex';
                 
-                // Show Permanent Erase button only for Owner/Admin
                 if(isOwner || isAdmin) {
                     document.getElementById('perm-delete-btn').style.display = 'block';
                 }
@@ -840,15 +911,12 @@
                 selectedMsgs.clear(); 
                 updateSelectCount();
             } else {
-                // Exit Select Mode
                 container.classList.remove('select-mode-active');
                 document.getElementById('multi-select-bar').style.display = 'none';
                 
-                // Uncheck all boxes
                 const checkboxes = container.querySelectorAll('.msg-checkbox');
                 checkboxes.forEach(cb => cb.checked = false);
                 
-                // Remove highlight classes
                 selectedMsgs.forEach(id => { 
                     let el = document.getElementById(id); 
                     if(el) el.classList.remove('selected'); 
@@ -890,27 +958,21 @@
             const confirmMsg = isPermanent ? `WARNING: ERASE ${selectedMsgs.size} message(s) FOREVER?` : `Hide ${selectedMsgs.size} message(s)?`;
             
             if(confirm(confirmMsg)) {
-                // Process each ID carefully
-                let updates = {};
                 selectedMsgs.forEach(id => { 
                     if(isPermanent && (isOwner || isAdmin)) {
-                        db.ref('messages/' + id).remove(); // True permanent delete
+                        db.ref('messages/' + id).remove();
                     } else {
-                        db.ref('messages/' + id).update({ isDeleted: true }); // Soft hide
+                        db.ref('messages/' + id).update({ isDeleted: true }); 
                     }
                 });
-                
                 toggleSelectMode(); 
             }
         }
 
         // Check Theme
         let isDark = localStorage.getItem('marutham_theme') === 'dark';
-        if(!isDark) { 
-            // Default to dark because user asked for "pink better ui" which works best combined with dark or native pink
-            document.body.classList.remove('dark-theme'); 
-            document.getElementById('theme-btn').innerText = '🌙 Dark Mode'; 
-        } else {
+        if(isDark) { 
+            document.body.classList.add('dark-theme'); 
             document.getElementById('theme-btn').innerText = '☀️ Light Mode'; 
         }
 
@@ -919,7 +981,7 @@
             if (e.key === 'Enter') checkStealth(); 
         });
         
-        // Show stealth immediately on load
+        // Show stealth immediately
         document.getElementById('stealth-screen').style.display = 'flex';
 
         function checkStealth() {
@@ -937,7 +999,7 @@
             if (saved) { 
                 myProfile = JSON.parse(saved); 
                 
-                // SAFETY INITS TO PREVENT PROFILE CRASH
+                // SAFETY INITS
                 if(myProfile.avatar === undefined) myProfile.avatar = "";
                 if(myProfile.roblox === undefined) myProfile.roblox = "";
                 if(myProfile.minecraft === undefined) myProfile.minecraft = "";
@@ -1017,7 +1079,6 @@
                 if(snap.exists() && snap.val().password === pwd) {
                     myProfile = snap.val();
                     
-                    // Safety check missing fields
                     if(!myProfile.nameColor) myProfile.nameColor = "#ff9ff3";
                     if(!myProfile.ownerEffect) myProfile.ownerEffect = "none";
                     if(!myProfile.timeoutUntil) myProfile.timeoutUntil = 0;
@@ -1062,7 +1123,7 @@
                     <option value="rgb-neon">⚡ Neon Cyber</option>
                 `;
                 effectSelect.value = myProfile.ownerEffect || 'none';
-                document.getElementById('user-color-section').style.display = 'none'; // Hide standard colors for owner
+                document.getElementById('user-color-section').style.display = 'none';
             } else if (isAdmin) {
                 effectSection.style.display = 'block';
                 effectLabel.innerText = "🛡️ Admin Glow Effects";
@@ -1073,7 +1134,7 @@
                     <option value="admin-emerald">💎 Emerald Glow</option>
                 `;
                 effectSelect.value = myProfile.ownerEffect || 'none';
-                document.getElementById('user-color-section').style.display = 'none'; // Hide standard colors for admin
+                document.getElementById('user-color-section').style.display = 'none';
             } else {
                 effectSection.style.display = 'none';
                 document.getElementById('user-color-section').style.display = 'block';
@@ -1114,7 +1175,7 @@
             document.getElementById('edit-screen').style.display = 'none';
         }
 
-        // 🐞 BUG REPORTER (FOR EVERYONE)
+        // 🐞 BUG REPORTER
         function submitBug() {
             const txt = document.getElementById('bugText').value.trim(); 
             if(!txt) return;
@@ -1156,27 +1217,54 @@
             o.style.display = s.classList.contains('open') ? 'block' : 'none';
         }
 
+        // 👑 MINIMIZABLE OWNER MENU
+        function toggleOwnerMenu() {
+            const content = document.getElementById('owner-menu-content');
+            const arrow = document.getElementById('owner-menu-arrow');
+            if (content.style.display === 'none') {
+                content.style.display = 'flex';
+                arrow.innerText = '▲';
+            } else {
+                content.style.display = 'none';
+                arrow.innerText = '▼';
+            }
+        }
+
+        // 🌍 GLOBAL BACKGROUND ENGINE
+        const bgClasses = ['bg-style-dark', 'bg-style-gamer', 'bg-style-pink', 'bg-style-stars'];
+        let currentGlobalBg = 0;
+
+        function changeGlobalBackground() {
+            if(!isOwner) return;
+            currentGlobalBg = (currentGlobalBg + 1) % bgClasses.length;
+            db.ref('settings/globalBackground').set(currentGlobalBg);
+        }
+
+        // --- APP BOOT SEQUENCE ---
         function startApp() {
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('app-screen').style.display = 'flex';
             
+            // Set User as Online
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
+            // Make Owner menu visible
             if(isOwner) {
                 document.getElementById('owner-super-controls').style.display = 'flex';
             }
 
-            db.ref('settings/chatLocked').on('value', (snap) => {
-                window.chatLocked = snap.val() === true;
-                document.getElementById('chat-lock-icon').style.display = window.chatLocked ? 'inline' : 'none';
-            });
-
-            db.ref('accounts/' + myProfile.id).on('value', (snap) => {
-                if(snap.exists()) {
-                    myTimeoutTime = snap.val().timeoutUntil || 0;
+            // Sync Background
+            db.ref('settings/globalBackground').on('value', (snap) => {
+                let bgIndex = snap.val();
+                if(bgIndex === null) bgIndex = 0;
+                currentGlobalBg = bgIndex; 
+                const bgContainer = document.getElementById('global-bg');
+                if(bgContainer) {
+                    bgContainer.className = `global-bg ${bgClasses[bgIndex]}`;
                 }
             });
 
+            // Listen for user updates (online/offline)
             db.ref('users').on('value', (snapshot) => {
                 classmates = snapshot.val() || {}; 
                 renderUserList(); 
@@ -1192,25 +1280,40 @@
                     if(now - raw[id].timestamp < 86400000) {
                         window.allStatuses[id] = raw[id]; 
                     } else {
-                        // Status is older than 24 hours, delete it
                         db.ref('statuses/' + id).remove(); 
                     }
                 } 
                 renderStatusBar();
             });
 
+            // Load Chat Messages
             db.ref('messages').on('value', (snap) => {
                 if(!snap.exists()) { 
                     document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Chat is clear.</div>'; 
                     window.allMessages = {}; 
                 }
             });
+
+            let initialLoad = true;
+            db.ref('messages').once('value').then(() => { 
+                initialLoad = false; 
+                isLoading = false;
+                
+                // Fade out loading screen safely
+                const loadScreen = document.getElementById('loading-overlay');
+                if(loadScreen) {
+                    loadScreen.style.opacity = '0';
+                    setTimeout(() => { 
+                        loadScreen.style.display = 'none'; 
+                    }, 500);
+                }
+            }); 
             
             db.ref('messages').on('child_added', (snapshot) => { 
                 const data = snapshot.val(); 
                 if(data && data.type !== 'global_alert') { 
                     renderMessage(data); 
-                    if(data.sender.id !== myProfile.id) playSound('receive'); 
+                    if(!initialLoad && data.sender.id !== myProfile.id) playSound('receive'); 
                 } else if (data && data.type === 'global_alert' && !data.isDeleted) {
                     showFullScreenAlert(data.text);
                 }
@@ -1228,24 +1331,6 @@
                 if (el) el.remove(); 
                 if(window.allMessages[snapshot.key]) delete window.allMessages[snapshot.key];
             });
-
-            // Timeout Checking Loop
-            setInterval(() => {
-                const inp = document.getElementById('chatInput');
-                if (myTimeoutTime > Date.now()) {
-                    let mins = Math.ceil((myTimeoutTime - Date.now()) / 60000);
-                    inp.placeholder = `⏱️ Muted for ${mins}m`;
-                    inp.disabled = true;
-                } else if (window.chatLocked && !isOwner && !isAdmin) {
-                    inp.placeholder = "🔒 Chat Locked";
-                    inp.disabled = true;
-                } else {
-                    if(inp.disabled) {
-                        inp.placeholder = "Message #general...";
-                        inp.disabled = false;
-                    }
-                }
-            }, 1000);
         }
 
         // 🚨 FULL SCREEN ALERT COMMAND
@@ -1286,7 +1371,6 @@
 
             const sortedIds = Object.keys(classmates).sort((a, b) => {
                 if(a === myProfile.id) return -1; if(b === myProfile.id) return 1;
-                // Owners & Admins at top
                 if(classmates[a].role === 'owner') return -1;
                 if(classmates[b].role === 'owner') return 1;
                 if(classmates[a].role === 'admin' && classmates[b].role !== 'admin') return -1;
@@ -1315,35 +1399,23 @@
                 let statusColorClass = 'offline';
                 if (u.online) statusColorClass = u.customStatus || 'online';
 
+                // Display Last Seen on User List card
+                let lastSeenTxt = u.online ? 'Active Now' : formatIST(u.lastSeen);
+
                 container.innerHTML += `
                     <div class="user-item" onclick="openUserActions('${id}')">
                         <div class="avatar-wrap">${avatarHTML}<div class="status-dot-abs ${statusColorClass}"></div></div>
-                        <div class="user-details"><div class="${nameClass}" style="color:${nameColor}">${displayName} ${roleBadge}</div></div>
+                        <div class="user-details">
+                            <div class="${nameClass}" style="color:${nameColor}">${displayName} ${roleBadge}</div>
+                            <div style="font-size:11px; color:var(--text-sub); font-weight:bold;">${lastSeenTxt}</div>
+                        </div>
                     </div>`;
             });
         }
 
-        function getIST() { 
-            return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' }); 
-        }
-
-        function handleTypingInput() {
-            const text = document.getElementById('chatInput').value.trim(); 
-            const btn = document.getElementById('action-btn-voice');
-            
-            if (text) { 
-                btn.innerText = '➤'; 
-                btn.style.background = 'var(--accent)'; 
-                btn.style.color = 'white';
-            } else { 
-                btn.innerText = '🎤'; 
-                btn.style.background = 'var(--input-bg)'; 
-                btn.style.color = 'var(--text-sub)';
-            }
-        }
-
         // --- ⌨️ ALL COMMANDS ENGINE ---
         function handleActionClick() {
+            if (isLoading) return;
             const text = document.getElementById('chatInput').value.trim();
             
             if (text) {
@@ -1397,12 +1469,6 @@
                         case '/kick':
                             if(isOwner) { let f = findUserByName(arg); if(f) cmdKick(f); }
                             break;
-                        case '/lock':
-                            if(isOwner || isAdmin) db.ref('settings/chatLocked').set(true);
-                            break;
-                        case '/unlock':
-                            if(isOwner || isAdmin) db.ref('settings/chatLocked').set(false);
-                            break;
                         case '/dice':
                             sendMsgToDB('text', `🎲 Rolled a ${Math.floor(Math.random() * 6) + 1}!`);
                             break;
@@ -1414,15 +1480,11 @@
                     }
                     
                     document.getElementById('chatInput').value=''; 
-                    handleTypingInput(); 
                     return;
                 }
                 
                 sendMsgToDB('text', text); 
                 document.getElementById('chatInput').value = ''; 
-                handleTypingInput(); 
-            } else { 
-                toggleVoiceRecord(); 
             }
         }
 
@@ -1451,7 +1513,7 @@
                 type: msgType, 
                 text: msgContent, 
                 data: base64Data, 
-                time: new Date().toLocaleTimeString() 
+                time: formatIST(Date.now()) // Use clean Tamil Nadu time for chat
             };
             
             if(currentReplyData) payload.replyTo = currentReplyData;
@@ -1481,10 +1543,6 @@
             document.getElementById('reply-preview-bar').style.display = 'none'; 
         }
 
-        document.getElementById('chatInput').addEventListener('keypress', (e) => { 
-            if(e.key === 'Enter') handleActionClick(); 
-        });
-
         // 🖼️ IMAGE UPLOAD LOGIC
         function compressImage(file, maxRes, callback) {
             const reader = new FileReader();
@@ -1511,6 +1569,7 @@
         }
 
         function handleImageUpload(e) {
+            if(isLoading) return;
             if(!e.target.files[0]) return; 
             
             document.getElementById('chatInput').placeholder = "Compressing image...";
@@ -1521,31 +1580,26 @@
             e.target.value = '';
         }
 
-        // 🎤 VOICE RECORD LOGIC (UNIVERSAL FIX)
+        // 🎤 DEDICATED VOICE RECORD LOGIC
         let isRecording = false; 
         let mediaRecorder; 
         let audioChunks = [];
 
         function toggleVoiceRecord() {
-            const btn = document.getElementById('action-btn-voice');
+            if(isLoading) return;
+            
+            const btn = document.getElementById('voice-btn');
             
             if(!isRecording) {
-                // Determine format
-                let mimeType = '';
-                if (MediaRecorder.isTypeSupported('audio/webm')) {
-                    mimeType = 'audio/webm';
-                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                    mimeType = 'audio/mp4';
-                }
-                
+                // Let browser choose native format so it works on iOS Safari
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined); 
+                    mediaRecorder = new MediaRecorder(stream); 
                     mediaRecorder.start(); 
                     isRecording = true; 
                     
                     btn.innerText = '⏹'; 
-                    btn.style.background = 'var(--danger)'; 
-                    btn.style.color = "white"; 
+                    btn.style.background = 'var(--bg-panel)'; 
+                    btn.style.color = "var(--danger)"; 
                     audioChunks = [];
                     
                     mediaRecorder.addEventListener("dataavailable", e => { 
@@ -1553,13 +1607,15 @@
                     });
                     
                     mediaRecorder.addEventListener("stop", () => {
-                        const blob = new Blob(audioChunks, mimeType ? { type: mimeType } : undefined); 
+                        const mimeType = mediaRecorder.mimeType || 'audio/mp4'; 
+                        const blob = new Blob(audioChunks, { type: mimeType }); 
                         const reader = new FileReader(); 
                         reader.readAsDataURL(blob);
                         reader.onloadend = () => { 
                             sendMsgToDB('voice', '', null, reader.result); 
                         }; 
                         
+                        // Stop all tracks to fully release the microphone
                         stream.getTracks().forEach(t => t.stop());
                     });
                 }).catch(e => {
@@ -1570,8 +1626,8 @@
                 mediaRecorder.stop(); 
                 isRecording = false; 
                 btn.innerText = '🎤'; 
-                btn.style.background = 'var(--input-bg)'; 
-                btn.style.color = "var(--text-sub)"; 
+                btn.style.background = 'var(--danger)'; 
+                btn.style.color = "white"; 
             }
         }
 
@@ -1626,7 +1682,7 @@
             alert("Status deleted."); 
         }
 
-        // 👤 GAMER CARD LOGIC
+        // 👤 GAMER CARD LOGIC (WITH NEW TIMESTAMP)
         function openUserActions(userId) {
             if(isSelectMode) { 
                 const cb = document.getElementById('cb_' + userId); 
@@ -1645,6 +1701,10 @@
             else nameEl.className = "";
             
             document.getElementById('action-role').innerText = u.name.toLowerCase().includes('vishnuram') ? '👑 OWNER' : (u.role === 'admin' ? '🛡️ ADMIN' : '🎮 GAMER');
+            
+            // Format Last Seen Time
+            const lastSeenText = u.online ? 'Active Now' : formatIST(u.lastSeen);
+            document.getElementById('card-last-seen').innerText = `Last Seen: ${lastSeenText}`;
             
             const initial = u.name.charAt(0).toUpperCase();
             const imgEl = document.getElementById('action-avatar'); 
@@ -1667,7 +1727,7 @@
             container.innerHTML = ''; 
             
             if(userId !== myProfile.id) {
-                container.innerHTML += `<button class="action-menu-btn" onclick="document.getElementById('chatInput').value='/dm ${u.name} '; document.getElementById('chatInput').focus(); closeUserActions();">💬 Private Message</button>`;
+                container.innerHTML += `<button class="action-menu-btn" onclick="document.getElementById('chatInput').value='/dm ${u.name} '; document.getElementById('chatInput').focus(); closeUserActions(); toggleSidebar();">💬 Private Message</button>`;
                 
                 // 👑 OWNER TOOLKIT
                 if(isOwner) { 
@@ -1705,11 +1765,9 @@
         function nukeChat() { 
             if(confirm("WARNING: Wipe Database FOREVER?")) { 
                 db.ref('messages').remove().then(() => {
-                    db.ref('statuses').remove();
                     window.allMessages = {};
                     document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Database wiped by Owner.</div>'; 
-                    alert("Database erased!");
-                }).catch(e => alert("Error: " + e.message));
+                });
             } 
         }
 
