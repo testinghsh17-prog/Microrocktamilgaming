@@ -10,25 +10,26 @@
 
     <style>
         /* =========================================================
-           1. CORE CSS VARIABLES (CUTE PINK & DARK THEMES)
+           1. CORE CSS VARIABLES (ULTIMATE PINK & DARK THEMES)
            ========================================================= */
         :root {
-            --bg-main: #fce4ec;       
-            --bg-panel: #ffffff;      
-            --bg-sidebar: #ffffff;    
-            --text-main: #2d3436;     
-            --text-sub: #a4b0be;      
-            --border-color: #f1f2f6;  
-            --accent: #ff9ff3;        
-            --accent-hover: #f368e0;
-            --msg-me: #ff9ff3;        
-            --msg-me-text: #ffffff;
-            --msg-other: #f8f9fa;     
-            --msg-other-text: #2d3436;
-            --input-bg: #f1f2f6;      
-            --danger: #ff7675;        
-            --success: #55efc4;       
-            --shadow: 0 8px 25px rgba(255, 159, 243, 0.15); 
+            --bg-main: #fce4ec;       /* Cute soft pink background */
+            --bg-panel: #ffffff;      /* Pure white panels */
+            --bg-sidebar: #ffffff;    /* Pure white sidebar */
+            --text-main: #2d3436;     /* Dark grey text for readability */
+            --text-sub: #a4b0be;      /* Soft grey for secondary text */
+            --border-color: #f8a5c2;  /* Soft pinkish borders */
+            --accent: #ff9ff3;        /* Bright cute pink accent */
+            --accent-hover: #f368e0;  /* Darker pink on hover */
+            --msg-me: #ff9ff3;        /* Your messages bubble color */
+            --msg-me-text: #ffffff;   /* Text inside your bubbles */
+            --msg-other: #f8f9fa;     /* Other people's bubbles */
+            --msg-other-text: #2d3436;/* Text inside their bubbles */
+            --input-bg: #fdf5f8;      /* Very soft pink input boxes */
+            --danger: #ff7675;        /* Soft red for delete buttons */
+            --danger-hover: #d63031;
+            --success: #55efc4;       /* Soft green */
+            --shadow: 0 8px 25px rgba(255, 159, 243, 0.25); /* Pink glow shadow */
         }
 
         .dark-theme {
@@ -38,9 +39,9 @@
             --text-main: #f5f6fa;
             --text-sub: #7f8fa6;
             --border-color: #404654;
-            --accent: #a29bfe; 
-            --accent-hover: #6c5ce7;
-            --msg-me: #a29bfe;
+            --accent: #ff9ff3; 
+            --accent-hover: #f368e0;
+            --msg-me: #ff9ff3;
             --msg-me-text: #ffffff;
             --msg-other: #404654;
             --msg-other-text: #f5f6fa;
@@ -56,7 +57,7 @@
             margin: 0; 
             padding: 0; 
             width: 100vw; 
-            height: 100dvh; 
+            height: 100dvh; /* 100dvh is best for mobile browsers */
             background: var(--bg-main); 
             color: var(--text-main); 
             overflow: hidden; 
@@ -70,40 +71,27 @@
         }
 
         /* =========================================================
-           3. BACKGROUND ENGINE (CONTROLLED BY OWNER)
-           ========================================================= */
-        .global-bg {
-            position: fixed; 
-            inset: 0; 
-            z-index: -10; 
-            transition: background 0.5s ease;
-        }
-        
-        .bg-style-dark { background: #1e272e; }
-        .bg-style-gamer { background-color: #202225; background-image: linear-gradient(rgba(255, 159, 243, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(162, 155, 254, 0.1) 2px, transparent 2px); background-size: 40px 40px; }
-        .bg-style-pink { background: #fce4ec; }
-        .bg-style-stars { background: radial-gradient(circle at bottom, #2f3640 0%, #192a56 100%); }
-
-        /* =========================================================
-           4. ROLE EFFECTS (OWNER RGB & ADMIN GLOWS)
+           3. ROLE EFFECTS (OWNER RGB & ADMIN GLOWS)
            ========================================================= */
         @keyframes rainbowGlow { 
             0% { background-position: 0% 50%; } 
             100% { background-position: 200% 50%; } 
         }
         
+        /* OWNER ONLY - 4 RGB EFFECTS */
         .rgb-classic { background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #1e90ff, #9c88ff, #ff4757); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 3s linear infinite; font-weight: 900 !important; }
         .rgb-fire { background: linear-gradient(90deg, #ff4757, #ffa502, #ff7f50, #ff4757); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 2s linear infinite; font-weight: 900 !important; }
         .rgb-ocean { background: linear-gradient(90deg, #1e90ff, #00cec9, #70a1ff, #1e90ff); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 3s linear infinite; font-weight: 900 !important; }
         .rgb-neon { background: linear-gradient(90deg, #ff9ff3, #feca57, #ff9ff3); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 2s linear infinite; font-weight: 900 !important; }
         .owner-rgb { background: linear-gradient(90deg, #ff4757, #ffa502, #2ed573, #1e90ff, #9c88ff, #ff4757); background-size: 200% auto; color: #fff; background-clip: text; -webkit-text-fill-color: transparent; -webkit-background-clip: text; animation: rainbowGlow 3s linear infinite; font-weight: 900 !important; }
 
+        /* ADMIN ONLY - 3 SOLID GLOW EFFECTS */
         .admin-gold { color: #f1c40f; text-shadow: 0 0 8px rgba(241, 196, 15, 0.6); font-weight: 900 !important; }
         .admin-purple { color: #9b59b6; text-shadow: 0 0 8px rgba(155, 89, 182, 0.6); font-weight: 900 !important; }
         .admin-emerald { color: #2ecc71; text-shadow: 0 0 8px rgba(46, 204, 113, 0.6); font-weight: 900 !important; }
 
         /* =========================================================
-           5. MASSIVE FULL SCREEN ALERT OVERLAY
+           4. MASSIVE FULL SCREEN ALERT OVERLAY
            ========================================================= */
         #massive-alert-screen {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 99999999;
@@ -123,7 +111,7 @@
         .massive-alert-body { font-size: 22px; font-weight: bold; color: var(--text-main); margin-bottom: 30px; line-height: 1.5; word-wrap: break-word; }
 
         /* =========================================================
-           6. FULL-SCREEN MODALS & BOXES
+           5. FULL-SCREEN MODALS & BOXES
            ========================================================= */
         .fullscreen-overlay { 
             position: fixed; inset: 0; background: var(--bg-main); z-index: 999999; 
@@ -182,7 +170,7 @@
             background: var(--danger); color: white; border: none; padding: 15px; border-radius: 18px; 
             font-weight: 900; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.3s; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 118, 117, 0.3);
         }
-        .btn-danger:hover { background: #d63031; transform: translateY(-3px); }
+        .btn-danger:hover { background: var(--danger-hover); transform: translateY(-3px); }
 
         /* Tabs */
         .tab-container { display: flex; gap: 10px; margin-bottom: 25px; background: var(--input-bg); padding: 8px; border-radius: 18px; }
@@ -190,7 +178,7 @@
         .tab.active { background: var(--bg-panel); color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
         /* =========================================================
-           7. MAIN APP LAYOUT & SIDEBAR
+           6. MAIN APP LAYOUT & SIDEBAR
            ========================================================= */
         #app-screen { display: none; flex: 1; flex-direction: row; width: 100%; overflow: hidden; position: relative; }
         
@@ -266,8 +254,43 @@
         }
         .tool-btn:hover { background: var(--accent); color: white; transform: translateY(-3px); box-shadow: var(--shadow);}
 
+        /* 👑 Minimized Owner Menu Styling */
+        #owner-super-controls {
+            padding: 0 20px 20px 20px; 
+            flex-direction: column; 
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .owner-menu-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            padding: 10px 0;
+            transition: 0.3s;
+        }
+
+        .owner-menu-header:hover {
+            opacity: 0.8;
+        }
+
+        .owner-menu-header h4 {
+            margin: 0; 
+            color: var(--accent); 
+            font-weight: 900; 
+            font-size: 16px;
+        }
+
+        #owner-menu-content {
+            display: none; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-top: 10px;
+        }
+
         /* =========================================================
-           8. CHAT SECTION
+           7. CHAT SECTION
            ========================================================= */
         .chat-section { flex: 1; display: flex; flex-direction: column; min-width: 0; background: transparent; position: relative; }
         
@@ -311,7 +334,7 @@
         }
 
         /* =========================================================
-           9. CUTE MESSAGE BUBBLES & ACTIONS
+           8. CUTE MESSAGE BUBBLES & ACTIONS
            ========================================================= */
         .discord-msg-row { 
             display: flex; flex-direction: row; gap: 15px; max-width: 85%; position: relative; align-items: flex-end; transition: 0.3s;
@@ -363,13 +386,13 @@
         audio { height: 50px; max-width: 260px; margin-top: 10px; outline: none; border-radius: 25px; }
 
         /* =========================================================
-           10. IRON-CLAD INPUT BAR (FIXED SEPARATE MIC & SEND BUTTONS)
+           9. IRON-CLAD INPUT BAR (DEDICATED MIC AND SEND)
            ========================================================= */
         .input-bar { 
-            padding: 15px 20px; 
+            padding: 15px 25px; 
             background: var(--bg-panel); 
             display: flex; 
-            gap: 10px; 
+            gap: 12px; 
             align-items: center; 
             width: 100%; 
             box-sizing: border-box; 
@@ -379,14 +402,14 @@
         }
         
         .action-btn { 
-            flex: 0 0 50px; 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 18px; 
+            flex: 0 0 45px; 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 16px; 
             background: var(--input-bg); 
             color: var(--text-sub); 
             border: none; 
-            font-size: 22px; 
+            font-size: 20px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -403,12 +426,12 @@
             color: white;
             border-radius: 50%; /* Make it round to match send */
         }
-        .voice-btn:hover { background: var(--danger-hover); }
+        .voice-btn:hover { background: var(--danger-hover); transform: scale(1.1); }
 
         .chat-input { 
             flex: 1 1 auto; 
             min-width: 50px; 
-            height: 50px; 
+            height: 45px; 
             border-radius: 25px; 
             background: var(--input-bg); 
             border: 2px solid transparent; 
@@ -423,14 +446,14 @@
         
         /* Dedicated Send Button */
         .send-btn { 
-            flex: 0 0 50px; 
-            width: 50px; 
-            height: 50px; 
+            flex: 0 0 45px; 
+            width: 45px; 
+            height: 45px; 
             border-radius: 50%; 
             background: var(--accent); 
             color: white; 
             border: none; 
-            font-size: 22px; 
+            font-size: 20px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -447,7 +470,7 @@
         }
 
         /* =========================================================
-           11. MOBILE RESPONSIVENESS
+           10. MOBILE RESPONSIVENESS
            ========================================================= */
         @media (max-width: 768px) {
             .sidebar { 
@@ -459,19 +482,19 @@
             .discord-msg-row { max-width: 95%; }
             
             /* Compact Input Bar for Mobile */
-            .input-bar { padding: 10px; gap: 6px; }
-            .action-btn, .send-btn { 
-                flex: 0 0 42px; 
-                width: 42px; 
-                height: 42px; 
-                font-size: 18px; 
+            .input-bar { padding: 10px; gap: 8px; }
+            .action-btn, .send-btn, .voice-btn { 
+                flex: 0 0 40px; 
+                width: 40px; 
+                height: 40px; 
+                font-size: 16px; 
             }
             
             .msg-actions { opacity: 1; } /* Always visible on mobile to avoid hover issues */
         }
 
         /* =========================================================
-           12. LIGHTBOX & STATUS VIEWERS
+           11. LIGHTBOX & STATUS VIEWERS
            ========================================================= */
         #media-viewer { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 500000; 
@@ -480,7 +503,10 @@
         .status-header { position: absolute; top: 25px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 5001; color: white; }
         .status-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 24px; cursor: pointer; transition:0.3s;}
         .status-close:hover { background: var(--danger); transform: scale(1.1);}
+        
         #media-image, #media-video { width: 100%; height: 100%; object-fit: contain; display: none; border-radius: 16px; }
+
+        #status-view-initial { width:50px; height:50px; border-radius:16px; background:var(--accent); color:white; display:none; align-items:center; justify-content:center; font-size:24px; font-weight:900; border:3px solid white;}
 
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 999999; flex-direction: column; }
         #lightbox.active { display: flex; }
@@ -493,8 +519,6 @@
 
     <audio id="sound-send" src="https://www.myinstants.com/media/sounds/pop_drip.mp3" preload="auto"></audio>
     <audio id="sound-receive" src="https://www.myinstants.com/media/sounds/discord-notification.mp3" preload="auto"></audio>
-
-    <div id="global-bg" class="global-bg bg-style-dark"></div>
 
     <div id="massive-alert-screen">
         <div class="massive-alert-box">
@@ -655,7 +679,8 @@
     <div id="media-viewer" class="fullscreen-overlay" style="display: none; background: rgba(0,0,0,0.95);">
         <div class="status-header">
             <div class="status-user-info" style="display: flex; align-items: center; gap: 15px;">
-                <img id="status-view-avatar" src="" style="width:50px; height:50px; border-radius:16px; object-fit:cover; border:3px solid white;">
+                <img id="status-view-avatar" src="" style="width:50px; height:50px; border-radius:16px; object-fit:cover; border:3px solid white; display:none;">
+                <div id="status-view-initial"></div>
                 <span id="status-view-name" style="font-size: 22px; font-weight: 900; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">User Name</span>
             </div>
             <button class="status-close" onclick="closeMedia()">✕</button>
@@ -678,6 +703,7 @@
                 <p><b>/kick [name]</b><br><span style="color:var(--text-sub);">(Owner) Ban gamer.</span></p>
                 <p><b>/clear</b><br><span style="color:var(--text-sub);">(Everyone) Clear local screen.</span></p>
                 <p><b>/dice & /coin</b><br><span style="color:var(--text-sub);">(Everyone) Roll die / flip coin.</span></p>
+                <p><b>/nuke</b><br><span style="color:var(--text-sub);">(Owner) Wipe entire database.</span></p>
             </div>
             <button class="btn-primary" onclick="document.getElementById('cmd-screen').style.display='none'">Got it</button>
         </div>
@@ -722,7 +748,6 @@
                 </div>
                 
                 <div id="owner-menu-content" style="display:none; flex-direction:column; gap:12px; margin-top:10px;">
-                    <button class="btn-primary" style="margin:0; background: #a29bfe; padding:14px; box-shadow:none;" onclick="changeGlobalBackground()">🌌 Change Global BG</button>
                     <button class="btn-primary" style="margin:0; background: #55efc4; color: black; padding:14px; box-shadow:none;" onclick="document.getElementById('owner-bugs-screen').style.display='flex'; loadBugs();">🛠️ View Bug Reports</button>
                     <button class="btn-danger" style="margin:0; padding:14px; box-shadow:none;" onclick="nukeChat()">☢️ Wipe Database</button>
                 </div>
@@ -835,12 +860,11 @@
         function formatIST(timestamp) {
             if(!timestamp) return "Never";
             const date = new Date(timestamp);
-            return date.toLocaleTimeString('en-US', { 
-                timeZone: 'Asia/Kolkata', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                hour12: true 
-            });
+            
+            const d = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+            const t = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' });
+            
+            return `${d}, ${t}`;
         }
 
         // 🚀 BUG-FREE BULK SELECT SYSTEM 🚀
@@ -1193,38 +1217,15 @@
             }
         }
 
-        // 🌍 GLOBAL BACKGROUND ENGINE
-        const bgClasses = ['bg-style-dark', 'bg-style-gamer', 'bg-style-pink', 'bg-style-stars'];
-        let currentGlobalBg = 0;
-
-        function changeGlobalBackground() {
-            if(!isOwner) return;
-            currentGlobalBg = (currentGlobalBg + 1) % bgClasses.length;
-            db.ref('settings/globalBackground').set(currentGlobalBg);
-        }
-
-        // --- APP BOOT SEQUENCE ---
         function startApp() {
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('app-screen').style.display = 'flex';
             
             db.ref('users/' + myProfile.id).set({ ...myProfile, online: true, lastSeen: Date.now() });
 
-            // Make Owner menu visible
             if(isOwner) {
                 document.getElementById('owner-super-controls').style.display = 'flex';
             }
-
-            // Sync Background
-            db.ref('settings/globalBackground').on('value', (snap) => {
-                let bgIndex = snap.val();
-                if(bgIndex === null) bgIndex = 0;
-                currentGlobalBg = bgIndex; 
-                const bgContainer = document.getElementById('global-bg');
-                if(bgContainer) {
-                    bgContainer.className = `global-bg ${bgClasses[bgIndex]}`;
-                }
-            });
 
             db.ref('settings/chatLocked').on('value', (snap) => {
                 window.chatLocked = snap.val() === true;
@@ -1259,7 +1260,6 @@
                 renderStatusBar();
             });
 
-            // Load Chat Messages
             db.ref('messages').on('value', (snap) => {
                 if(!snap.exists()) { 
                     document.getElementById('messages').innerHTML = '<div class="sys-msg">🧹 Chat is clear.</div>'; 
@@ -1267,7 +1267,7 @@
                 }
             });
 
-            // Ensure no loading screen
+            // Handle Initial Load
             let initialLoad = true;
             db.ref('messages').once('value').then(() => { 
                 initialLoad = false; 
@@ -1330,7 +1330,13 @@
                 const u = classmates[id]; if(!u && id !== myProfile.id) continue;
                 const usr = u || myProfile;
                 const initial = usr.name ? usr.name.charAt(0).toUpperCase() : '?';
-                let imgHTML = (usr.avatar && usr.avatar.startsWith('data:')) ? `<img src="${usr.avatar}" class="status-img">` : `<div class="status-img">${initial}</div>`;
+                
+                let imgHTML;
+                if(usr.avatar && usr.avatar.startsWith('data:')) {
+                    imgHTML = `<img src="${usr.avatar}" class="status-img">`;
+                } else {
+                    imgHTML = `<div class="status-img" style="background:var(--accent); color:white;">${initial}</div>`;
+                }
                 
                 container.innerHTML += `
                     <div class="status-item" onclick="openStatus('${id}')">
@@ -1580,9 +1586,16 @@
             const btn = document.getElementById('voice-btn');
             
             if(!isRecording) {
-                // Let browser choose native format so it works on iOS Safari
+                // Determine format
+                let mimeType = '';
+                if (MediaRecorder.isTypeSupported('audio/webm')) {
+                    mimeType = 'audio/webm';
+                } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                    mimeType = 'audio/mp4';
+                }
+                
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream); 
+                    mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined); 
                     mediaRecorder.start(); 
                     isRecording = true; 
                     
@@ -1596,8 +1609,8 @@
                     });
                     
                     mediaRecorder.addEventListener("stop", () => {
-                        const mimeType = mediaRecorder.mimeType || 'audio/mp4'; 
-                        const blob = new Blob(audioChunks, { type: mimeType }); 
+                        // Create blob using the recorder's actual mimetype, fallback to mp4 for iOS
+                        const blob = new Blob(audioChunks, mimeType ? { type: mimeType } : undefined); 
                         const reader = new FileReader(); 
                         reader.readAsDataURL(blob);
                         reader.onloadend = () => { 
@@ -1643,10 +1656,30 @@
         let mediaTimer = null;
         function openStatus(userId) {
             const s = window.allStatuses[userId]; if(!s) return;
+            
+            const u = classmates[userId] || myProfile; 
+            const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
+            
             document.getElementById('action-target-id').value = userId;
             document.getElementById('status-delete-btn').style.display = (isOwner || userId === myProfile.id) ? 'block' : 'none';
             
-            const imgEl = document.getElementById('media-image'); const vidEl = document.getElementById('media-video');
+            // Fix Name and Avatar on Status Screen
+            document.getElementById('status-view-name').innerText = u.name;
+            const avatarEl = document.getElementById('status-view-avatar');
+            const initialEl = document.getElementById('status-view-initial');
+            
+            if (u.avatar && u.avatar.startsWith('data:image')) {
+                avatarEl.src = u.avatar;
+                avatarEl.style.display = 'block';
+                initialEl.style.display = 'none';
+            } else {
+                avatarEl.style.display = 'none';
+                initialEl.innerText = initial;
+                initialEl.style.display = 'flex';
+            }
+            
+            const imgEl = document.getElementById('media-image'); 
+            const vidEl = document.getElementById('media-video');
             document.getElementById('media-viewer').style.display = 'flex';
             
             if(s.type === 'video') { 
