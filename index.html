@@ -431,10 +431,35 @@
             navTo('screen-username');
         }
 
-        // -- Robust Multi-Proxy Roblox Avatar Fetching --
+        // -- Bulletproof Multi-Proxy Roblox Avatar Fetching --
         let debounceTimer;
         let isUserValid = false;
         
+        // Helper Functions to control UI state
+        function showRealError() {
+            document.getElementById('default-avatar').classList.remove('hidden');
+            document.getElementById('profile-avatar').classList.add('hidden');
+            document.getElementById('username-error').classList.remove('hidden');
+            isUserValid = false; // Blocks confirmation
+        }
+
+        function bypassError() {
+            // Keep default icon, but hide the red error text and ALLOW confirmation
+            document.getElementById('default-avatar').classList.remove('hidden');
+            document.getElementById('profile-avatar').classList.add('hidden');
+            document.getElementById('username-error').classList.add('hidden');
+            isUserValid = true; // Allows confirmation
+        }
+
+        function showAvatar(url) {
+            const img = document.getElementById('profile-avatar');
+            img.src = url;
+            img.classList.remove('hidden');
+            document.getElementById('default-avatar').classList.add('hidden');
+            document.getElementById('username-error').classList.add('hidden');
+            isUserValid = true; // Allows confirmation
+        }
+
         document.getElementById('roblox-username').addEventListener('input', (e) => {
             const username = e.target.value.trim();
             isUserValid = false;
@@ -455,70 +480,101 @@
             document.getElementById('avatar-loader').classList.remove('hidden');
             document.getElementById('avatar-loader').classList.add('flex');
 
-            try {
-                let userId = null;
-                const payload = JSON.stringify({ usernames: [username], excludeBannedUsers: false });
+            let apiResponded = false;
+            let userExists = false;
+            let userId = null;
 
-                // Method 1: corsproxy.io (Very reliable on Vercel)
+            const payload = JSON.stringify({ usernames: [username], excludeBannedUsers: false });
+
+            // 1. Try RoProxy
+            try {
+                const res = await fetch('https://users.roproxy.com/v1/usernames/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                });
+                if (res.ok) {
+                    apiResponded = true;
+                    const data = await res.json();
+                    if (data.data && data.data.length > 0) {
+                        userExists = true;
+                        userId = data.data[0].id;
+                    }
+                }
+            } catch (e) { console.log("Proxy 1 blocked"); }
+
+            // 2. Try corsproxy.io (Fallback)
+            if (!apiResponded) {
                 try {
                     const res = await fetch('https://corsproxy.io/?https://users.roblox.com/v1/usernames/users', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: payload
                     });
-                    const data = await res.json();
-                    if (data.data && data.data.length > 0) userId = data.data[0].id;
-                } catch(e) { console.log("Proxy 1 failed"); }
-
-                // Method 2: RoProxy (Fallback if corsproxy fails)
-                if (!userId) {
-                    try {
-                        const res = await fetch('https://users.roproxy.com/v1/usernames/users', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: payload
-                        });
+                    if (res.ok) {
+                        apiResponded = true;
                         const data = await res.json();
-                        if (data.data && data.data.length > 0) userId = data.data[0].id;
-                    } catch(e) { console.log("Proxy 2 failed"); }
+                        if (data.data && data.data.length > 0) {
+                            userExists = true;
+                            userId = data.data[0].id;
+                        }
+                    }
+                } catch (e) { console.log("Proxy 2 blocked"); }
+            }
+
+            // Decide logic based on API success
+            if (apiResponded) {
+                if (!userExists) {
+                    // API works, but username actually doesn't exist
+                    document.getElementById('avatar-loader').classList.add('hidden');
+                    document.getElementById('avatar-loader').classList.remove('flex');
+                    showRealError();
+                    return;
                 }
+                
+                // User exists, try fetching avatar image
+                await fetchAvatarImage(userId);
 
-                if (!userId) throw new Error("User not found");
-
-                // Get Avatar Image URL using the found User ID
-                let avatarUrl = null;
-                const thumbApiUrl = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
-
-                // Method 1 for Image: allorigins (Perfect for GET requests on Vercel)
-                try {
-                    const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(thumbApiUrl)}`);
-                    const data = await res.json();
-                    if (data.data && data.data.length > 0) avatarUrl = data.data[0].imageUrl;
-                } catch(e) { console.log("Image Proxy 1 failed"); }
-
-                // Method 2 for Image: RoProxy Fallback
-                if (!avatarUrl) {
-                    const res = await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`);
-                    const data = await res.json();
-                    if (data.data && data.data.length > 0) avatarUrl = data.data[0].imageUrl;
-                }
-
-                if (!avatarUrl) throw new Error("Avatar not found");
-
-                // Display Image
-                const img = document.getElementById('profile-avatar');
-                img.src = avatarUrl;
-                img.classList.remove('hidden');
-                isUserValid = true;
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('default-avatar').classList.remove('hidden');
-                document.getElementById('username-error').classList.remove('hidden');
-                isUserValid = false;
-            } finally {
+            } else {
+                // Vercel completely blocked the proxy requests
+                // Gracefully bypass error so the user can continue
                 document.getElementById('avatar-loader').classList.add('hidden');
                 document.getElementById('avatar-loader').classList.remove('flex');
+                bypassError();
+            }
+        }
+
+        async function fetchAvatarImage(userId) {
+            let avatarUrl = null;
+
+            // 1. Try RoProxy for Image
+            try {
+                const res = await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.data && data.data.length > 0) avatarUrl = data.data[0].imageUrl;
+                }
+            } catch(e) {}
+
+            // 2. Try allorigins for Image (Fallback)
+            if (!avatarUrl) {
+                try {
+                    const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.data && data.data.length > 0) avatarUrl = data.data[0].imageUrl;
+                    }
+                } catch(e) {}
+            }
+
+            document.getElementById('avatar-loader').classList.add('hidden');
+            document.getElementById('avatar-loader').classList.remove('flex');
+
+            if (avatarUrl) {
+                showAvatar(avatarUrl);
+            } else {
+                // User exists but thumbnail proxy failed -> allow bypass
+                bypassError();
             }
         }
 
